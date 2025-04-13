@@ -1,0 +1,33 @@
+{
+  "name": "ledger",
+  "version": "0.0.1",
+  "description": "Text-based double-entry bookkeeping",
+  "type": "module",
+  "main": "main.ts",
+  "scripts": {
+    "main": "tsx main.ts",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "compile": "tsc",
+    "fix": "gts fix",
+    "test!": "tsx --enable-source-maps --test --test-reporter=spec",
+    "test": "npm run test! -- $(find lib -name '*.test.ts')",
+    "test-watch!": "npm run test! -- --watch",
+    "test-watch": "npm run test-watch! -- $(find lib -name '*.test.ts')",
+    "typecheck": "tsc --noEmit",
+    "pre-commit": "concurrently --timings --group npm:lint npm:test npm:typecheck"
+  },
+  "author": "Luca Emanuele Mattiello <lucae.mattiello@gmail.com>",
+  "license": "ISC",
+  "engines": {
+    "node": ">=16.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "concurrently": "^9.1.2",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "gts": "^6.0.2",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  }
+}
