@@ -1,0 +1,63 @@
+{
+  "_tag": "Right",
+  "right": {
+    "transactions": [
+      {
+        "date": "2025-04-01T00:00:00.000Z",
+        "description": "Buy USD with CHF",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "amount": {
+              "amount": "-10",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": {
+              "amount": "12",
+              "currency": "USD"
+            }
+          },
+          {
+            "account": "Trading:Broker",
+            "amount": {
+              "amount": "10",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Trading:Broker",
+            "amount": {
+              "amount": "-12",
+              "currency": "USD"
+            }
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": [
+            {
+              "amount": "-10",
+              "currency": "CHF"
+            },
+            {
+              "amount": "12",
+              "currency": "USD"
+            }
+          ],
+          "Trading:Broker": [
+            {
+              "amount": "10",
+              "currency": "CHF"
+            },
+            {
+              "amount": "-12",
+              "currency": "USD"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -10,6 +10,84 @@ await describe('Amount', async () => {
   const amount = (amount: number | string, currency: string) =>
     new Amount(ExactNumber(amount), currency);
 
+  await describe('#zero', async () => {
+    await it('returns an amount with zero value', () => {
+      assert(Amount.zero('USD').amount.isZero());
+    });
+
+    await it('returns an amount with the given currency', () => {
+      assert.equal(Amount.zero('USD').currency, 'USD');
+    });
+  });
+
+  await describe('#isZero', async () => {
+    await it('returns true for a zero amount', () => {
+      assert(Amount.zero('USD').isZero());
+    });
+
+    await it('returns false for a positive amount', () => {
+      assert(!amount(1, 'USD').isZero());
+    });
+
+    await it('returns false for a negative amount', () => {
+      assert(!amount(-1, 'USD').isZero());
+    });
+  });
+
+  await describe('#neg', async () => {
+    await it('returns an Amount with the same Currency', () => {
+      assert.equal(amount(1, 'USD').neg().currency, 'USD');
+    });
+
+    await it('returns an Amount with the negated value when positive', () => {
+      assert(amount(1, 'USD').neg().amount.eq(-1));
+    });
+
+    await it('returns an Amount with the negated value when negative', () => {
+      assert(amount(-1, 'USD').neg().amount.eq(1));
+    });
+  });
+
+  await describe('#add', async () => {
+    await it('requires operands to have the same Currency', () => {
+      assert.throws(() => {
+        amount(1, 'USD').add(amount(1, 'EUR'));
+      }, /invalid 'add' operation between currencies 'USD' and 'EUR'/i);
+    });
+
+    await it('returns an Amount with the same Currency', () => {
+      assert.equal(amount(1, 'USD').add(amount(2, 'USD')).currency, 'USD');
+    });
+
+    await it('returns an Amount with the sum of the values', () => {
+      assert(amount(1, 'USD').add(amount(2, 'USD')).amount.eq(3));
+    });
+
+    await it('has exact precision', () => {
+      assert(amount('0.1', 'USD').add(amount('0.2', 'USD')).amount.eq('0.3'));
+    });
+  });
+
+  await describe('#sub', async () => {
+    await it('requires operands to have the same Currency', () => {
+      assert.throws(() => {
+        amount(1, 'USD').sub(amount(1, 'EUR'));
+      }, /invalid 'sub' operation between currencies 'USD' and 'EUR'/i);
+    });
+
+    await it('returns an Amount with the same Currency', () => {
+      assert.equal(amount(3, 'USD').sub(amount(2, 'USD')).currency, 'USD');
+    });
+
+    await it('returns an Amount with the difference of the values', () => {
+      assert(amount(3, 'USD').sub(amount(2, 'USD')).amount.eq(1));
+    });
+
+    await it('has exact precision', () => {
+      assert(amount('0.3', 'USD').sub(amount('0.2', 'USD')).amount.eq('0.1'));
+    });
+  });
+
   await describe('#toString', async () => {
     const tests: Array<{ amount: Amount; want: string }> = [
       { amount: amount('1', 'USD'), want: '1 USD' },

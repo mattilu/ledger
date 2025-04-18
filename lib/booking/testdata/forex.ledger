@@ -1,0 +1,4 @@
+2025-04-01 * "Buy USD with CHF"
+  Assets:Broker -10 CHF
+  Assets:Broker  12 USD
+  Trading:Broker

@@ -1,0 +1,148 @@
+{
+  "_tag": "Right",
+  "right": {
+    "transactions": [
+      {
+        "date": "2025-04-01T00:00:00.000Z",
+        "description": "No Postings",
+        "postings": [],
+        "inventoriesAfter": {}
+      },
+      {
+        "date": "2025-04-02T00:00:00.000Z",
+        "description": "Posting without amount",
+        "postings": [],
+        "inventoriesAfter": {}
+      },
+      {
+        "date": "2025-04-03T00:00:00.000Z",
+        "description": "Postings with amount",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "10",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Income:Foo",
+            "amount": {
+              "amount": "-10",
+              "currency": "CHF"
+            }
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Foo": [
+            {
+              "amount": "10",
+              "currency": "CHF"
+            }
+          ],
+          "Income:Foo": [
+            {
+              "amount": "-10",
+              "currency": "CHF"
+            }
+          ]
+        }
+      },
+      {
+        "date": "2025-04-04T00:00:00.000Z",
+        "description": "Postings with amount interpolation",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "-10",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Bar",
+            "amount": {
+              "amount": "10",
+              "currency": "CHF"
+            }
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Bar": [
+            {
+              "amount": "10",
+              "currency": "CHF"
+            }
+          ],
+          "Assets:Foo": [],
+          "Income:Foo": [
+            {
+              "amount": "-10",
+              "currency": "CHF"
+            }
+          ]
+        }
+      },
+      {
+        "date": "2025-04-05T00:00:00.000Z",
+        "description": "Postings with multiple amount interpolations",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "-10",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Bar",
+            "amount": {
+              "amount": "10",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "-1",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Expenses:Fee",
+            "amount": {
+              "amount": "1",
+              "currency": "CHF"
+            }
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Bar": [
+            {
+              "amount": "20",
+              "currency": "CHF"
+            }
+          ],
+          "Assets:Foo": [
+            {
+              "amount": "-11",
+              "currency": "CHF"
+            }
+          ],
+          "Expenses:Fee": [
+            {
+              "amount": "1",
+              "currency": "CHF"
+            }
+          ],
+          "Income:Foo": [
+            {
+              "amount": "-10",
+              "currency": "CHF"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
