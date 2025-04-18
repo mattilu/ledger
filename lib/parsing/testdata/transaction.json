@@ -1,0 +1,79 @@
+{
+  "_tag": "Right",
+  "right": {
+    "directives": [
+      {
+        "type": "transaction",
+        "description": "No Postings",
+        "date": {
+          "date": "2025-04-01",
+          "time": null,
+          "timezone": null
+        },
+        "postings": []
+      },
+      {
+        "type": "transaction",
+        "description": "Posting without amount",
+        "date": {
+          "date": "2025-04-02",
+          "time": null,
+          "timezone": null
+        },
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "amount": null
+          }
+        ]
+      },
+      {
+        "type": "transaction",
+        "description": "Postings with amount",
+        "date": {
+          "date": "2025-04-03",
+          "time": null,
+          "timezone": null
+        },
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "10",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Income:Foo",
+            "amount": {
+              "amount": "-10",
+              "currency": "CHF"
+            }
+          }
+        ]
+      },
+      {
+        "type": "transaction",
+        "description": "Postings with and without amount",
+        "date": {
+          "date": "2025-04-04",
+          "time": null,
+          "timezone": null
+        },
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "-10",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Bar",
+            "amount": null
+          }
+        ]
+      }
+    ]
+  }
+}

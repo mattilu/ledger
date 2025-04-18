@@ -1,0 +1,52 @@
+import { strict as assert } from 'node:assert';
+import { describe, test } from 'node:test';
+
+import { bimap } from 'fp-ts/lib/Either.js';
+import { pipe } from 'fp-ts/lib/function.js';
+import { glob, readFile } from 'fs/promises';
+
+import { parse } from './parser.js';
+import { LedgerSpec } from './spec/ledger.js';
+
+await describe('parse', async () => {
+  const tests = [];
+  const dirname = 'lib/parsing/testdata/';
+  for await (const f of glob([`${dirname}**/*.ledger`])) {
+    tests.push({
+      testName: f.replace(dirname, '').replace('.ledger', ''),
+      srcPath: f,
+      wantPath: f.replace('.ledger', '.json'),
+    });
+  }
+
+  // Make sure we have test data
+  assert(tests.length > 0);
+
+  for (const t of tests) {
+    await test(t.testName, async () => {
+      const srcContent = await readFile(t.srcPath, { encoding: 'utf-8' });
+      const wantContent = await readFile(t.wantPath, { encoding: 'utf-8' });
+      const got = pipe(
+        parse(srcContent),
+        bimap(
+          err => ({
+            error: `${err.message} at ${t.srcPath}:${err.srcPos.row}`,
+          }),
+          res => canonicalize(cleanup(res)),
+        ),
+      );
+
+      assert.deepEqual(got, JSON.parse(wantContent));
+    });
+  }
+});
+
+function cleanup(ledger: LedgerSpec) {
+  return {
+    directives: ledger.directives.map(x => ({ ...x, srcPos: undefined })),
+  };
+}
+
+function canonicalize<T>(x: T): T {
+  return JSON.parse(JSON.stringify(x));
+}

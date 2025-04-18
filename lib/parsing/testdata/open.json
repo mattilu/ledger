@@ -1,0 +1,52 @@
+{
+  "_tag": "Right",
+  "right": {
+    "directives": [
+      {
+        "type": "open",
+        "account": "Assets:Foo",
+        "date": {
+          "date": "2025-04-01",
+          "time": null,
+          "timezone": null
+        }
+      },
+      {
+        "type": "open",
+        "account": "Liabilities:Foo",
+        "date": {
+          "date": "2025-04-01",
+          "time": "00:00",
+          "timezone": null
+        }
+      },
+      {
+        "type": "open",
+        "account": "Income:Foo",
+        "date": {
+          "date": "2025-04-01",
+          "time": "00:00:00",
+          "timezone": null
+        }
+      },
+      {
+        "type": "open",
+        "account": "Expenses:Foo",
+        "date": {
+          "date": "2025-04-01",
+          "time": "00:00:00",
+          "timezone": "+00:00"
+        }
+      },
+      {
+        "type": "open",
+        "account": "Equity:Foo",
+        "date": {
+          "date": "2025-04-01",
+          "time": "00:00:00",
+          "timezone": "Z"
+        }
+      }
+    ]
+  }
+}
