@@ -1,0 +1,12 @@
+2025-04-01 * "No Postings"
+
+2025-04-02 * "Posting without amount"
+  Assets:Foo
+
+2025-04-03 * "Postings with amount"
+  Assets:Foo  10 CHF
+  Income:Foo  -10 CHF
+
+2025-04-04 * "Postings with and without amount"
+  Assets:Foo  -10 CHF
+  Assets:Bar
