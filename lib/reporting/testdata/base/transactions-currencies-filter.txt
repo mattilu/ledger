@@ -1,0 +1,3 @@
+2025-01-05T00:00:00.000Z * "Trade"
+  Assets:Trading 25 VT
+  Trading:Default -25 VT
