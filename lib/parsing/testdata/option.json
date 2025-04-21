@@ -1,0 +1,12 @@
+{
+  "_tag": "Right",
+  "right": {
+    "directives": [
+      {
+        "type": "option",
+        "optionName": "default-timezone",
+        "optionValue": "+02:00"
+      }
+    ]
+  }
+}

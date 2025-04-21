@@ -35,7 +35,7 @@ export const debug = command({
   },
   handler: async ({ inputFile, line }): Promise<Either<CommandError, void>> => {
     return pipe(
-      await load(inputFile, { defaultTimezone: 'Z' }),
+      await load(inputFile),
       mapLeft(CommandError.fromLoadError),
       tap(debugLoadResult(inputFile, line)),
       flatMap(flow(book, mapLeft(CommandError.fromBookingError))),

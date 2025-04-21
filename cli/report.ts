@@ -92,7 +92,7 @@ async function runReport(
   { inputFile, date }: Output<typeof commonArgs>,
 ): Promise<Either<CommandError, void>> {
   return pipe(
-    await load(inputFile, { defaultTimezone: 'Z' }),
+    await load(inputFile),
     mapLeft(CommandError.fromLoadError),
     flatMap(flow(book, mapLeft(CommandError.fromBookingError))),
     map(date ? dropAfter(date) : identity),

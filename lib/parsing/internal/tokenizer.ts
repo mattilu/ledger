@@ -9,6 +9,7 @@ export enum TokenKind {
   StringLiteral,
 
   KEYWORD_open,
+  KEYWORD_option,
 
   Account,
   Currency,
@@ -27,6 +28,7 @@ const tokenizer = buildLexer([
   [true, /^"[^"\n]*"/g, TokenKind.StringLiteral],
 
   [true, /^open\b/g, TokenKind.KEYWORD_open],
+  [true, /^option\b/g, TokenKind.KEYWORD_option],
 
   [
     true,

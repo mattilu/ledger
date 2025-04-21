@@ -26,7 +26,7 @@ await describe('book', async () => {
   for (const t of tests) {
     await test(t.testName, async () => {
       const wantContent = await readFile(t.wantPath, { encoding: 'utf-8' });
-      const ledger = await load(t.srcPath, { defaultTimezone: '+00:00' });
+      const ledger = await load(t.srcPath);
       assert(isRight(ledger));
 
       const got = pipe(

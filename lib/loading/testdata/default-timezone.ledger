@@ -1,0 +1,7 @@
+option "default-timezone" "+01:00"
+
+2025-04-01 open Assets:Bank  ; Note: no time, so UTC
+
+2025-04-01 02:00 open Assets:Wallet  ; Note: time but no timezone
+
+2025-04-01 04:00 +02:00 open Assets:Trading  ; Note: time and timezone

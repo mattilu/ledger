@@ -1,8 +1,8 @@
 import { strict as assert } from 'node:assert';
 
-import { parse as parseDate } from 'date-fns';
 import { Either, isLeft, left, right } from 'fp-ts/lib/Either.js';
 import { readFile } from 'fs/promises';
+import { Map } from 'immutable';
 import { resolve } from 'path';
 
 import { parse } from '../parsing/parser.js';
@@ -12,13 +12,8 @@ import { LoadError } from './error.js';
 import { Ledger } from './ledger.js';
 import { makeSourceContext } from './source-context.js';
 
-export interface LoadOptions {
-  readonly defaultTimezone: string;
-}
-
 export async function load(
   filePath: string,
-  options: LoadOptions,
 ): Promise<Either<LoadError, Ledger>> {
   const contents = await readFile(resolve(filePath), { encoding: 'utf-8' });
   const result = parse(contents);
@@ -33,6 +28,9 @@ export async function load(
     );
   }
 
+  let defaultTimezone = '+00:00';
+  let optionMap = Map<string, string>([['default-timezone', defaultTimezone]]);
+
   const directives: Directive[] = [];
 
   for (const directive of result.right.directives) {
@@ -40,15 +38,21 @@ export async function load(
       case 'open':
         directives.push({
           type: 'open',
-          date: makeDate(directive.date, options.defaultTimezone),
+          date: makeDate(directive.date, defaultTimezone),
           account: directive.account,
           srcCtx: makeSourceContext(filePath, directive.srcPos),
         });
         break;
+      case 'option':
+        optionMap = optionMap.set(directive.optionName, directive.optionValue);
+        if (directive.optionName === 'default-timezone') {
+          defaultTimezone = directive.optionValue;
+        }
+        break;
       case 'transaction':
         directives.push({
           type: 'transaction',
-          date: makeDate(directive.date, options.defaultTimezone),
+          date: makeDate(directive.date, defaultTimezone),
           description: directive.description,
           postings: directive.postings,
           srcCtx: makeSourceContext(filePath, directive.srcPos),
@@ -65,20 +69,10 @@ export async function load(
 }
 
 function makeDate(dateSpec: DateSpec, defaultTimezone: string): Date {
-  const date = [dateSpec.date];
-  const fmt = ['yyyy-MM-dd'];
-
-  const time = dateSpec.time ?? '00:00:00';
-  date.push(time);
-  if (time.length > 5) {
-    fmt.push('HH:mm:ss');
-  } else {
-    fmt.push('HH:mm');
+  if (!dateSpec.time) {
+    return new Date(dateSpec.date);
   }
-
-  const timezone = dateSpec.timezone ?? defaultTimezone;
-  date.push(timezone);
-  fmt.push('XXX');
-
-  return parseDate(date.join(' '), fmt.join(' '), 0);
+  return new Date(
+    `${dateSpec.date}T${dateSpec.time}${dateSpec.timezone ?? defaultTimezone}`,
+  );
 }

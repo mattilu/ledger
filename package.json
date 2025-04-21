@@ -32,7 +32,6 @@
   },
   "dependencies": {
     "cmd-ts": "^0.13.0",
-    "date-fns": "^4.1.0",
     "exactnumber": "^1.0.4",
     "fp-ts": "^2.16.10",
     "immutable": "^5.1.1",

@@ -24,10 +24,7 @@ export async function collectTests(scenario: string): Promise<TestCase[]> {
     const srcPath = path.join(dataDir, testName, 'main.ledger');
     const wantContent = await readFile(wantPath, { encoding: 'utf-8' });
 
-    const got = pipe(
-      await load(srcPath, { defaultTimezone: '+00:00' }),
-      flatMap(book),
-    );
+    const got = pipe(await load(srcPath), flatMap(book));
     assert(isRight(got));
 
     tests.push({

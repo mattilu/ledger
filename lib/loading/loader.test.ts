@@ -26,7 +26,7 @@ await describe('load', async () => {
     await test(t.testName, async () => {
       const wantContent = await readFile(t.wantPath, { encoding: 'utf-8' });
       const got = pipe(
-        await load(t.srcPath, { defaultTimezone: '+00:00' }),
+        await load(t.srcPath),
         bimap(
           err => ({
             error: `${err.message} at ${err.srcCtx.filePath}:${err.srcCtx.row}`,
