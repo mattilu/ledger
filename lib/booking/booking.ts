@@ -80,6 +80,10 @@ function bookPosting(
   inventories: InventoryMap,
   balance: Inventory,
 ): Either<Error, [BookedPosting[], InventoryMap, balance: Inventory]> {
+  if (posting.costSpec !== null) {
+    return left(new Error('Booking with cost spec not implemented yet'));
+  }
+
   if (posting.amount !== null) {
     // Posting is fully specified, we can just book it.
     return right(

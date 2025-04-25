@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "While processing 'transaction' directive at lib/booking/testdata/cost.ledger:1: Booking with cost spec not implemented yet"
+  }
+}

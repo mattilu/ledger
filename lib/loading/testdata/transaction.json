@@ -15,7 +15,8 @@
         "postings": [
           {
             "account": "Assets:Foo",
-            "amount": null
+            "amount": null,
+            "costSpec": null
           }
         ]
       },
@@ -29,14 +30,16 @@
             "amount": {
               "amount": "10",
               "currency": "CHF"
-            }
+            },
+            "costSpec": null
           },
           {
             "account": "Income:Foo",
             "amount": {
               "amount": "-10",
               "currency": "CHF"
-            }
+            },
+            "costSpec": null
           }
         ]
       },
@@ -50,11 +53,69 @@
             "amount": {
               "amount": "-10",
               "currency": "CHF"
-            }
+            },
+            "costSpec": null
           },
           {
             "account": "Assets:Bar",
-            "amount": null
+            "amount": null,
+            "costSpec": null
+          }
+        ]
+      },
+      {
+        "type": "transaction",
+        "description": "Posting with total cost spec",
+        "date": "2025-04-05T00:00:00.000Z",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "10",
+              "currency": "CHF"
+            },
+            "costSpec": {
+              "kind": "total",
+              "amounts": [
+                {
+                  "amount": "10",
+                  "currency": "EUR"
+                }
+              ]
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": null,
+            "costSpec": null
+          }
+        ]
+      },
+      {
+        "type": "transaction",
+        "description": "Posting with per-unit cost spec",
+        "date": "2025-04-05T00:00:00.000Z",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "10",
+              "currency": "CHF"
+            },
+            "costSpec": {
+              "kind": "per-unit",
+              "amounts": [
+                {
+                  "amount": "1",
+                  "currency": "EUR"
+                }
+              ]
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": null,
+            "costSpec": null
           }
         ]
       }
