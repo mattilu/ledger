@@ -12,6 +12,7 @@ import { load } from '../../loading/loader.js';
 export interface TestCase {
   readonly testName: string;
   readonly ledger: BookedLedger;
+  readonly wantPath: string;
   readonly wantReport: string;
 }
 
@@ -30,6 +31,7 @@ export async function collectTests(scenario: string): Promise<TestCase[]> {
     tests.push({
       testName,
       ledger: got.right,
+      wantPath,
       wantReport: wantContent.trim(),
     });
   }

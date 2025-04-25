@@ -11,7 +11,7 @@ await describe('InventoryReport', async () => {
       for (const t of tests) {
         await it(t.testName, async () => {
           const got = new TransactionsReport({}).run(t.ledger);
-          assert.equal(got.trim(), t.wantReport);
+          assert.equal(got.trim(), t.wantReport, t.wantPath);
         });
       }
     });
@@ -23,7 +23,7 @@ await describe('InventoryReport', async () => {
           const got = new TransactionsReport({
             accounts: ['Assets:.*'],
           }).run(t.ledger);
-          assert.equal(got.trim(), t.wantReport);
+          assert.equal(got.trim(), t.wantReport, t.wantPath);
         });
       }
     });
@@ -35,7 +35,7 @@ await describe('InventoryReport', async () => {
           const got = new TransactionsReport({
             currencies: ['VT'],
           }).run(t.ledger);
-          assert.equal(got.trim(), t.wantReport);
+          assert.equal(got.trim(), t.wantReport, t.wantPath);
         });
       }
     });
@@ -48,7 +48,7 @@ await describe('InventoryReport', async () => {
             currencies: ['VT'],
             allPostings: true,
           }).run(t.ledger);
-          assert.equal(got.trim(), t.wantReport);
+          assert.equal(got.trim(), t.wantReport, t.wantPath);
         });
       }
     });

@@ -11,7 +11,7 @@ await describe('InventoryReport', async () => {
       for (const t of tests) {
         await it(t.testName, async () => {
           const got = new InventoryReport({}).run(t.ledger);
-          assert.equal(got, t.wantReport);
+          assert.equal(got, t.wantReport, t.wantPath);
         });
       }
     });
@@ -23,7 +23,7 @@ await describe('InventoryReport', async () => {
           const got = new InventoryReport({
             accounts: ['Assets:.*', 'Trading:.*'],
           }).run(t.ledger);
-          assert.equal(got, t.wantReport);
+          assert.equal(got, t.wantReport, t.wantPath);
         });
       }
     });

@@ -35,7 +35,7 @@ await describe('load', async () => {
         ),
       );
 
-      assert.deepEqual(got, JSON.parse(wantContent));
+      assert.deepEqual(got, JSON.parse(wantContent), t.wantPath);
     });
   }
 });

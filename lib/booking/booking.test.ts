@@ -41,7 +41,7 @@ await describe('book', async () => {
         ),
       );
 
-      assert.deepEqual(got, JSON.parse(wantContent));
+      assert.deepEqual(got, JSON.parse(wantContent), t.wantPath);
     });
   }
 });
