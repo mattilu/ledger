@@ -6,8 +6,8 @@
   Assets:Trading 5000 CHF
 
 2025-01-05T00:00:00.000Z * "Trade"
-  Assets:Trading -2500 CHF
   Assets:Trading 25 VT
+  Assets:Trading -2500 CHF
 
 2025-01-25T00:00:00.000Z * "Salary"
   Assets:Bank 5000 CHF

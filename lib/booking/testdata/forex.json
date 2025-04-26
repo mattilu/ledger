@@ -11,28 +11,32 @@
             "amount": {
               "amount": "-10",
               "currency": "CHF"
-            }
+            },
+            "cost": null
           },
           {
             "account": "Assets:Broker",
             "amount": {
               "amount": "12",
               "currency": "USD"
-            }
+            },
+            "cost": null
           },
           {
             "account": "Trading:Broker",
             "amount": {
               "amount": "10",
               "currency": "CHF"
-            }
+            },
+            "cost": null
           },
           {
             "account": "Trading:Broker",
             "amount": {
               "amount": "-12",
               "currency": "USD"
-            }
+            },
+            "cost": null
           }
         ],
         "inventoriesAfter": {

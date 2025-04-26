@@ -23,14 +23,16 @@
             "amount": {
               "amount": "10",
               "currency": "CHF"
-            }
+            },
+            "cost": null
           },
           {
             "account": "Income:Foo",
             "amount": {
               "amount": "-10",
               "currency": "CHF"
-            }
+            },
+            "cost": null
           }
         ],
         "inventoriesAfter": {
@@ -63,14 +65,16 @@
             "amount": {
               "amount": "-10",
               "currency": "CHF"
-            }
+            },
+            "cost": null
           },
           {
             "account": "Assets:Bar",
             "amount": {
               "amount": "10",
               "currency": "CHF"
-            }
+            },
+            "cost": null
           }
         ],
         "inventoriesAfter": {
@@ -104,28 +108,32 @@
             "amount": {
               "amount": "-10",
               "currency": "CHF"
-            }
+            },
+            "cost": null
           },
           {
             "account": "Assets:Bar",
             "amount": {
               "amount": "10",
               "currency": "CHF"
-            }
+            },
+            "cost": null
           },
           {
             "account": "Assets:Foo",
             "amount": {
               "amount": "-1",
               "currency": "CHF"
-            }
+            },
+            "cost": null
           },
           {
             "account": "Expenses:Fee",
             "amount": {
               "amount": "1",
               "currency": "CHF"
-            }
+            },
+            "cost": null
           }
         ],
         "inventoriesAfter": {

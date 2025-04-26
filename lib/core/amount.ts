@@ -53,6 +53,26 @@ export class Amount {
     return amount(this.amount.sub(rhs.amount), this.currency);
   }
 
+  /**
+   * Returns the product of this amount and the given number.
+   *
+   * @param rhs Number to multiply the current amount by.
+   * @returns A new amount with the product.
+   */
+  mul(rhs: N): Amount {
+    return amount(this.amount.mul(rhs), this.currency);
+  }
+
+  /**
+   * Returns the division of this amount and the given number.
+   *
+   * @param rhs Number to divide the current amount by.
+   * @returns A new amount with the division.
+   */
+  div(rhs: N): Amount {
+    return amount(this.amount.div(rhs), this.currency);
+  }
+
   toString() {
     return `${this.amount.toString(10, 18)} ${this.currency}`;
   }

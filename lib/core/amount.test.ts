@@ -88,6 +88,34 @@ await describe('Amount', async () => {
     });
   });
 
+  await describe('#mul', async () => {
+    await it('returns an Amount with the same Currency', () => {
+      assert.equal(amount(1, 'USD').mul(ExactNumber(2)).currency, 'USD');
+    });
+
+    await it('returns an Amount with the product of the values', () => {
+      assert(amount(2, 'USD').mul(ExactNumber(3)).amount.eq(6));
+    });
+
+    await it('has exact precision', () => {
+      assert(amount('0.2', 'USD').mul(ExactNumber('0.3')).amount.eq('0.06'));
+    });
+  });
+
+  await describe('#div', async () => {
+    await it('returns an Amount with the same Currency', () => {
+      assert.equal(amount(1, 'USD').div(ExactNumber(2)).currency, 'USD');
+    });
+
+    await it('returns an Amount with the division of the values', () => {
+      assert(amount(3, 'USD').div(ExactNumber(2)).amount.eq('1.5'));
+    });
+
+    await it('has exact precision', () => {
+      assert(amount(2, 'USD').div(ExactNumber(3)).amount.eq('0.(6)'));
+    });
+  });
+
   await describe('#toString', async () => {
     const tests: Array<{ amount: Amount; want: string }> = [
       { amount: amount('1', 'USD'), want: '1 USD' },

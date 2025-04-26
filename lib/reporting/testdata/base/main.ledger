@@ -1,20 +1,19 @@
 2025-01-01 * "Opening Balance"
-  Assets:Bank 10000 CHF
+  Assets:Bank     10000 CHF
   Equity:Opening-Balances
 
 2025-01-05 * "Transfer"
-  Assets:Bank -5000 CHF
+  Assets:Bank     -5000 CHF
   Assets:Trading
 
 2025-01-05 * "Trade"
-  Assets:Trading -2500 CHF
-  Assets:Trading    25 VT
-  Trading:Default
+  Assets:Trading     25 VT {{ 2500 CHF }}
+  Assets:Trading
 
 2025-01-25 * "Salary"
-  Assets:Bank 5000 CHF
+  Assets:Bank      5000 CHF
   Income:Salary
 
 2025-01-25 * "Rent"
-  Assets:Bank -1250 CHF
+  Assets:Bank     -1250 CHF
   Expenses:Rent

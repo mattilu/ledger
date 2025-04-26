@@ -1,6 +1,442 @@
 {
-  "_tag": "Left",
-  "left": {
-    "error": "While processing 'transaction' directive at lib/booking/testdata/cost.ledger:1: Booking with cost spec not implemented yet"
+  "_tag": "Right",
+  "right": {
+    "transactions": [
+      {
+        "date": "2025-04-01T00:00:00.000Z",
+        "description": "Long USD (with CHF, total)",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "amount": {
+              "amount": "10",
+              "currency": "USD"
+            },
+            "cost": null
+          },
+          {
+            "account": "Trading:Default",
+            "amount": {
+              "amount": "-10",
+              "currency": "USD"
+            },
+            "cost": {
+              "amounts": [
+                {
+                  "amount": "0.9",
+                  "currency": "CHF"
+                }
+              ],
+              "date": "2025-04-01T00:00:00.000Z"
+            }
+          },
+          {
+            "account": "Trading:Default",
+            "amount": {
+              "amount": "9",
+              "currency": "CHF"
+            },
+            "cost": null
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": {
+              "amount": "-9",
+              "currency": "CHF"
+            },
+            "cost": null
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": [
+            {
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "amount": {
+                "amount": "-9",
+                "currency": "CHF"
+              },
+              "cost": null
+            }
+          ],
+          "Trading:Default": [
+            {
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "0.9",
+                    "currency": "CHF"
+                  }
+                ],
+                "date": "2025-04-01T00:00:00.000Z"
+              }
+            },
+            {
+              "amount": {
+                "amount": "9",
+                "currency": "CHF"
+              },
+              "cost": null
+            }
+          ]
+        }
+      },
+      {
+        "date": "2025-04-02T00:00:00.000Z",
+        "description": "Long USD (with CHF, per-unit)",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "amount": {
+              "amount": "10",
+              "currency": "USD"
+            },
+            "cost": null
+          },
+          {
+            "account": "Trading:Default",
+            "amount": {
+              "amount": "-10",
+              "currency": "USD"
+            },
+            "cost": {
+              "amounts": [
+                {
+                  "amount": "0.8",
+                  "currency": "CHF"
+                }
+              ],
+              "date": "2025-04-02T00:00:00.000Z"
+            }
+          },
+          {
+            "account": "Trading:Default",
+            "amount": {
+              "amount": "8",
+              "currency": "CHF"
+            },
+            "cost": null
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": {
+              "amount": "-8",
+              "currency": "CHF"
+            },
+            "cost": null
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": [
+            {
+              "amount": {
+                "amount": "20",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "amount": {
+                "amount": "-17",
+                "currency": "CHF"
+              },
+              "cost": null
+            }
+          ],
+          "Trading:Default": [
+            {
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "0.9",
+                    "currency": "CHF"
+                  }
+                ],
+                "date": "2025-04-01T00:00:00.000Z"
+              }
+            },
+            {
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "0.8",
+                    "currency": "CHF"
+                  }
+                ],
+                "date": "2025-04-02T00:00:00.000Z"
+              }
+            },
+            {
+              "amount": {
+                "amount": "17",
+                "currency": "CHF"
+              },
+              "cost": null
+            }
+          ]
+        }
+      },
+      {
+        "date": "2025-04-03T00:00:00.000Z",
+        "description": "Short USD (with CHF, total)",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "amount": {
+              "amount": "-10",
+              "currency": "USD"
+            },
+            "cost": null
+          },
+          {
+            "account": "Trading:Default",
+            "amount": {
+              "amount": "10",
+              "currency": "USD"
+            },
+            "cost": {
+              "amounts": [
+                {
+                  "amount": "0.7",
+                  "currency": "CHF"
+                }
+              ],
+              "date": "2025-04-03T00:00:00.000Z"
+            }
+          },
+          {
+            "account": "Trading:Default",
+            "amount": {
+              "amount": "-7",
+              "currency": "CHF"
+            },
+            "cost": null
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": {
+              "amount": "7",
+              "currency": "CHF"
+            },
+            "cost": null
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": [
+            {
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "amount": {
+                "amount": "-10",
+                "currency": "CHF"
+              },
+              "cost": null
+            }
+          ],
+          "Trading:Default": [
+            {
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "0.9",
+                    "currency": "CHF"
+                  }
+                ],
+                "date": "2025-04-01T00:00:00.000Z"
+              }
+            },
+            {
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "0.8",
+                    "currency": "CHF"
+                  }
+                ],
+                "date": "2025-04-02T00:00:00.000Z"
+              }
+            },
+            {
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "0.7",
+                    "currency": "CHF"
+                  }
+                ],
+                "date": "2025-04-03T00:00:00.000Z"
+              }
+            },
+            {
+              "amount": {
+                "amount": "10",
+                "currency": "CHF"
+              },
+              "cost": null
+            }
+          ]
+        }
+      },
+      {
+        "date": "2025-04-04T00:00:00.000Z",
+        "description": "Short USD (with CHF, per-unit)",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "amount": {
+              "amount": "-10",
+              "currency": "USD"
+            },
+            "cost": null
+          },
+          {
+            "account": "Trading:Default",
+            "amount": {
+              "amount": "10",
+              "currency": "USD"
+            },
+            "cost": {
+              "amounts": [
+                {
+                  "amount": "0.6",
+                  "currency": "CHF"
+                }
+              ],
+              "date": "2025-04-04T00:00:00.000Z"
+            }
+          },
+          {
+            "account": "Trading:Default",
+            "amount": {
+              "amount": "-6",
+              "currency": "CHF"
+            },
+            "cost": null
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": {
+              "amount": "6",
+              "currency": "CHF"
+            },
+            "cost": null
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": [
+            {
+              "amount": {
+                "amount": "-4",
+                "currency": "CHF"
+              },
+              "cost": null
+            }
+          ],
+          "Trading:Default": [
+            {
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "0.9",
+                    "currency": "CHF"
+                  }
+                ],
+                "date": "2025-04-01T00:00:00.000Z"
+              }
+            },
+            {
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "0.8",
+                    "currency": "CHF"
+                  }
+                ],
+                "date": "2025-04-02T00:00:00.000Z"
+              }
+            },
+            {
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "0.7",
+                    "currency": "CHF"
+                  }
+                ],
+                "date": "2025-04-03T00:00:00.000Z"
+              }
+            },
+            {
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "0.6",
+                    "currency": "CHF"
+                  }
+                ],
+                "date": "2025-04-04T00:00:00.000Z"
+              }
+            },
+            {
+              "amount": {
+                "amount": "4",
+                "currency": "CHF"
+              },
+              "cost": null
+            }
+          ]
+        }
+      }
+    ]
   }
 }
