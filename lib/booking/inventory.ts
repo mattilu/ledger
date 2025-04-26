@@ -165,6 +165,15 @@ export class Inventory {
       .toArray();
   }
 
+  /**
+   * Returns the current positions in the inventory for a given currency.
+   *
+   * @param currency Currency to get positions for.
+   */
+  getPositionsForCurrency(currency: string): Position[] {
+    return this.inventories.get(currency)?.getPositions() ?? [];
+  }
+
   toString() {
     return this.inventories
       .entrySeq()

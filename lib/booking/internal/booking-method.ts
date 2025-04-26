@@ -1,0 +1,26 @@
+import { Either } from 'fp-ts/lib/Either.js';
+
+import { Amount } from '../../core/amount.js';
+import { Inventory } from '../inventory.js';
+import { BookedPosting } from '../transaction.js';
+
+/**
+ * Interface to be implemented by booking methods (e.g. FIFO, LIFO, etc.)
+ */
+export interface BookingMethod {
+  /**
+   * Books an amount to the account, and returns the generated postings and new
+   * state of the inventory.
+   *
+   * @param account The account to be booked. Generally a trading account as
+   *   that's where positions at-cost are held.
+   * @param amount Amount to be booked.
+   * @param inventory Current state of the inventory for the account.
+   * @returns A pair of [postings, newInventory].
+   */
+  book(
+    account: string,
+    amount: Amount,
+    inventory: Inventory,
+  ): Either<Error, [postings: BookedPosting[], newInventory: Inventory]>;
+}

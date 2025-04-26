@@ -34,6 +34,130 @@ await describe('Amount', async () => {
     });
   });
 
+  await describe('#isPos', async () => {
+    await it('returns true when value is positive', () => {
+      assert.equal(amount(1, 'USD').isPos(), true);
+    });
+
+    await it('returns false when value is negative', () => {
+      assert.equal(amount(-1, 'USD').isPos(), false);
+    });
+
+    await it('returns false when value is zero', () => {
+      assert.equal(amount(0, 'USD').isPos(), false);
+    });
+  });
+
+  await describe('#isNeg', async () => {
+    await it('returns true when value is negative', () => {
+      assert.equal(amount(-1, 'USD').isNeg(), true);
+    });
+
+    await it('returns false when value is positive', () => {
+      assert.equal(amount(1, 'USD').isNeg(), false);
+    });
+
+    await it('returns false when value is zero', () => {
+      assert.equal(amount(0, 'USD').isNeg(), false);
+    });
+  });
+
+  await describe('#eq', async () => {
+    await it('requires operands to have the same Currency', () => {
+      assert.throws(() => {
+        amount(1, 'USD').eq(amount(1, 'EUR'));
+      }, /invalid 'eq' operation between currencies 'USD' and 'EUR'/i);
+    });
+
+    await it('returns true when operands have the same value', () => {
+      assert.equal(amount(1, 'USD').eq(amount(1, 'USD')), true);
+    });
+
+    await it('returns false when operands have different values', () => {
+      assert.equal(amount(1, 'USD').eq(amount(2, 'USD')), false);
+    });
+  });
+
+  await describe('#lt', async () => {
+    await it('requires operands to have the same Currency', () => {
+      assert.throws(() => {
+        amount(1, 'USD').lt(amount(1, 'EUR'));
+      }, /invalid 'lt' operation between currencies 'USD' and 'EUR'/i);
+    });
+
+    await it('returns true when value is lesser than operand', () => {
+      assert.equal(amount(1, 'USD').lt(amount(2, 'USD')), true);
+    });
+
+    await it('returns false when value is greater than operand', () => {
+      assert.equal(amount(2, 'USD').lt(amount(1, 'USD')), false);
+    });
+
+    await it('returns false when value is equal to operand', () => {
+      assert.equal(amount(1, 'USD').lt(amount(1, 'USD')), false);
+    });
+  });
+
+  await describe('#lte', async () => {
+    await it('requires operands to have the same Currency', () => {
+      assert.throws(() => {
+        amount(1, 'USD').lte(amount(1, 'EUR'));
+      }, /invalid 'lte' operation between currencies 'USD' and 'EUR'/i);
+    });
+
+    await it('returns true when value is lesser than operand', () => {
+      assert.equal(amount(1, 'USD').lte(amount(2, 'USD')), true);
+    });
+
+    await it('returns false when value is greater than operand', () => {
+      assert.equal(amount(2, 'USD').lte(amount(1, 'USD')), false);
+    });
+
+    await it('returns true when value is equal to operand', () => {
+      assert.equal(amount(1, 'USD').lte(amount(1, 'USD')), true);
+    });
+  });
+
+  await describe('#gt', async () => {
+    await it('requires operands to have the same Currency', () => {
+      assert.throws(() => {
+        amount(1, 'USD').gt(amount(1, 'EUR'));
+      }, /invalid 'gt' operation between currencies 'USD' and 'EUR'/i);
+    });
+
+    await it('returns true when value is greater than operand', () => {
+      assert.equal(amount(2, 'USD').gt(amount(1, 'USD')), true);
+    });
+
+    await it('returns false when value is lesser than operand', () => {
+      assert.equal(amount(1, 'USD').gt(amount(2, 'USD')), false);
+    });
+
+    await it('returns false when value is equal to operand', () => {
+      assert.equal(amount(1, 'USD').gt(amount(1, 'USD')), false);
+    });
+  });
+
+  await describe('#gte', async () => {
+    await it('requires operands to have the same Currency', () => {
+      assert.throws(() => {
+        amount(1, 'USD').gte(amount(1, 'EUR'));
+      }, /invalid 'gte' operation between currencies 'USD' and 'EUR'/i);
+    });
+
+    await it('returns true when value is greater than operand', () => {
+      assert.equal(amount(2, 'USD').gte(amount(1, 'USD')), true);
+    });
+
+    await it('returns false when value is lesser than operand', () => {
+      assert.equal(amount(1, 'USD').gte(amount(2, 'USD')), false);
+    });
+
+    await it('returns true when value is equal to operand', () => {
+      assert.equal(amount(1, 'USD').gte(amount(1, 'USD')), true);
+    });
+  });
+
   await describe('#neg', async () => {
     await it('returns an Amount with the same Currency', () => {
       assert.equal(amount(1, 'USD').neg().currency, 'USD');
@@ -45,6 +169,20 @@ await describe('Amount', async () => {
 
     await it('returns an Amount with the negated value when negative', () => {
       assert(amount(-1, 'USD').neg().amount.eq(1));
+    });
+  });
+
+  await describe('#abs', async () => {
+    await it('returns an Amount with the same Currency', () => {
+      assert.equal(amount(1, 'USD').abs().currency, 'USD');
+    });
+
+    await it('returns an Amount with the same value when positive', () => {
+      assert(amount(1, 'USD').abs().amount.eq(1));
+    });
+
+    await it('returns an Amount with the negated value when negative', () => {
+      assert(amount(-1, 'USD').abs().amount.eq(1));
     });
   });
 

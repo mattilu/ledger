@@ -45,6 +45,24 @@ await describe('Inventory', async () => {
     });
   });
 
+  await describe('#getPositionsForCurrency', async () => {
+    await it('returns empty array for empty inventory', () => {
+      assert.deepEqual(Inventory.Empty.getPositionsForCurrency('USD'), []);
+    });
+
+    await it('returns an array of positions in the inventory for the requested currency', () => {
+      const inventory = Inventory.Empty.addAmounts([
+        amount(1, 'USD'),
+        amount(-1, 'EUR'),
+      ]);
+
+      const got = inventory.getPositionsForCurrency('USD');
+      const want = [position(amount(1, 'USD'))];
+
+      assert.deepEqual(new Set(got), new Set(want));
+    });
+  });
+
   await describe('#addAmount', async () => {
     await it('ignores zero amounts', () => {
       const inventory = Inventory.Empty.addAmount(amount(0, 'USD'));

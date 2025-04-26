@@ -25,10 +25,72 @@ export class Amount {
   }
 
   /**
+   * Returns true if the amount is positive.
+   */
+  isPos(): boolean {
+    return this.amount.gt(0);
+  }
+
+  /**
+   * Returns true if the amount is negative.
+   */
+  isNeg(): boolean {
+    return this.amount.isNegative();
+  }
+
+  /**
+   * Returns true if the current amount is equal to the given one.
+   */
+  eq(rhs: Amount): boolean {
+    this.ensureSameCurrency(rhs, 'eq');
+    return this.amount.eq(rhs.amount);
+  }
+
+  /**
+   * Returns true if the current amount is less than the given one.
+   */
+  lt(rhs: Amount): boolean {
+    this.ensureSameCurrency(rhs, 'lt');
+    return this.amount.lt(rhs.amount);
+  }
+
+  /**
+   * Returns true if the current amount is less than or equal to the given one.
+   */
+  lte(rhs: Amount): boolean {
+    this.ensureSameCurrency(rhs, 'lte');
+    return this.amount.lte(rhs.amount);
+  }
+
+  /**
+   * Returns true if the current amount is greater than the given one.
+   */
+  gt(rhs: Amount): boolean {
+    this.ensureSameCurrency(rhs, 'gt');
+    return this.amount.gt(rhs.amount);
+  }
+
+  /**
+   * Returns true if the current amount is greater than or equal to the given
+   * one.
+   */
+  gte(rhs: Amount): boolean {
+    this.ensureSameCurrency(rhs, 'gte');
+    return this.amount.gte(rhs.amount);
+  }
+
+  /**
    * Returns the current amount, with inverted sign.
    */
   neg(): Amount {
     return new Amount(this.amount.neg(), this.currency);
+  }
+
+  /**
+   * Returns the current amount, with absolute value.
+   */
+  abs(): Amount {
+    return amount(this.amount.abs(), this.currency);
   }
 
   /**
