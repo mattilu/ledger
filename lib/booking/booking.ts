@@ -96,10 +96,10 @@ function bookPosting(
 
   // Posting doesn't specify amount, so we infer it to be the running balance of
   // the transaction, and balance it out.
-  const balancePostings = balance.getAmounts().map(
+  const balancePostings = balance.getPositions().map(
     (amount): BookedPosting => ({
       account: posting.account,
-      amount: amount.neg(),
+      amount: amount.amount.neg(),
     }),
   );
   return right(doBook(inventories, balance, ...balancePostings));

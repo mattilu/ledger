@@ -38,22 +38,34 @@
         "inventoriesAfter": {
           "Assets:Broker": [
             {
-              "amount": "-10",
-              "currency": "CHF"
+              "amount": {
+                "amount": "-10",
+                "currency": "CHF"
+              },
+              "cost": null
             },
             {
-              "amount": "12",
-              "currency": "USD"
+              "amount": {
+                "amount": "12",
+                "currency": "USD"
+              },
+              "cost": null
             }
           ],
           "Trading:Broker": [
             {
-              "amount": "10",
-              "currency": "CHF"
+              "amount": {
+                "amount": "10",
+                "currency": "CHF"
+              },
+              "cost": null
             },
             {
-              "amount": "-12",
-              "currency": "USD"
+              "amount": {
+                "amount": "-12",
+                "currency": "USD"
+              },
+              "cost": null
             }
           ]
         }

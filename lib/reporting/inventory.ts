@@ -41,10 +41,10 @@ export class InventoryReport implements Report {
       if (this.accountRegex && !this.accountRegex.test(account)) {
         continue;
       }
-      for (const amount of Seq(inventory.getAmounts()).sortBy(
-        a => a.currency,
+      for (const position of Seq(inventory.getPositions()).sortBy(a =>
+        Seq([a.amount.currency, a.cost?.date.getTime() ?? 0]),
       )) {
-        report.push(`${account} ${amount}`);
+        report.push(`${account} ${position}`);
       }
     }
 

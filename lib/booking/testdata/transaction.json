@@ -36,14 +36,20 @@
         "inventoriesAfter": {
           "Assets:Foo": [
             {
-              "amount": "10",
-              "currency": "CHF"
+              "amount": {
+                "amount": "10",
+                "currency": "CHF"
+              },
+              "cost": null
             }
           ],
           "Income:Foo": [
             {
-              "amount": "-10",
-              "currency": "CHF"
+              "amount": {
+                "amount": "-10",
+                "currency": "CHF"
+              },
+              "cost": null
             }
           ]
         }
@@ -70,15 +76,21 @@
         "inventoriesAfter": {
           "Assets:Bar": [
             {
-              "amount": "10",
-              "currency": "CHF"
+              "amount": {
+                "amount": "10",
+                "currency": "CHF"
+              },
+              "cost": null
             }
           ],
           "Assets:Foo": [],
           "Income:Foo": [
             {
-              "amount": "-10",
-              "currency": "CHF"
+              "amount": {
+                "amount": "-10",
+                "currency": "CHF"
+              },
+              "cost": null
             }
           ]
         }
@@ -119,26 +131,38 @@
         "inventoriesAfter": {
           "Assets:Bar": [
             {
-              "amount": "20",
-              "currency": "CHF"
+              "amount": {
+                "amount": "20",
+                "currency": "CHF"
+              },
+              "cost": null
             }
           ],
           "Assets:Foo": [
             {
-              "amount": "-11",
-              "currency": "CHF"
+              "amount": {
+                "amount": "-11",
+                "currency": "CHF"
+              },
+              "cost": null
             }
           ],
           "Expenses:Fee": [
             {
-              "amount": "1",
-              "currency": "CHF"
+              "amount": {
+                "amount": "1",
+                "currency": "CHF"
+              },
+              "cost": null
             }
           ],
           "Income:Foo": [
             {
-              "amount": "-10",
-              "currency": "CHF"
+              "amount": {
+                "amount": "-10",
+                "currency": "CHF"
+              },
+              "cost": null
             }
           ]
         }
