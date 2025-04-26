@@ -1,3 +1,5 @@
+import { strict as assert } from 'node:assert';
+
 import { Either, isLeft, left, right } from 'fp-ts/lib/Either.js';
 import { Map } from 'immutable';
 
@@ -11,6 +13,7 @@ import { Ledger } from '../loading/ledger.js';
 import { CostSpec } from '../parsing/spec/directives/transaction.js';
 import { Cost } from './cost.js';
 import { BookingError } from './error.js';
+import { FIFO } from './internal/fifo.js';
 import { Inventory, InventoryMap } from './inventory.js';
 import { BookedLedger } from './ledger.js';
 import { Position } from './position.js';
@@ -134,6 +137,56 @@ function bookPosting(
           })),
         ),
       );
+    }
+
+    if (posting.amount !== null) {
+      assert(posting.costSpec.amounts.length === 0);
+
+      // Amount is known, but cost is not. We treat this as a reduction, and
+      // invoke the booking method (currently only FIFO is supported.)
+      //
+      // Example (assuming the open position from previous example):
+      //
+      // 2025-04-02 * "Close Long"
+      //   Assets:Broker  -2 VT {}
+      //   Assets:Broker 350 CHF
+      //   Income:Trading
+      //
+      //  ->
+      //
+      // 2025-04-02 * "Close Long"
+      //   Assets:Broker     -2 VT
+      //   Trading:Default    2 VT { 150 CHF }
+      //   Trading:Default -300 CHF
+      //   Assets:Broker    350 CHF
+      //   Income:Trading ; -50 CHF, inferred
+      let postings: BookedPosting[];
+      [postings, inventories, balance] = doBook(inventories, balance, {
+        account: posting.account,
+        amount: posting.amount,
+        cost: null,
+      });
+
+      const bookResult = FIFO.book(
+        tradingAccount,
+        posting.amount.neg(),
+        inventories.get(tradingAccount) ?? Inventory.Empty,
+      );
+      if (isLeft(bookResult)) {
+        return bookResult;
+      }
+
+      let postings1: BookedPosting[];
+      [postings1, , balance] = doBook(
+        inventories,
+        balance,
+        ...bookResult.right[0],
+      );
+
+      postings.push(...postings1);
+      inventories = inventories.set(tradingAccount, bookResult.right[1]);
+
+      return right([postings, inventories, balance]);
     }
 
     return left(
