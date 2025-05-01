@@ -1,0 +1,6 @@
+Assets:Bank 8750 CHF
+Assets:Trading 2500 CHF
+Assets:Trading 25 VT
+Equity:Opening-Balances -10000 CHF
+Expenses:Rent 1250 CHF
+Income:Salary -5000 CHF

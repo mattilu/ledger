@@ -43,6 +43,18 @@ const commonArgs = {
     type: optional(date),
     description: 'Only process transactions up to this date',
   }),
+  accounts: multioption({
+    long: 'account',
+    short: 'a',
+    type: array(string),
+    description: 'Regex to match accounts to include; can be repeated',
+  }),
+  excludeAccounts: multioption({
+    long: 'exclude-account',
+    short: 'A',
+    type: array(string),
+    description: 'Regex to match accounts to exclude; can be repeated',
+  }),
 };
 
 type Output<Args extends Record<string, ArgParser<unknown>>> = {
@@ -51,15 +63,7 @@ type Output<Args extends Record<string, ArgParser<unknown>>> = {
 
 const inventory = command({
   name: 'inventory',
-  args: {
-    ...commonArgs,
-    accounts: multioption({
-      long: 'account',
-      short: 'a',
-      type: array(string),
-      description: 'The account to show inventory for; can be repeated',
-    }),
-  },
+  args: { ...commonArgs },
   handler: args => runReport(new InventoryReport(args), args),
 });
 
@@ -67,12 +71,6 @@ const transactions = command({
   name: 'transactions',
   args: {
     ...commonArgs,
-    accounts: multioption({
-      long: 'account',
-      short: 'a',
-      type: array(string),
-      description: 'The account to display transactions for; can be repeated',
-    }),
     currencies: multioption({
       long: 'currency',
       short: 'c',

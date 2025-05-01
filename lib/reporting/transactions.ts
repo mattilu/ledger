@@ -9,7 +9,13 @@ export interface TransactionsReportOptions {
   readonly accounts?: readonly string[];
 
   /**
+   * If specified, excludes these accounts from reporting. Can use regexes.
+   */
+  readonly excludeAccounts?: readonly string[];
+
+  /**
    * If specified, limits reporting transactions that involve these currencies.
+   * Can use regexes.
    */
   readonly currencies?: readonly string[];
 
@@ -26,10 +32,12 @@ export interface TransactionsReportOptions {
  */
 export class TransactionsReport implements Report {
   private readonly accountsRegex: RegExp | null;
+  private readonly excludeAccountsRegex: RegExp | null;
   private readonly currenciesRegex: RegExp | null;
 
   constructor(private readonly options: TransactionsReportOptions) {
     this.accountsRegex = makeRegexp(options.accounts ?? []);
+    this.excludeAccountsRegex = makeRegexp(options.excludeAccounts ?? []);
     this.currenciesRegex = makeRegexp(options.currencies ?? []);
   }
 
@@ -39,6 +47,13 @@ export class TransactionsReport implements Report {
     for (const transaction of ledger.transactions) {
       const postings: BookedPosting[] = [];
       for (const posting of transaction.postings) {
+        if (
+          this.excludeAccountsRegex &&
+          this.excludeAccountsRegex.test(posting.account)
+        ) {
+          continue;
+        }
+
         if (
           this.matches(posting.account, this.accountsRegex) &&
           this.matches(posting.amount.currency, this.currenciesRegex)

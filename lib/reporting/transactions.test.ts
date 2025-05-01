@@ -2,55 +2,51 @@ import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
 
 import { collectTests } from './internal/testing.js';
-import { TransactionsReport } from './transactions.js';
+import {
+  TransactionsReport,
+  TransactionsReportOptions,
+} from './transactions.js';
 
 await describe('InventoryReport', async () => {
   await describe('#run', async () => {
-    await describe('without filters', async () => {
-      const tests = await collectTests('transactions');
-      for (const t of tests) {
-        await it(t.testName, async () => {
-          const got = new TransactionsReport({}).run(t.ledger);
-          assert.equal(got.trim(), t.wantReport, t.wantPath);
-        });
-      }
-    });
+    const testCases: Array<{
+      name: string;
+      scenario: string;
+      options: TransactionsReportOptions;
+    }> = [
+      { name: 'without filters', scenario: 'transactions', options: {} },
+      {
+        name: 'with accounts filter',
+        scenario: 'transactions-accounts-filter',
+        options: { accounts: ['Assets:.*'] },
+      },
+      {
+        name: 'with excludeAccounts filter',
+        scenario: 'transactions-exclude-accounts-filter',
+        options: { excludeAccounts: ['Trading:.*'] },
+      },
+      {
+        name: 'with currencies filter',
+        scenario: 'transactions-currencies-filter',
+        options: { currencies: ['VT'] },
+      },
+      {
+        name: 'with all postings',
+        scenario: 'transactions-all-postings',
+        options: { currencies: ['VT'], allPostings: true },
+      },
+    ];
 
-    await describe('with accounts filter', async () => {
-      const tests = await collectTests('transactions-accounts-filter');
-      for (const t of tests) {
-        await it(t.testName, async () => {
-          const got = new TransactionsReport({
-            accounts: ['Assets:.*'],
-          }).run(t.ledger);
-          assert.equal(got.trim(), t.wantReport, t.wantPath);
-        });
-      }
-    });
-
-    await describe('with currencies filter', async () => {
-      const tests = await collectTests('transactions-currencies-filter');
-      for (const t of tests) {
-        await it(t.testName, async () => {
-          const got = new TransactionsReport({
-            currencies: ['VT'],
-          }).run(t.ledger);
-          assert.equal(got.trim(), t.wantReport, t.wantPath);
-        });
-      }
-    });
-
-    await describe('with currencies filter', async () => {
-      const tests = await collectTests('transactions-all-postings');
-      for (const t of tests) {
-        await it(t.testName, async () => {
-          const got = new TransactionsReport({
-            currencies: ['VT'],
-            allPostings: true,
-          }).run(t.ledger);
-          assert.equal(got.trim(), t.wantReport, t.wantPath);
-        });
-      }
-    });
+    for (const testCase of testCases) {
+      await describe(testCase.name, async () => {
+        const tests = await collectTests(testCase.scenario);
+        for (const t of tests) {
+          await it(t.testName, async () => {
+            const got = new TransactionsReport(testCase.options).run(t.ledger);
+            assert.equal(got.trim(), t.wantReport, t.wantPath);
+          });
+        }
+      });
+    }
   });
 });
