@@ -1,4 +1,4 @@
-import { command, number, option, positional, string } from 'cmd-ts';
+import { command, number, option, optional, positional, string } from 'cmd-ts';
 import {
   asUnit,
   Either,
@@ -26,6 +26,13 @@ export const debug = command({
       type: string,
       description: 'Input ledger file to process',
     }),
+    file: option({
+      long: 'file',
+      short: 'f',
+      type: optional(string),
+      description:
+        'File containing the directive to debug. Defaults to input file',
+    }),
     line: option({
       long: 'line',
       short: 'l',
@@ -33,20 +40,25 @@ export const debug = command({
       description: 'Line number of the directive to debug',
     }),
   },
-  handler: async ({ inputFile, line }): Promise<Either<CommandError, void>> => {
+  handler: async ({
+    inputFile,
+    file,
+    line,
+  }): Promise<Either<CommandError, void>> => {
+    file = file ?? inputFile;
     return pipe(
       await load(inputFile),
       mapLeft(CommandError.fromLoadError),
-      tap(debugLoadResult(inputFile, line)),
+      tap(debugLoadResult(file, line)),
       flatMap(flow(book, mapLeft(CommandError.fromBookingError))),
-      tap(debugBookResult(inputFile, line)),
+      tap(debugBookResult(file, line)),
       asUnit,
     );
   },
 });
 
 const debugLoadResult = (file: string, line: number) => (ledger: Ledger) => {
-  const directive = find(ledger.directives, line);
+  const directive = find(ledger.directives, file, line);
 
   if (!directive) {
     return left(new CommandError(`No directive found at ${file}:${line}`));
@@ -62,7 +74,7 @@ const debugLoadResult = (file: string, line: number) => (ledger: Ledger) => {
 
 const debugBookResult =
   (file: string, line: number) => (ledger: BookedLedger) => {
-    const transaction = find(ledger.transactions, line);
+    const transaction = find(ledger.transactions, file, line);
 
     if (!transaction) {
       return left(new CommandError(`No transaction found at ${file}:${line}`));
@@ -85,11 +97,15 @@ const debugBookResult =
 
 function find<T extends { srcCtx: SourceContext }>(
   items: readonly T[],
+  file: string,
   line: number,
 ): T | undefined {
   let found: T | undefined;
 
   for (const item of items) {
+    if (item.srcCtx.filePath !== file) {
+      continue;
+    }
     if (item.srcCtx.row === line) {
       return item;
     }
