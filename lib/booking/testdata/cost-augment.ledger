@@ -1,0 +1,15 @@
+2025-04-01 * "Long USD (with CHF, total)"
+  Assets:Broker   10 USD {{ 9 CHF }}
+  Assets:Broker
+
+2025-04-02 * "Long USD (with CHF, per-unit)"
+  Assets:Broker   10 USD { 0.8 CHF }
+  Assets:Broker
+
+2025-04-03 * "Short USD (with CHF, total)"
+  Assets:Broker  -10 USD {{ -7 CHF }}
+  Assets:Broker
+
+2025-04-04 * "Short USD (with CHF, per-unit)"
+  Assets:Broker  -10 USD { 0.6 CHF }
+  Assets:Broker

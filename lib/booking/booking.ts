@@ -1,15 +1,22 @@
+import { strict as assert } from 'node:assert';
+
 import { Either, isLeft, left, right } from 'fp-ts/lib/Either.js';
 import { Map } from 'immutable';
 
+import { Amount } from '../core/amount.js';
 import { Directive } from '../loading/directive.js';
 import {
   Posting,
   TransactionDirective,
 } from '../loading/directives/transaction.js';
 import { Ledger } from '../loading/ledger.js';
+import { CostSpec } from '../parsing/spec/directives/transaction.js';
+import { Cost } from './cost.js';
 import { BookingError } from './error.js';
+import { FIFO } from './internal/fifo.js';
 import { Inventory, InventoryMap } from './inventory.js';
 import { BookedLedger } from './ledger.js';
+import { Position } from './position.js';
 import { BookedPosting, Transaction } from './transaction.js';
 
 export function book(ledger: Ledger): Either<BookingError, BookedLedger> {
@@ -49,7 +56,7 @@ function bookTransaction(
   let balance = Inventory.Empty;
 
   for (const posting of transaction.postings) {
-    const got = bookPosting(posting, inventories, balance);
+    const got = bookPosting(transaction, posting, inventories, balance);
     if (isLeft(got)) {
       return got;
     }
@@ -76,26 +83,135 @@ function bookTransaction(
 }
 
 function bookPosting(
+  transaction: TransactionDirective,
   posting: Posting,
   inventories: InventoryMap,
   balance: Inventory,
 ): Either<Error, [BookedPosting[], InventoryMap, balance: Inventory]> {
+  if (posting.costSpec !== null) {
+    const tradingAccount = 'Trading:Default';
+    if (posting.amount !== null && posting.costSpec.amounts.length > 0) {
+      // Both cost and amount are known. We increase the account by the amount,
+      // and post the opposite at-cost, and the cost, to the trading account.
+      // This leaves the amount of the cost in the running balance, which is
+      // usually balanced with a posting without amount.
+      //
+      // Example:
+      //
+      // 2025-04-01 * "Open Long"
+      //   Assets:Broker 2 VT {{ 300 CHF }}
+      //   Assets:Broker
+      //
+      //  ->
+      //
+      // 2025-04-01 * "Open Long"
+      //   Assets:Broker    2 VT
+      //   Trading:Default -2 VT { 150 CHF }
+      //   Trading:Default  300 CHF
+      //   Assets:Broker ; -300 CHF, inferred
+      const postingAmount = posting.amount;
+      const costSpec = posting.costSpec;
+      return right(
+        doBook(
+          inventories,
+          balance,
+          {
+            account: posting.account,
+            amount: posting.amount,
+            cost: null,
+          },
+          {
+            account: tradingAccount,
+            amount: posting.amount.neg(),
+            cost: new Cost(
+              posting.costSpec.amounts.map(amount =>
+                getPerUnitAmount(amount, postingAmount, costSpec),
+              ),
+              transaction.date,
+            ),
+          },
+          ...posting.costSpec.amounts.map(amount => ({
+            account: tradingAccount,
+            amount: getTotalAmount(amount, postingAmount, costSpec),
+            cost: null,
+          })),
+        ),
+      );
+    }
+
+    if (posting.amount !== null) {
+      assert(posting.costSpec.amounts.length === 0);
+
+      // Amount is known, but cost is not. We treat this as a reduction, and
+      // invoke the booking method (currently only FIFO is supported.)
+      //
+      // Example (assuming the open position from previous example):
+      //
+      // 2025-04-02 * "Close Long"
+      //   Assets:Broker  -2 VT {}
+      //   Assets:Broker 350 CHF
+      //   Income:Trading
+      //
+      //  ->
+      //
+      // 2025-04-02 * "Close Long"
+      //   Assets:Broker     -2 VT
+      //   Trading:Default    2 VT { 150 CHF }
+      //   Trading:Default -300 CHF
+      //   Assets:Broker    350 CHF
+      //   Income:Trading ; -50 CHF, inferred
+      let postings: BookedPosting[];
+      [postings, inventories, balance] = doBook(inventories, balance, {
+        account: posting.account,
+        amount: posting.amount,
+        cost: null,
+      });
+
+      const bookResult = FIFO.book(
+        tradingAccount,
+        posting.amount.neg(),
+        inventories.get(tradingAccount) ?? Inventory.Empty,
+      );
+      if (isLeft(bookResult)) {
+        return bookResult;
+      }
+
+      let postings1: BookedPosting[];
+      [postings1, , balance] = doBook(
+        inventories,
+        balance,
+        ...bookResult.right[0],
+      );
+
+      postings.push(...postings1);
+      inventories = inventories.set(tradingAccount, bookResult.right[1]);
+
+      return right([postings, inventories, balance]);
+    }
+
+    return left(
+      new Error('Booking with cost spec inference not implemented yet'),
+    );
+  }
+
   if (posting.amount !== null) {
     // Posting is fully specified, we can just book it.
     return right(
       doBook(inventories, balance, {
         account: posting.account,
         amount: posting.amount,
+        cost: null,
       }),
     );
   }
 
   // Posting doesn't specify amount, so we infer it to be the running balance of
   // the transaction, and balance it out.
-  const balancePostings = balance.getAmounts().map(
+  const balancePostings = balance.getPositions().map(
     (amount): BookedPosting => ({
       account: posting.account,
-      amount: amount.neg(),
+      amount: amount.amount.neg(),
+      cost: null,
     }),
   );
   return right(doBook(inventories, balance, ...balancePostings));
@@ -109,10 +225,36 @@ function doBook(
   inventories = inventories.withMutations(inventories => {
     for (const posting of postings) {
       inventories = inventories.update(posting.account, inventory =>
-        (inventory ?? Inventory.Empty).addAmount(posting.amount),
+        (inventory ?? Inventory.Empty).addPosition(
+          new Position(posting.amount, posting.cost),
+        ),
       );
       balance = balance.addAmount(posting.amount);
     }
   });
   return [postings, inventories, balance];
+}
+
+function getTotalAmount(
+  amount: Amount,
+  baseAmount: Amount,
+  costSpec: CostSpec,
+): Amount {
+  if (costSpec.kind === 'total') {
+    return amount;
+  } else {
+    return amount.mul(baseAmount.amount);
+  }
+}
+
+function getPerUnitAmount(
+  amount: Amount,
+  baseAmount: Amount,
+  costSpec: CostSpec,
+): Amount {
+  if (costSpec.kind === 'per-unit') {
+    return amount;
+  } else {
+    return amount.div(baseAmount.amount);
+  }
 }

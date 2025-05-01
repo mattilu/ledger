@@ -15,6 +15,11 @@ export enum TokenKind {
   Currency,
 
   Star,
+  OpenBrace,
+  CloseBrace,
+  DoubleOpenBrace,
+  DoubleCloseBrace,
+  Comma,
 
   Space,
   Comment,
@@ -38,6 +43,11 @@ const tokenizer = buildLexer([
   [true, /^[A-Z][A-Z0-9_-]+/g, TokenKind.Currency],
 
   [true, /^[*]/g, TokenKind.Star],
+  [true, /^{/g, TokenKind.OpenBrace],
+  [true, /^}/g, TokenKind.CloseBrace],
+  [true, /^{{/g, TokenKind.DoubleOpenBrace],
+  [true, /^}}/g, TokenKind.DoubleCloseBrace],
+  [true, /^,/g, TokenKind.Comma],
 
   [false, /^\s+/g, TokenKind.Space],
   [false, /^;[^\n]*(\n|$)/g, TokenKind.Comment],

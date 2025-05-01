@@ -1,0 +1,200 @@
+{
+  "_tag": "Right",
+  "right": {
+    "transactions": [
+      {
+        "date": "2025-04-01T00:00:00.000Z",
+        "description": "Open Position",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "amount": {
+              "amount": "10",
+              "currency": "USD"
+            },
+            "cost": null
+          },
+          {
+            "account": "Trading:Default",
+            "amount": {
+              "amount": "-10",
+              "currency": "USD"
+            },
+            "cost": {
+              "amounts": [
+                {
+                  "amount": "0.9",
+                  "currency": "CHF"
+                }
+              ],
+              "date": "2025-04-01T00:00:00.000Z"
+            }
+          },
+          {
+            "account": "Trading:Default",
+            "amount": {
+              "amount": "9",
+              "currency": "CHF"
+            },
+            "cost": null
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": {
+              "amount": "-9",
+              "currency": "CHF"
+            },
+            "cost": null
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": [
+            {
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "amount": {
+                "amount": "-9",
+                "currency": "CHF"
+              },
+              "cost": null
+            }
+          ],
+          "Trading:Default": [
+            {
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "0.9",
+                    "currency": "CHF"
+                  }
+                ],
+                "date": "2025-04-01T00:00:00.000Z"
+              }
+            },
+            {
+              "amount": {
+                "amount": "9",
+                "currency": "CHF"
+              },
+              "cost": null
+            }
+          ]
+        }
+      },
+      {
+        "date": "2025-04-02T00:00:00.000Z",
+        "description": "Close Position",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "amount": {
+              "amount": "-5",
+              "currency": "USD"
+            },
+            "cost": null
+          },
+          {
+            "account": "Trading:Default",
+            "amount": {
+              "amount": "5",
+              "currency": "USD"
+            },
+            "cost": {
+              "amounts": [
+                {
+                  "amount": "0.9",
+                  "currency": "CHF"
+                }
+              ],
+              "date": "2025-04-01T00:00:00.000Z"
+            }
+          },
+          {
+            "account": "Trading:Default",
+            "amount": {
+              "amount": "-4.5",
+              "currency": "CHF"
+            },
+            "cost": null
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": {
+              "amount": "5",
+              "currency": "CHF"
+            },
+            "cost": null
+          },
+          {
+            "account": "Income:Profit",
+            "amount": {
+              "amount": "-0.5",
+              "currency": "CHF"
+            },
+            "cost": null
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": [
+            {
+              "amount": {
+                "amount": "5",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "amount": {
+                "amount": "-4",
+                "currency": "CHF"
+              },
+              "cost": null
+            }
+          ],
+          "Income:Profit": [
+            {
+              "amount": {
+                "amount": "-0.5",
+                "currency": "CHF"
+              },
+              "cost": null
+            }
+          ],
+          "Trading:Default": [
+            {
+              "amount": {
+                "amount": "-5",
+                "currency": "USD"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "0.9",
+                    "currency": "CHF"
+                  }
+                ],
+                "date": "2025-04-01T00:00:00.000Z"
+              }
+            },
+            {
+              "amount": {
+                "amount": "4.5",
+                "currency": "CHF"
+              },
+              "cost": null
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

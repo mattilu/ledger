@@ -51,7 +51,7 @@ function cleanup(ledger: BookedLedger) {
     transactions: ledger.transactions.map(x => ({
       ...x,
       inventoriesBefore: undefined,
-      inventoriesAfter: x.inventoriesAfter.map(x => x.getAmounts()),
+      inventoriesAfter: x.inventoriesAfter.map(x => x.getPositions()),
       srcCtx: undefined,
     })),
   };

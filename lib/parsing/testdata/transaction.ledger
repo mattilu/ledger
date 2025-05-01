@@ -4,9 +4,25 @@
   Assets:Foo
 
 2025-04-03 * "Postings with amount"
-  Assets:Foo  10 CHF
+  Assets:Foo   10 CHF
   Income:Foo  -10 CHF
 
 2025-04-04 * "Postings with and without amount"
   Assets:Foo  -10 CHF
   Assets:Bar
+
+2025-04-05 * "Posting with total cost spec"
+  Assets:Foo   10 CHF {{ 10 EUR }}
+  Assets:Foo
+
+2025-04-05 * "Posting with per-unit cost spec"
+  Assets:Foo   10 CHF { 1 EUR }
+  Assets:Foo
+
+2025-04-06 * "Posting with cost spec, with multiple costs"
+  Assets:Foo    1 ETHBTC-LP { 1 BTC, 50 ETH }
+  Assets:Foo
+
+2025-04-07 * "Posting with cost spec, empty"
+  Assets:Foo  -10 CHF {}
+  Assets:Foo

@@ -10,3 +10,11 @@
 2025-04-04 * "Postings with and without amount"
   Assets:Foo  -10 CHF
   Assets:Bar
+
+2025-04-05 * "Posting with total cost spec"
+  Assets:Foo  10 CHF {{ 10 EUR }}
+  Assets:Foo
+
+2025-04-05 * "Posting with per-unit cost spec"
+  Assets:Foo  10 CHF { 1 EUR }
+  Assets:Foo

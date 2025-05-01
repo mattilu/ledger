@@ -1,6 +1,15 @@
-import { apply, opt_sc, rep_sc, seq, tok } from 'typescript-parsec';
+import {
+  alt_sc,
+  apply,
+  list_sc,
+  opt_sc,
+  rep_sc,
+  seq,
+  tok,
+} from 'typescript-parsec';
 
 import {
+  CostSpec,
   PostingSpec,
   TransactionDirectiveSpec,
 } from '../../spec/directives/transaction.js';
@@ -11,11 +20,38 @@ import { makeSourcePosition } from '../source-position.js';
 import { stringParser } from '../string.js';
 import { TokenKind } from '../tokenizer.js';
 
+const costSpecContentParser = apply(
+  list_sc(amountParser, tok(TokenKind.Comma)),
+  (amounts): Omit<CostSpec, 'kind'> => ({ amounts }),
+);
+
+const costSpecParser = apply(
+  alt_sc(
+    seq(
+      tok(TokenKind.OpenBrace),
+      opt_sc(costSpecContentParser),
+      tok(TokenKind.CloseBrace),
+    ),
+    seq(
+      tok(TokenKind.DoubleOpenBrace),
+      opt_sc(costSpecContentParser),
+      tok(TokenKind.DoubleCloseBrace),
+    ),
+  ),
+  ([token, costSpec]): CostSpec => {
+    return {
+      kind: token.kind === TokenKind.OpenBrace ? 'per-unit' : 'total',
+      amounts: costSpec?.amounts ?? [],
+    };
+  },
+);
+
 const postingParser = apply(
-  seq(accountParser, opt_sc(amountParser)),
-  ([account, amount]): PostingSpec => ({
+  seq(accountParser, opt_sc(amountParser), opt_sc(costSpecParser)),
+  ([account, amount, costSpec]): PostingSpec => ({
     account,
     amount: amount ?? null,
+    costSpec: costSpec ?? null,
   }),
 );
 

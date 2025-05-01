@@ -56,7 +56,11 @@ export class TransactionsReport implements Report {
           ? transaction.postings
           : postings;
         for (const posting of postingsToReport) {
-          report.push(`  ${posting.account} ${posting.amount}`);
+          report.push(
+            posting.cost !== null
+              ? `  ${posting.account} ${posting.amount} ${posting.cost}`
+              : `  ${posting.account} ${posting.amount}`,
+          );
         }
 
         report.push('');

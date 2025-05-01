@@ -5,4 +5,4 @@ Equity:Opening-Balances -10000 CHF
 Expenses:Rent 1250 CHF
 Income:Salary -5000 CHF
 Trading:Default 2500 CHF
-Trading:Default -25 VT
+Trading:Default -25 VT { 100 CHF, 2025-01-05T00:00:00.000Z }
