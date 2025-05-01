@@ -9,9 +9,12 @@ import {
   tap,
 } from 'fp-ts/lib/Either.js';
 import { flow, pipe } from 'fp-ts/lib/function.js';
+import { fst } from 'fp-ts/lib/Tuple.js';
+import { Map, Set } from 'immutable';
 import { inspect } from 'util';
 
 import { book } from '../lib/booking/booking.js';
+import { InventoryMap } from '../lib/booking/inventory.js';
 import { BookedLedger } from '../lib/booking/ledger.js';
 import { Ledger } from '../lib/loading/ledger.js';
 import { load } from '../lib/loading/loader.js';
@@ -80,13 +83,34 @@ const debugBookResult =
       return left(new CommandError(`No transaction found at ${file}:${line}`));
     }
 
+    const accounts = Set(transaction.postings.map(x => x.account));
+    const currencies = Set(
+      transaction.postings.flatMap(x => [
+        x.amount.currency,
+        ...(x.cost?.amounts.map(x => x.currency) ?? []),
+      ]),
+    ).sort();
+
+    const filterInventories = (inventories: InventoryMap) =>
+      Map(
+        inventories
+          .entrySeq()
+          .filter(([account]) => accounts.has(account))
+          .sortBy(fst)
+          .map(([account, inventory]) => [
+            account,
+            currencies.flatMap(currency =>
+              inventory.getPositionsForCurrency(currency),
+            ),
+          ]),
+      ).toJS();
     console.log(
       'Transaction: %s',
       inspect(
         {
           ...transaction,
-          inventoriesBefore: transaction.inventoriesBefore.toJS(),
-          inventoriesAfter: transaction.inventoriesAfter.toJS(),
+          inventoriesBefore: filterInventories(transaction.inventoriesBefore),
+          inventoriesAfter: filterInventories(transaction.inventoriesAfter),
         },
         { depth: null, colors: true },
       ),
