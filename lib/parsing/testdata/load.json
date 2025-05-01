@@ -1,0 +1,11 @@
+{
+  "_tag": "Right",
+  "right": {
+    "directives": [
+      {
+        "type": "load",
+        "path": "empty.ledger"
+      }
+    ]
+  }
+}

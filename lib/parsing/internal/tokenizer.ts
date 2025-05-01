@@ -8,6 +8,7 @@ export enum TokenKind {
   TimeZoneLiteral,
   StringLiteral,
 
+  KEYWORD_load,
   KEYWORD_open,
   KEYWORD_option,
 
@@ -32,6 +33,7 @@ const tokenizer = buildLexer([
   [true, /^[+-]\d{2}:\d{2}|^Z\b/g, TokenKind.TimeZoneLiteral],
   [true, /^"[^"\n]*"/g, TokenKind.StringLiteral],
 
+  [true, /^load\b/g, TokenKind.KEYWORD_load],
   [true, /^open\b/g, TokenKind.KEYWORD_open],
   [true, /^option\b/g, TokenKind.KEYWORD_option],
 
