@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "`load` directive not implemented yet at lib/loading/testdata/load.ledger:1"
+  }
+}

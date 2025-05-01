@@ -58,6 +58,13 @@ export async function load(
           srcCtx: makeSourceContext(filePath, directive.srcPos),
         });
         break;
+      case 'load':
+        return left(
+          new LoadError(
+            '`load` directive not implemented yet',
+            makeSourceContext(filePath, directive.srcPos),
+          ),
+        );
       default:
         assert.fail('reached unreachable code');
     }
