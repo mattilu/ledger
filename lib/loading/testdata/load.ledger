@@ -1,1 +1,14 @@
-load "empty.ledger"
+; Options set in `_option.ledger` do not propagate outwards
+load "load/_option.ledger"
+
+2025-04-01 00:00 open Assets:Test:Time-Should-Be-00-00
+
+option "default-timezone" "-02:00"
+
+2025-04-01 00:00 open Assets:Test:Time-Should-Be-02-00
+
+; But they propagate inwards
+load "load/_open.ledger"
+
+; Test loading tree
+load "load/_outer.ledger"

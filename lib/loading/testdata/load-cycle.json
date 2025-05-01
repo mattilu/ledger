@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "Circular load dependency detected: lib/loading/testdata/load/_cycle-a.ledger was already loaded (at lib/loading/testdata/load-cycle.ledger:1) at lib/loading/testdata/load/_cycle-c.ledger:1"
+  }
+}

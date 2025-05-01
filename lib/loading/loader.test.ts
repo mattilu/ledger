@@ -1,4 +1,5 @@
 import { strict as assert } from 'node:assert';
+import { basename } from 'node:path';
 import { describe, test } from 'node:test';
 
 import { bimap } from 'fp-ts/lib/Either.js';
@@ -11,7 +12,9 @@ import { load } from './loader.js';
 await describe('load', async () => {
   const tests = [];
   const dirname = 'lib/loading/testdata/';
-  for await (const f of glob([`${dirname}**/*.ledger`])) {
+  for await (const f of glob([`${dirname}**/*.ledger`], {
+    exclude: f => basename(f).startsWith('_'),
+  })) {
     tests.push({
       testName: f.replace(dirname, '').replace('.ledger', ''),
       srcPath: f,

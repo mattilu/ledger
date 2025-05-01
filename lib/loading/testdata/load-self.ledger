@@ -1,0 +1,2 @@
+; Attempt to load itself should fail
+load "load-self.ledger"
