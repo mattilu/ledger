@@ -22,6 +22,11 @@ await describe('InventoryReport', async () => {
         scenario: 'inventory-exclude-accounts-filter',
         options: { excludeAccounts: ['Trading:.*'] },
       },
+      {
+        name: 'with currencies filter',
+        scenario: 'inventory-currencies-filter',
+        options: { currencies: ['CHF'] },
+      },
     ];
 
     for (const testCase of testCases) {

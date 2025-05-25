@@ -55,6 +55,12 @@ const commonArgs = {
     type: array(string),
     description: 'Regex to match accounts to exclude; can be repeated',
   }),
+  currencies: multioption({
+    long: 'currency',
+    short: 'c',
+    type: array(string),
+    description: 'Regex to match currencies to include; can be repeated',
+  }),
 };
 
 type Output<Args extends Record<string, ArgParser<unknown>>> = {
@@ -71,12 +77,6 @@ const transactions = command({
   name: 'transactions',
   args: {
     ...commonArgs,
-    currencies: multioption({
-      long: 'currency',
-      short: 'c',
-      type: array(string),
-      description: 'The currency to display transactions for; can be repeated',
-    }),
     allPostings: flag({
       long: 'all-postings',
       description: 'Whether to display all the postings',

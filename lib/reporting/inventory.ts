@@ -14,6 +14,11 @@ export interface InventoryReportOptions {
    * If specified, excludes these accounts from reporting. Can use regexes.
    */
   readonly excludeAccounts?: readonly string[];
+
+  /**
+   * If specified, limits reporting to these currencies. Can use regexes.
+   */
+  readonly currencies?: readonly string[];
 }
 
 /**
@@ -22,10 +27,12 @@ export interface InventoryReportOptions {
 export class InventoryReport implements Report {
   private readonly accountRegex: RegExp | null;
   private readonly excludeAccountRegex: RegExp | null;
+  private readonly currenciesRegex: RegExp | null;
 
   constructor(options: InventoryReportOptions) {
     this.accountRegex = makeRegexp(options.accounts ?? []);
     this.excludeAccountRegex = makeRegexp(options.excludeAccounts ?? []);
+    this.currenciesRegex = makeRegexp(options.currencies ?? []);
   }
 
   run(ledger: BookedLedger): string {
@@ -49,9 +56,16 @@ export class InventoryReport implements Report {
     const report: string[] = [];
 
     for (const [account, inventory] of inventories) {
-      const positions = Seq(inventory.getPositions()).sortBy(a =>
-        Seq([a.amount.currency, a.cost?.date.getTime() ?? 0]),
-      );
+      const positions = Seq(inventory.getPositions())
+        .filter(
+          position =>
+            this.currenciesRegex === null ||
+            this.currenciesRegex.test(position.amount.currency) ||
+            position.cost?.amounts.some(x =>
+              this.currenciesRegex!.test(x.currency),
+            ),
+        )
+        .sortBy(a => Seq([a.amount.currency, a.cost?.date.getTime() ?? 0]));
 
       for (const position of positions) {
         report.push(`${account} ${position}`);
