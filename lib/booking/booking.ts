@@ -5,11 +5,14 @@ import { Map } from 'immutable';
 
 import { Amount } from '../core/amount.js';
 import { Directive, DirectiveCommon } from '../loading/directive.js';
+import { CloseDirective } from '../loading/directives/close.js';
+import { OpenDirective } from '../loading/directives/open.js';
 import {
   Posting,
   TransactionDirective,
 } from '../loading/directives/transaction.js';
 import { Ledger } from '../loading/ledger.js';
+import { SourceContext } from '../loading/source-context.js';
 import { CostSpec } from '../parsing/spec/directives/transaction.js';
 import { Cost } from './cost.js';
 import { BookingError } from './error.js';
@@ -19,14 +22,29 @@ import { BookedLedger } from './ledger.js';
 import { Position } from './position.js';
 import { BookedPosting, Transaction } from './transaction.js';
 
+type AccountMap = Map<string, OpenDirective | CloseDirective>;
+
 export function book(ledger: Ledger): Either<BookingError, BookedLedger> {
   const transactions: Transaction[] = [];
+  let accountMap: AccountMap = Map();
   let inventories: InventoryMap = Map();
 
   for (const directive of ledger.directives) {
     switch (directive.type) {
       case 'balance': {
         for (const balance of directive.balances) {
+          const accountCheck = checkValidAccount(
+            accountMap,
+            directive.optionMap,
+            balance.account,
+            // Checking balance of a closed account is fine. Maybe later we can
+            // optionally add an implicit check that it's empty at close.
+            { allowClosed: true },
+          );
+          if (isLeft(accountCheck)) {
+            return left(enrichError(accountCheck.left, directive));
+          }
+
           const inventory = inventories.get(balance.account, Inventory.Empty);
           const amount = inventory
             .getPositionsForCurrency(balance.amount.currency)
@@ -38,8 +56,8 @@ export function book(ledger: Ledger): Either<BookingError, BookedLedger> {
             return left(
               new BookingError(
                 `Balance does not match.
-Want: ${balance.amount}
-Got: ${amount}
+Expected: ${balance.amount}
+Actual: ${amount}
 Delta: ${balance.amount.sub(amount)}`,
                 directive,
               ),
@@ -48,14 +66,46 @@ Delta: ${balance.amount.sub(amount)}`,
         }
         break;
       }
+      case 'close': {
+        const accountCheck = checkValidAccount(
+          accountMap,
+          directive.optionMap,
+          directive.account,
+          // Don't fail if closed, so we can provide a better error message.
+          { allowClosed: true },
+        );
+        if (isLeft(accountCheck)) {
+          return left(enrichError(accountCheck.left, directive));
+        }
+        if (accountCheck.right?.type === 'close') {
+          return left(
+            new BookingError(
+              `Account ${directive.account} is already closed (at ` +
+                `${formatSourceContext(accountCheck.right.srcCtx)})`,
+              directive,
+            ),
+          );
+        }
+        accountMap = accountMap.set(directive.account, directive);
+        break;
+      }
       case 'open': {
-        // TODO: keep track of which accounts are open/close, and return an
-        // error if a transaction posts to a closed account, or (gated by an
-        // option) an undeclared one.
+        // Note: reopening a closed account is allowed.
+        const account = accountMap.get(directive.account, null);
+        if (account?.type === 'open') {
+          return left(
+            new BookingError(
+              `Account ${directive.account} is already open (at ` +
+                `${formatSourceContext(account.srcCtx)})`,
+              directive,
+            ),
+          );
+        }
+        accountMap = accountMap.set(directive.account, directive);
         break;
       }
       case 'transaction': {
-        const got = bookTransaction(directive, inventories);
+        const got = bookTransaction(directive, inventories, accountMap);
         if (isLeft(got)) {
           return left(enrichError(got.left, directive));
         }
@@ -81,6 +131,48 @@ Delta: ${balance.amount.sub(amount)}`,
   });
 }
 
+function checkValidAccount(
+  accountMap: AccountMap,
+  optionMap: Map<string, string>,
+  account: string,
+  options?: { allowClosed: boolean },
+): Either<Error, OpenDirective | CloseDirective | null> {
+  const state = accountMap.get(account, null);
+  const referenceChecksMode = optionMap.get(
+    'account-reference-checks',
+    'lenient',
+  );
+
+  const validModes = ['none', 'lenient', 'strict'];
+  if (validModes.indexOf(referenceChecksMode) === -1) {
+    return left(
+      new Error(
+        `Invalid account-reference-checks mode: ${referenceChecksMode}, ` +
+          `expected one of ${validModes.join(', ')}`,
+      ),
+    );
+  }
+
+  if (referenceChecksMode === 'none') {
+    return right(state);
+  }
+
+  if (state?.type === 'close' && !(options?.allowClosed ?? false)) {
+    return left(
+      new Error(
+        `Account ${account} has been closed ` +
+          `(at ${formatSourceContext(state.srcCtx)})`,
+      ),
+    );
+  }
+
+  if (state === null && referenceChecksMode === 'strict') {
+    return left(new Error(`Account ${account} has not been opened`));
+  }
+
+  return right(state);
+}
+
 function enrichError(error: Error, directive: Directive) {
   return new BookingError(error.message, directive, { cause: error });
 }
@@ -88,12 +180,22 @@ function enrichError(error: Error, directive: Directive) {
 function bookTransaction(
   transaction: TransactionDirective,
   inventories: InventoryMap,
+  accountMap: AccountMap,
 ): Either<Error, Transaction> {
   const inventoriesBefore = inventories;
   const postings: BookedPosting[] = [];
   let balance = Inventory.Empty;
 
   for (const posting of transaction.postings) {
+    const accountCheck = checkValidAccount(
+      accountMap,
+      transaction.optionMap,
+      posting.account,
+    );
+    if (isLeft(accountCheck)) {
+      return accountCheck;
+    }
+
     const got = bookPosting(transaction, posting, inventories, balance);
     if (isLeft(got)) {
       return got;
@@ -295,4 +397,8 @@ function getPerUnitAmount(
   } else {
     return amount.div(baseAmount.amount);
   }
+}
+
+function formatSourceContext(srcCtx: SourceContext) {
+  return `${srcCtx.filePath}:${srcCtx.row}`;
 }

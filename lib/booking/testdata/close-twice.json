@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "While processing 'close' directive at lib/booking/testdata/close-twice.ledger:2: Account Assets:Foo is already closed (at lib/booking/testdata/close-twice.ledger:1)"
+  }
+}

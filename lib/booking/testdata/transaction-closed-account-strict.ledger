@@ -1,0 +1,7 @@
+option "account-reference-checks" "strict"
+
+2025-05-01 open Assets:Foo
+2025-05-01 close Assets:Foo
+
+2025-05-01 * "Test"
+  Assets:Foo

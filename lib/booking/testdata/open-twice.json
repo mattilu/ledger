@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "While processing 'open' directive at lib/booking/testdata/open-twice.ledger:2: Account Assets:Foo is already open (at lib/booking/testdata/open-twice.ledger:1)"
+  }
+}

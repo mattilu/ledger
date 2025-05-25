@@ -1,0 +1,4 @@
+option "account-reference-checks" "strict"
+
+2025-05-01 * "Test"
+  Assets:Foo
