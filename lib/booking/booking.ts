@@ -4,7 +4,7 @@ import { Either, isLeft, left, right } from 'fp-ts/lib/Either.js';
 import { Map } from 'immutable';
 
 import { Amount } from '../core/amount.js';
-import { Directive } from '../loading/directive.js';
+import { Directive, DirectiveCommon } from '../loading/directive.js';
 import {
   Posting,
   TransactionDirective,
@@ -25,6 +25,12 @@ export function book(ledger: Ledger): Either<BookingError, BookedLedger> {
 
   for (const directive of ledger.directives) {
     switch (directive.type) {
+      case 'open': {
+        // TODO: keep track of which accounts are open/close, and return an
+        // error if a transaction posts to a closed account, or (gated by an
+        // option) an undeclared one.
+        break;
+      }
       case 'transaction': {
         const got = bookTransaction(directive, inventories);
         if (isLeft(got)) {
@@ -34,6 +40,15 @@ export function book(ledger: Ledger): Either<BookingError, BookedLedger> {
         transactions.push(got.right);
         inventories = got.right.inventoriesAfter;
         break;
+      }
+      default: {
+        const d = directive as DirectiveCommon<string>;
+        return left(
+          new BookingError(
+            `${d.type} directive not implemented yet`,
+            directive,
+          ),
+        );
       }
     }
   }
