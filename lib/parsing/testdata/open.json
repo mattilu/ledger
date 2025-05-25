@@ -46,6 +46,15 @@
           "time": "00:00:00",
           "timezone": "Z"
         }
+      },
+      {
+        "type": "open",
+        "account": "Assets:Foo:123",
+        "date": {
+          "date": "2025-04-01",
+          "time": null,
+          "timezone": null
+        }
       }
     ]
   }

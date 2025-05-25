@@ -3,3 +3,5 @@
 2025-04-01 00:00:00        open Income:Foo
 2025-04-01 00:00:00 +00:00 open Expenses:Foo
 2025-04-01 00:00:00Z       open Equity:Foo
+
+2025-04-01                 open Assets:Foo:123
