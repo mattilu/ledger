@@ -4,14 +4,16 @@
     "directives": [
       {
         "type": "transaction",
-        "description": "No Postings",
         "date": "2025-04-01T00:00:00.000Z",
+        "optionMap": {},
+        "description": "No Postings",
         "postings": []
       },
       {
         "type": "transaction",
-        "description": "Posting without amount",
         "date": "2025-04-02T00:00:00.000Z",
+        "optionMap": {},
+        "description": "Posting without amount",
         "postings": [
           {
             "account": "Assets:Foo",
@@ -22,8 +24,9 @@
       },
       {
         "type": "transaction",
-        "description": "Postings with amount",
         "date": "2025-04-03T00:00:00.000Z",
+        "optionMap": {},
+        "description": "Postings with amount",
         "postings": [
           {
             "account": "Assets:Foo",
@@ -45,8 +48,9 @@
       },
       {
         "type": "transaction",
-        "description": "Postings with and without amount",
         "date": "2025-04-04T00:00:00.000Z",
+        "optionMap": {},
+        "description": "Postings with and without amount",
         "postings": [
           {
             "account": "Assets:Foo",
@@ -65,8 +69,9 @@
       },
       {
         "type": "transaction",
-        "description": "Posting with total cost spec",
         "date": "2025-04-05T00:00:00.000Z",
+        "optionMap": {},
+        "description": "Posting with total cost spec",
         "postings": [
           {
             "account": "Assets:Foo",
@@ -93,8 +98,9 @@
       },
       {
         "type": "transaction",
-        "description": "Posting with per-unit cost spec",
         "date": "2025-04-05T00:00:00.000Z",
+        "optionMap": {},
+        "description": "Posting with per-unit cost spec",
         "postings": [
           {
             "account": "Assets:Foo",

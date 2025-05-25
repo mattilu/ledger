@@ -5,31 +5,47 @@
       {
         "type": "open",
         "date": "2025-04-01T00:00:00.000Z",
+        "optionMap": {},
         "account": "Assets:Test:Time-Should-Be-00-00"
       },
       {
         "type": "open",
         "date": "2025-04-01T01:00:00.000Z",
+        "optionMap": {
+          "default-timezone": "-01:00"
+        },
         "account": "Assets:Test:Time-Should-Be-01-00"
       },
       {
         "type": "open",
         "date": "2025-04-01T02:00:00.000Z",
+        "optionMap": {
+          "default-timezone": "-02:00"
+        },
         "account": "Assets:Test:Time-Should-Be-02-00"
       },
       {
         "type": "open",
         "date": "2025-04-01T03:00:00.000Z",
+        "optionMap": {
+          "default-timezone": "-02:00"
+        },
         "account": "Assets:Test:Time-Should-Be-03-00"
       },
       {
         "type": "open",
         "date": "2025-04-02T02:00:00.000Z",
+        "optionMap": {
+          "default-timezone": "-02:00"
+        },
         "account": "Assets:Test:Outer"
       },
       {
         "type": "open",
         "date": "2025-04-02T03:00:00.000Z",
+        "optionMap": {
+          "default-timezone": "-02:00"
+        },
         "account": "Assets:Test:Inner"
       }
     ]

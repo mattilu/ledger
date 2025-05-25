@@ -4,28 +4,33 @@
     "directives": [
       {
         "type": "open",
-        "account": "Assets:Foo",
-        "date": "2025-04-01T00:00:00.000Z"
+        "date": "2025-04-01T00:00:00.000Z",
+        "optionMap": {},
+        "account": "Assets:Foo"
       },
       {
         "type": "open",
-        "account": "Liabilities:Foo",
-        "date": "2025-04-01T00:00:00.000Z"
+        "date": "2025-04-01T00:00:00.000Z",
+        "optionMap": {},
+        "account": "Liabilities:Foo"
       },
       {
         "type": "open",
-        "account": "Income:Foo",
-        "date": "2025-04-01T00:00:00.000Z"
+        "date": "2025-04-01T00:00:00.000Z",
+        "optionMap": {},
+        "account": "Income:Foo"
       },
       {
         "type": "open",
-        "account": "Expenses:Foo",
-        "date": "2025-04-01T00:00:00.000Z"
+        "date": "2025-04-01T00:00:00.000Z",
+        "optionMap": {},
+        "account": "Expenses:Foo"
       },
       {
         "type": "open",
-        "account": "Equity:Foo",
-        "date": "2025-04-01T00:00:00.000Z"
+        "date": "2025-04-01T00:00:00.000Z",
+        "optionMap": {},
+        "account": "Equity:Foo"
       }
     ]
   }

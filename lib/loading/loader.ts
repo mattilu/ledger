@@ -124,6 +124,7 @@ async function doLoad(
           date: date.right,
           balances: directive.balances,
           srcCtx: makeSourceContext(filePath, directive.srcPos),
+          optionMap: ctx.optionMap,
         });
         break;
       }
@@ -162,6 +163,7 @@ async function doLoad(
           date: date.right,
           account: directive.account,
           srcCtx: makeSourceContext(filePath, directive.srcPos),
+          optionMap: ctx.optionMap,
         });
         break;
       }
@@ -188,6 +190,7 @@ async function doLoad(
           description: directive.description,
           postings: directive.postings,
           srcCtx: makeSourceContext(filePath, directive.srcPos),
+          optionMap: ctx.optionMap,
         });
         break;
       }
