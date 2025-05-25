@@ -1,3 +1,4 @@
+import { BalanceDirective } from './directives/balance.js';
 import { OpenDirective } from './directives/open.js';
 import { TransactionDirective } from './directives/transaction.js';
 import { SourceContext } from './source-context.js';
@@ -8,4 +9,4 @@ export interface DirectiveCommon<T extends string> {
   readonly srcCtx: SourceContext;
 }
 
-export type Directive = OpenDirective | TransactionDirective;
+export type Directive = BalanceDirective | OpenDirective | TransactionDirective;

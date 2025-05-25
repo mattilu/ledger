@@ -114,6 +114,20 @@ async function doLoad(
 
   for (const directive of result.right.directives) {
     switch (directive.type) {
+      case 'balance': {
+        const date = makeDate(directive);
+        if (isLeft(date)) {
+          return date;
+        }
+        directives.push({
+          type: 'balance',
+          date: date.right,
+          account: directive.account,
+          amount: directive.amount,
+          srcCtx: makeSourceContext(filePath, directive.srcPos),
+        });
+        break;
+      }
       case 'load': {
         const toLoad = makeRelativePath(filePath, directive.path);
         const loadedFrom = ctx.loadedMap.get(toLoad);

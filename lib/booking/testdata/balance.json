@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "While processing 'balance' directive at lib/booking/testdata/balance.ledger:5: balance directive not implemented yet"
+  }
+}
