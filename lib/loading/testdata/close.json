@@ -1,6 +1,13 @@
 {
-  "_tag": "Left",
-  "left": {
-    "error": "close directive not implemented yet at lib/loading/testdata/close.ledger:1"
+  "_tag": "Right",
+  "right": {
+    "directives": [
+      {
+        "type": "close",
+        "date": "2025-05-01T00:00:00.000Z",
+        "optionMap": {},
+        "account": "Assets:Foo"
+      }
+    ]
   }
 }

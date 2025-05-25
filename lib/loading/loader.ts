@@ -128,6 +128,20 @@ async function doLoad(
         });
         break;
       }
+      case 'close': {
+        const date = makeDate(directive);
+        if (isLeft(date)) {
+          return date;
+        }
+        directives.push({
+          type: 'close',
+          date: date.right,
+          account: directive.account,
+          srcCtx: makeSourceContext(filePath, directive.srcPos),
+          optionMap: ctx.optionMap,
+        });
+        break;
+      }
       case 'load': {
         const toLoad = makeRelativePath(filePath, directive.path);
         const loadedFrom = ctx.loadedMap.get(toLoad);

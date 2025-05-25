@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "While processing 'close' directive at lib/booking/testdata/close.ledger:1: close directive not implemented yet"
+  }
+}
