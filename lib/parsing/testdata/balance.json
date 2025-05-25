@@ -1,0 +1,33 @@
+{
+  "_tag": "Right",
+  "right": {
+    "directives": [
+      {
+        "type": "balance",
+        "date": {
+          "date": "2025-05-01",
+          "time": null,
+          "timezone": null
+        },
+        "account": "Assets:Foo",
+        "amount": {
+          "amount": "1",
+          "currency": "CHF"
+        }
+      },
+      {
+        "type": "balance",
+        "date": {
+          "date": "2025-05-01",
+          "time": null,
+          "timezone": null
+        },
+        "account": "Assets:Foo",
+        "amount": {
+          "amount": "1",
+          "currency": "EUR"
+        }
+      }
+    ]
+  }
+}
