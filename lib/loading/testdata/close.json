@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "close directive not implemented yet at lib/loading/testdata/close.ledger:1"
+  }
+}
