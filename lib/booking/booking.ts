@@ -25,6 +25,27 @@ export function book(ledger: Ledger): Either<BookingError, BookedLedger> {
 
   for (const directive of ledger.directives) {
     switch (directive.type) {
+      case 'balance': {
+        const inventory = inventories.get(directive.account, Inventory.Empty);
+        const amount = inventory
+          .getPositionsForCurrency(directive.amount.currency)
+          .reduce(
+            (acc, v) => acc.add(v.amount),
+            Amount.zero(directive.amount.currency),
+          );
+        if (!amount.eq(directive.amount)) {
+          return left(
+            new BookingError(
+              `Balance does not match.
+Want: ${directive.amount}
+Got: ${amount}
+Delta: ${directive.amount.sub(amount)}`,
+              directive,
+            ),
+          );
+        }
+        break;
+      }
       case 'open': {
         // TODO: keep track of which accounts are open/close, and return an
         // error if a transaction posts to a closed account, or (gated by an
