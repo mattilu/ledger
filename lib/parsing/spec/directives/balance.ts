@@ -8,6 +8,8 @@ import { DirectiveCommonSpec } from '../directive.js';
  */
 export interface BalanceDirectiveSpec extends DirectiveCommonSpec<'balance'> {
   readonly date: DateSpec;
-  readonly account: string;
-  readonly amount: Amount;
+  readonly balances: ReadonlyArray<{
+    readonly account: string;
+    readonly amount: Amount;
+  }>;
 }

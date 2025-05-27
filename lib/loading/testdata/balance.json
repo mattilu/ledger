@@ -5,11 +5,15 @@
       {
         "type": "balance",
         "date": "2025-05-01T00:00:00.000Z",
-        "account": "Assets:Foo",
-        "amount": {
-          "amount": "1",
-          "currency": "CHF"
-        }
+        "balances": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "1",
+              "currency": "CHF"
+            }
+          }
+        ]
       }
     ]
   }

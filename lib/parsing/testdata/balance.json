@@ -9,11 +9,15 @@
           "time": null,
           "timezone": null
         },
-        "account": "Assets:Foo",
-        "amount": {
-          "amount": "1",
-          "currency": "CHF"
-        }
+        "balances": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "1",
+              "currency": "CHF"
+            }
+          }
+        ]
       },
       {
         "type": "balance",
@@ -22,11 +26,29 @@
           "time": null,
           "timezone": null
         },
-        "account": "Assets:Foo",
-        "amount": {
-          "amount": "1",
-          "currency": "EUR"
-        }
+        "balances": [
+          {
+            "account": "Assets:Bar",
+            "amount": {
+              "amount": "1",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Bar",
+            "amount": {
+              "amount": "1",
+              "currency": "EUR"
+            }
+          },
+          {
+            "account": "Assets:Baz",
+            "amount": {
+              "amount": "1",
+              "currency": "USD"
+            }
+          }
+        ]
       }
     ]
   }

@@ -122,8 +122,7 @@ async function doLoad(
         directives.push({
           type: 'balance',
           date: date.right,
-          account: directive.account,
-          amount: directive.amount,
+          balances: directive.balances,
           srcCtx: makeSourceContext(filePath, directive.srcPos),
         });
         break;

@@ -26,23 +26,25 @@ export function book(ledger: Ledger): Either<BookingError, BookedLedger> {
   for (const directive of ledger.directives) {
     switch (directive.type) {
       case 'balance': {
-        const inventory = inventories.get(directive.account, Inventory.Empty);
-        const amount = inventory
-          .getPositionsForCurrency(directive.amount.currency)
-          .reduce(
-            (acc, v) => acc.add(v.amount),
-            Amount.zero(directive.amount.currency),
-          );
-        if (!amount.eq(directive.amount)) {
-          return left(
-            new BookingError(
-              `Balance does not match.
-Want: ${directive.amount}
+        for (const balance of directive.balances) {
+          const inventory = inventories.get(balance.account, Inventory.Empty);
+          const amount = inventory
+            .getPositionsForCurrency(balance.amount.currency)
+            .reduce(
+              (acc, v) => acc.add(v.amount),
+              Amount.zero(balance.amount.currency),
+            );
+          if (!amount.eq(balance.amount)) {
+            return left(
+              new BookingError(
+                `Balance does not match.
+Want: ${balance.amount}
 Got: ${amount}
-Delta: ${directive.amount.sub(amount)}`,
-              directive,
-            ),
-          );
+Delta: ${balance.amount.sub(amount)}`,
+                directive,
+              ),
+            );
+          }
         }
         break;
       }

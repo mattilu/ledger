@@ -1,4 +1,4 @@
-import { apply, seq, tok } from 'typescript-parsec';
+import { apply, rep_sc, seq, tok } from 'typescript-parsec';
 
 import { BalanceDirectiveSpec } from '../../spec/directives/balance.js';
 import { accountParser } from '../account.js';
@@ -8,12 +8,18 @@ import { makeSourcePosition } from '../source-position.js';
 import { TokenKind } from '../tokenizer.js';
 
 export const balanceDirectiveParser = apply(
-  seq(dateParser, tok(TokenKind.KEYWORD_balance), accountParser, amountParser),
-  ([date, , account, amount], tokenRange): BalanceDirectiveSpec => ({
+  seq(
+    dateParser,
+    tok(TokenKind.KEYWORD_balance),
+    rep_sc(seq(accountParser, amountParser)),
+  ),
+  ([date, , accountAmountList], tokenRange): BalanceDirectiveSpec => ({
     type: 'balance',
     date,
-    account,
-    amount,
+    balances: accountAmountList.map(([account, amount]) => ({
+      account,
+      amount,
+    })),
     srcPos: makeSourcePosition(tokenRange),
   }),
 );
