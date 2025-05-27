@@ -1,0 +1,7 @@
+2025-05-01 * "Open"
+  Assets:Foo                1 USD
+  Equity:Opening-Balances
+
+2025-05-01 balance
+  Assets:Foo                1 USD
+  Equity:Opening-Balances  -1 USD

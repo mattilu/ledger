@@ -1,0 +1,49 @@
+{
+  "_tag": "Right",
+  "right": {
+    "transactions": [
+      {
+        "date": "2025-05-01T00:00:00.000Z",
+        "description": "Open",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "1",
+              "currency": "USD"
+            },
+            "cost": null
+          },
+          {
+            "account": "Equity:Opening-Balances",
+            "amount": {
+              "amount": "-1",
+              "currency": "USD"
+            },
+            "cost": null
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Foo": [
+            {
+              "amount": {
+                "amount": "1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "Equity:Opening-Balances": [
+            {
+              "amount": {
+                "amount": "-1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

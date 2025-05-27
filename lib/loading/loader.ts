@@ -1,4 +1,3 @@
-import { strict as assert } from 'node:assert';
 import { dirname, isAbsolute, join } from 'node:path';
 
 import { Either, isLeft, left, map, right, tap } from 'fp-ts/lib/Either.js';
@@ -10,6 +9,7 @@ import { resolve } from 'path';
 import { parse } from '../parsing/parser.js';
 import { SourcePosition } from '../parsing/source-position.js';
 import { DateSpec } from '../parsing/spec/date.js';
+import { DirectiveCommonSpec } from '../parsing/spec/directive.js';
 import { Directive } from './directive.js';
 import { LoadError } from './error.js';
 import { Ledger } from './ledger.js';
@@ -114,6 +114,19 @@ async function doLoad(
 
   for (const directive of result.right.directives) {
     switch (directive.type) {
+      case 'balance': {
+        const date = makeDate(directive);
+        if (isLeft(date)) {
+          return date;
+        }
+        directives.push({
+          type: 'balance',
+          date: date.right,
+          balances: directive.balances,
+          srcCtx: makeSourceContext(filePath, directive.srcPos),
+        });
+        break;
+      }
       case 'load': {
         const toLoad = makeRelativePath(filePath, directive.path);
         const loadedFrom = ctx.loadedMap.get(toLoad);
@@ -178,8 +191,16 @@ async function doLoad(
         });
         break;
       }
-      default:
-        assert.fail('reached unreachable code');
+      default: {
+        const d = directive as DirectiveCommonSpec<string>;
+        return left(
+          new LoadError(
+            `${d.type} directive not implemented yet`,
+            makeSourceContext(filePath, d.srcPos),
+            ctx.stackTrace,
+          ),
+        );
+      }
     }
   }
 
