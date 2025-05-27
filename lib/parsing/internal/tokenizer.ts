@@ -44,7 +44,7 @@ const tokenizer = buildLexer([
     /^(?:Assets|Liabilities|Income|Expenses|Equity|Trading)(?::[A-Z0-9][\w-]+)+/g,
     TokenKind.Account,
   ],
-  [true, /^[A-Z][A-Z0-9_-]+/g, TokenKind.Currency],
+  [true, /^[A-Z][A-Z0-9._-]+/g, TokenKind.Currency],
 
   [true, /^[*]/g, TokenKind.Star],
   [true, /^{/g, TokenKind.OpenBrace],

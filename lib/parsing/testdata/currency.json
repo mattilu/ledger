@@ -1,0 +1,52 @@
+{
+  "_tag": "Right",
+  "right": {
+    "directives": [
+      {
+        "type": "balance",
+        "date": {
+          "date": "2025-05-01",
+          "time": null,
+          "timezone": null
+        },
+        "balances": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "0",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "0",
+              "currency": "FOO-BAR"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "0",
+              "currency": "FOO_BAR"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "0",
+              "currency": "FOO.BAR"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "0",
+              "currency": "FOO-2.0"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
