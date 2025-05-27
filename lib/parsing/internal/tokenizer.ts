@@ -28,7 +28,7 @@ export enum TokenKind {
 }
 
 const tokenizer = buildLexer([
-  [true, /^[+-]?\d+(?:[.]\d*)?/g, TokenKind.NumberLiteral],
+  [true, /^[+-]?\d+(?:,\d{3})*(?:[.]\d*)?/g, TokenKind.NumberLiteral],
   [true, /^\d{4}-\d{2}-\d{2}/g, TokenKind.DateLiteral],
   [true, /^\d{2}:\d{2}(?::\d{2})?/g, TokenKind.TimeLiteral],
   [true, /^[+-]\d{2}:\d{2}|^Z\b/g, TokenKind.TimeZoneLiteral],
