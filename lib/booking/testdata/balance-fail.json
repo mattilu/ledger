@@ -1,6 +1,6 @@
 {
   "_tag": "Left",
   "left": {
-    "error": "While processing 'balance' directive at lib/booking/testdata/balance-fail.ledger:1: Balance does not match.\nWant: 1 USD\nGot: 0 USD\nDelta: 1 USD"
+    "error": "While processing 'balance' directive at lib/booking/testdata/balance-fail.ledger:1: Balance does not match.\nExpected: 1 USD\nActual: 0 USD\nDelta: 1 USD"
   }
 }

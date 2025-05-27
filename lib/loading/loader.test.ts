@@ -45,7 +45,10 @@ await describe('load', async () => {
 
 function cleanup(ledger: Ledger) {
   return {
-    directives: ledger.directives.map(x => ({ ...x, srcCtx: undefined })),
+    directives: ledger.directives.map(x => ({
+      ...x,
+      srcCtx: undefined,
+    })),
   };
 }
 

@@ -4,28 +4,45 @@
     "directives": [
       {
         "type": "open",
+        "date": "2025-04-01T00:00:00.000Z",
+        "optionMap": {},
         "account": "Assets:Foo",
-        "date": "2025-04-01T00:00:00.000Z"
+        "currencies": []
       },
       {
         "type": "open",
+        "date": "2025-04-01T00:00:00.000Z",
+        "optionMap": {},
         "account": "Liabilities:Foo",
-        "date": "2025-04-01T00:00:00.000Z"
+        "currencies": []
       },
       {
         "type": "open",
+        "date": "2025-04-01T00:00:00.000Z",
+        "optionMap": {},
         "account": "Income:Foo",
-        "date": "2025-04-01T00:00:00.000Z"
+        "currencies": []
       },
       {
         "type": "open",
+        "date": "2025-04-01T00:00:00.000Z",
+        "optionMap": {},
         "account": "Expenses:Foo",
-        "date": "2025-04-01T00:00:00.000Z"
+        "currencies": []
       },
       {
         "type": "open",
+        "date": "2025-04-01T00:00:00.000Z",
+        "optionMap": {},
         "account": "Equity:Foo",
-        "date": "2025-04-01T00:00:00.000Z"
+        "currencies": []
+      },
+      {
+        "type": "open",
+        "date": "2025-05-01T00:00:00.000Z",
+        "optionMap": {},
+        "account": "Assets:Bar",
+        "currencies": ["CHF", "EUR"]
       }
     ]
   }

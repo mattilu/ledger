@@ -1,0 +1,16 @@
+{
+  "_tag": "Right",
+  "right": {
+    "directives": [
+      {
+        "type": "close",
+        "date": {
+          "date": "2025-05-01",
+          "time": null,
+          "timezone": null
+        },
+        "account": "Assets:Foo"
+      }
+    ]
+  }
+}

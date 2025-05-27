@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "While processing 'balance' directive at lib/booking/testdata/balance-undeclared-account-strict.ledger:3: Account Assets:Foo has not been opened"
+  }
+}
