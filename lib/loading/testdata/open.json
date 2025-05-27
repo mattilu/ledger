@@ -6,31 +6,43 @@
         "type": "open",
         "date": "2025-04-01T00:00:00.000Z",
         "optionMap": {},
-        "account": "Assets:Foo"
+        "account": "Assets:Foo",
+        "currencies": []
       },
       {
         "type": "open",
         "date": "2025-04-01T00:00:00.000Z",
         "optionMap": {},
-        "account": "Liabilities:Foo"
+        "account": "Liabilities:Foo",
+        "currencies": []
       },
       {
         "type": "open",
         "date": "2025-04-01T00:00:00.000Z",
         "optionMap": {},
-        "account": "Income:Foo"
+        "account": "Income:Foo",
+        "currencies": []
       },
       {
         "type": "open",
         "date": "2025-04-01T00:00:00.000Z",
         "optionMap": {},
-        "account": "Expenses:Foo"
+        "account": "Expenses:Foo",
+        "currencies": []
       },
       {
         "type": "open",
         "date": "2025-04-01T00:00:00.000Z",
         "optionMap": {},
-        "account": "Equity:Foo"
+        "account": "Equity:Foo",
+        "currencies": []
+      },
+      {
+        "type": "open",
+        "date": "2025-05-01T00:00:00.000Z",
+        "optionMap": {},
+        "account": "Assets:Bar",
+        "currencies": ["CHF", "EUR"]
       }
     ]
   }

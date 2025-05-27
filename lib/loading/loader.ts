@@ -176,6 +176,7 @@ async function doLoad(
           type: 'open',
           date: date.right,
           account: directive.account,
+          currencies: directive.currencies,
           srcCtx: makeSourceContext(filePath, directive.srcPos),
           optionMap: ctx.optionMap,
         });

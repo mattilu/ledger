@@ -5,6 +5,7 @@
       {
         "type": "open",
         "account": "Assets:Foo",
+        "currencies": [],
         "date": {
           "date": "2025-04-01",
           "time": null,
@@ -14,6 +15,7 @@
       {
         "type": "open",
         "account": "Liabilities:Foo",
+        "currencies": [],
         "date": {
           "date": "2025-04-01",
           "time": "00:00",
@@ -23,6 +25,7 @@
       {
         "type": "open",
         "account": "Income:Foo",
+        "currencies": [],
         "date": {
           "date": "2025-04-01",
           "time": "00:00:00",
@@ -32,6 +35,7 @@
       {
         "type": "open",
         "account": "Expenses:Foo",
+        "currencies": [],
         "date": {
           "date": "2025-04-01",
           "time": "00:00:00",
@@ -41,6 +45,7 @@
       {
         "type": "open",
         "account": "Equity:Foo",
+        "currencies": [],
         "date": {
           "date": "2025-04-01",
           "time": "00:00:00",
@@ -50,8 +55,19 @@
       {
         "type": "open",
         "account": "Assets:Foo:123",
+        "currencies": [],
         "date": {
           "date": "2025-04-01",
+          "time": null,
+          "timezone": null
+        }
+      },
+      {
+        "type": "open",
+        "account": "Assets:Bar",
+        "currencies": ["CHF", "EUR"],
+        "date": {
+          "date": "2025-05-01",
           "time": null,
           "timezone": null
         }

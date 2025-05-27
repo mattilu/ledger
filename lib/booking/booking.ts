@@ -203,6 +203,21 @@ function bookTransaction(
 
     let bookedPostings: BookedPosting[];
     [bookedPostings, inventories, balance] = got.right;
+
+    const allowedCurrencies =
+      accountCheck?.right?.type === 'open' ? accountCheck.right.currencies : [];
+    if (allowedCurrencies.length > 0) {
+      for (const posting of bookedPostings) {
+        if (allowedCurrencies.indexOf(posting.amount.currency) === -1) {
+          return left(
+            new Error(
+              `Currency ${posting.amount.currency} not allowed in account ${posting.account}`,
+            ),
+          );
+        }
+      }
+    }
+
     postings.push(...bookedPostings);
   }
 

@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "While processing 'transaction' directive at lib/booking/testdata/transaction-forbidden-currency.ledger:3: Currency EUR not allowed in account Assets:Foo"
+  }
+}
