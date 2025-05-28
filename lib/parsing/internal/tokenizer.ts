@@ -14,6 +14,8 @@ export enum TokenKind {
   KEYWORD_option,
   KEYWORD_txn,
 
+  Identifier,
+
   Account,
   Currency,
 
@@ -23,6 +25,7 @@ export enum TokenKind {
   DoubleOpenBrace,
   DoubleCloseBrace,
   Comma,
+  Colon,
   ExclamationMark,
 
   Space,
@@ -41,8 +44,10 @@ const tokenizer = buildLexer([
   [true, /^load\b/g, TokenKind.KEYWORD_load],
   [true, /^open\b/g, TokenKind.KEYWORD_open],
   [true, /^option\b/g, TokenKind.KEYWORD_option],
+
   [true, /^txn\b/g, TokenKind.KEYWORD_txn],
 
+  [true, /^[a-z][a-z0-9_-]*/g, TokenKind.Identifier],
   [
     true,
     /^(?:Assets|Liabilities|Income|Expenses|Equity|Trading)(?::[A-Z0-9][\w-]+)+/g,
@@ -56,6 +61,7 @@ const tokenizer = buildLexer([
   [true, /^{{/g, TokenKind.DoubleOpenBrace],
   [true, /^}}/g, TokenKind.DoubleCloseBrace],
   [true, /^,/g, TokenKind.Comma],
+  [true, /^:/g, TokenKind.Colon],
   [true, /^!/g, TokenKind.ExclamationMark],
 
   [false, /^\s+/g, TokenKind.Space],

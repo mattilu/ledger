@@ -1,0 +1,117 @@
+{
+  "_tag": "Right",
+  "right": {
+    "directives": [
+      {
+        "type": "load",
+        "path": "foo.ledger",
+        "meta": {
+          "string-key": {
+            "type": "string",
+            "value": "string-value"
+          }
+        }
+      },
+      {
+        "type": "option",
+        "optionName": "foo",
+        "optionValue": "bar",
+        "meta": {
+          "account-key": {
+            "type": "account",
+            "value": "Assets:Foo"
+          }
+        }
+      },
+      {
+        "type": "open",
+        "date": {
+          "date": "2025-06-01",
+          "time": null,
+          "timezone": null
+        },
+        "account": "Assets:Bar",
+        "currencies": [],
+        "meta": {
+          "currency-key": {
+            "type": "currency",
+            "value": "CHF"
+          }
+        }
+      },
+      {
+        "type": "close",
+        "date": {
+          "date": "2025-06-01",
+          "time": null,
+          "timezone": null
+        },
+        "account": "Assets:Bar",
+        "meta": {
+          "date-key": {
+            "type": "date",
+            "value": {
+              "date": "2025-06-02",
+              "time": null,
+              "timezone": null
+            }
+          }
+        }
+      },
+      {
+        "type": "balance",
+        "date": {
+          "date": "2025-06-01",
+          "time": null,
+          "timezone": null
+        },
+        "balances": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "0",
+              "currency": "CHF"
+            }
+          }
+        ],
+        "meta": {
+          "string-key": {
+            "type": "string",
+            "value": "string-value"
+          }
+        }
+      },
+      {
+        "type": "transaction",
+        "date": {
+          "date": "2025-06-01",
+          "time": null,
+          "timezone": null
+        },
+        "description": "Test",
+        "flag": "*",
+        "meta": {
+          "number-key": {
+            "type": "number",
+            "value": 1234.5
+          },
+          "amount-key": {
+            "type": "number",
+            "value": 1
+          }
+        },
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "flag": null,
+            "amount": {
+              "amount": "1",
+              "currency": "CHF"
+            },
+            "costSpec": null
+          }
+        ]
+      }
+    ]
+  }
+}
