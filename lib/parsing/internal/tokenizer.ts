@@ -1,4 +1,3 @@
-import { Either, left, right } from 'fp-ts/lib/Either.js';
 import { buildLexer, Token } from 'typescript-parsec';
 
 export enum TokenKind {
@@ -59,15 +58,6 @@ const tokenizer = buildLexer([
   [false, /^;[^\n]*(\n|$)/g, TokenKind.Comment],
 ]);
 
-export function tokenize(
-  contents: string,
-): Either<Error, Token<TokenKind> | undefined> {
-  try {
-    return right(tokenizer.parse(contents));
-  } catch (ex) {
-    if (ex instanceof Error) {
-      return left(ex);
-    }
-    return left(new Error(`${ex}`));
-  }
+export function tokenize(contents: string): Token<TokenKind> | undefined {
+  return tokenizer.parse(contents);
 }
