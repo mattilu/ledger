@@ -2,6 +2,7 @@ import { Map, Seq } from 'immutable';
 
 import { InventoryMap } from '../booking/inventory.js';
 import { BookedLedger } from '../booking/ledger.js';
+import { makeRegexp } from './internal/regexp-utils.js';
 import { Report } from './report.js';
 
 export interface InventoryReportOptions {
@@ -74,11 +75,4 @@ export class InventoryReport implements Report {
 
     return report.join('\n');
   }
-}
-
-function makeRegexp(values: readonly string[]): RegExp | null {
-  if (values.length === 0) {
-    return null;
-  }
-  return new RegExp(`^(?:${values.join('|')})$`, 'i');
 }

@@ -1,5 +1,6 @@
 import { BookedLedger } from '../booking/ledger.js';
 import { BookedPosting } from '../booking/transaction.js';
+import { makeRegexp } from './internal/regexp-utils.js';
 import { Report } from './report.js';
 
 export interface TransactionsReportOptions {
@@ -55,8 +56,8 @@ export class TransactionsReport implements Report {
         }
 
         if (
-          this.matches(posting.account, this.accountsRegex) &&
-          this.matches(posting.amount.currency, this.currenciesRegex)
+          matches(posting.account, this.accountsRegex) &&
+          matches(posting.amount.currency, this.currenciesRegex)
         ) {
           postings.push(posting);
         }
@@ -84,15 +85,8 @@ export class TransactionsReport implements Report {
 
     return report.join('\n');
   }
-
-  private matches(value: string, regex: RegExp | null): boolean {
-    return regex === null || regex.test(value);
-  }
 }
 
-function makeRegexp(values: readonly string[]): RegExp | null {
-  if (values.length === 0) {
-    return null;
-  }
-  return new RegExp(`^(?:${values.join('|')})$`, 'i');
+function matches(value: string, regex: RegExp | null): boolean {
+  return regex === null || regex.test(value);
 }
