@@ -246,8 +246,8 @@ function bookPosting(
   if (posting.costSpec !== null) {
     const tradingAccount = 'Trading:Default';
     if (posting.amount !== null && posting.costSpec.amounts.length > 0) {
-      // Both cost and amount are known. We increase the account by the amount,
-      // and post the opposite at-cost, and the cost, to the trading account.
+      // Both cost and amount are known. We increase the account by the amount
+      // at-cost, and post the opposite, and the cost, to the trading account.
       // This leaves the amount of the cost in the running balance, which is
       // usually balanced with a posting without amount.
       //
@@ -260,8 +260,8 @@ function bookPosting(
       //  ->
       //
       // 2025-04-01 * "Open Long"
-      //   Assets:Broker    2 VT
-      //   Trading:Default -2 VT { 150 CHF }
+      //   Assets:Broker    2 VT { 150 CHF }
+      //   Trading:Default -2 VT
       //   Trading:Default  300 CHF
       //   Assets:Broker ; -300 CHF, inferred
       const postingAmount = posting.amount;
@@ -273,17 +273,17 @@ function bookPosting(
           {
             account: posting.account,
             amount: posting.amount,
-            cost: null,
-          },
-          {
-            account: tradingAccount,
-            amount: posting.amount.neg(),
             cost: new Cost(
               posting.costSpec.amounts.map(amount =>
                 getPerUnitAmount(amount, postingAmount, costSpec),
               ),
               transaction.date,
             ),
+          },
+          {
+            account: tradingAccount,
+            amount: posting.amount.neg(),
+            cost: null,
           },
           ...posting.costSpec.amounts.map(amount => ({
             account: tradingAccount,
@@ -310,36 +310,63 @@ function bookPosting(
       //  ->
       //
       // 2025-04-02 * "Close Long"
-      //   Assets:Broker     -2 VT
-      //   Trading:Default    2 VT { 150 CHF }
+      //   Assets:Broker     -2 VT { 150 CHF }
+      //   Trading:Default    2 VT
       //   Trading:Default -300 CHF
       //   Assets:Broker    350 CHF
       //   Income:Trading ; -50 CHF, inferred
-      let postings: BookedPosting[];
-      [postings, inventories, balance] = doBook(inventories, balance, {
-        account: posting.account,
-        amount: posting.amount,
-        cost: null,
-      });
-
       const bookResult = FIFO.book(
-        tradingAccount,
-        posting.amount.neg(),
-        inventories.get(tradingAccount) ?? Inventory.Empty,
+        posting.account,
+        posting.amount,
+        inventories.get(posting.account) ?? Inventory.Empty,
       );
       if (isLeft(bookResult)) {
         return bookResult;
       }
 
-      let postings1: BookedPosting[];
-      [postings1, , balance] = doBook(
-        inventories,
-        balance,
-        ...bookResult.right[0],
-      );
+      const postings: BookedPosting[] = [];
+      for (const posting of bookResult.right[0]) {
+        let postings1: BookedPosting[] = [];
+        [postings1, inventories, balance] = doBook(
+          inventories,
+          balance,
+          // Post the reduction as we got it from the booking method, e.g.
+          //
+          // Assets:Broker    -60 USD { 1.2 CHF }
+          //
+          posting,
+          // Additonally, post the amount, negated, and the total cost, to the
+          // trading accounts, e.g.
+          //
+          // Trading:Default   60 USD
+          // Trading:Default  -72 CHF  ; 60 USD * 1.2 CHF/USD
+          //
+          // And if we got 80 CHF for the sale, then our PnL would be 8 CHF:
+          //
+          //   Assets:Broker   -60 USD { 1.2 CHF }
+          //   Trading:Default  60 USD
+          //   Trading:Default -72 CHF
+          //   Assets:Broker    80 CHF
+          //   Income:Trading ; -8 CHF, inferred
+          //
+          {
+            account: tradingAccount,
+            amount: posting.amount.neg(),
+            cost: null,
+          },
+          ...(posting.cost?.amounts ?? []).map(cost => ({
+            account: tradingAccount,
+            amount: cost.mul(posting.amount.amount),
+            cost: null,
+          })),
+        );
+        postings.push(...postings1);
+      }
 
-      postings.push(...postings1);
-      inventories = inventories.set(tradingAccount, bookResult.right[1]);
+      // Overwrite the inventory for the account with the result from the
+      // booking method, as it could apply different changes, like averaging
+      // cost of positions.
+      inventories = inventories.set(posting.account, bookResult.right[1]);
 
       return right([postings, inventories, balance]);
     }

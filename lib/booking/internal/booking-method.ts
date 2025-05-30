@@ -12,8 +12,7 @@ export interface BookingMethod {
    * Books an amount to the account, and returns the generated postings and new
    * state of the inventory.
    *
-   * @param account The account to be booked. Generally a trading account as
-   *   that's where positions at-cost are held.
+   * @param account The account to be booked.
    * @param amount Amount to be booked.
    * @param inventory Current state of the inventory for the account.
    * @returns A pair of [postings, newInventory].

@@ -1,5 +1,5 @@
 Assets:Bank 8750 CHF
 Assets:Trading 2500 CHF
-Assets:Trading 25 VT
+Assets:Trading 25 VT { 100 CHF, 2025-01-05T00:00:00.000Z }
 Trading:Default 2500 CHF
-Trading:Default -25 VT { 100 CHF, 2025-01-05T00:00:00.000Z }
+Trading:Default -25 VT

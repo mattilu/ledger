@@ -55,41 +55,14 @@ class FifoBookingMethod implements BookingMethod {
         ? position.amount.neg()
         : amount;
 
-      // Post the reduction at cost, and the corresponding cost, negated.
-      // For example, if position was:
-      //
-      //  -100 USD { 1.2 CHF }
-      //
-      // And we were trying to reduce it by 60 USD, we would post:
-      //
-      //    60 USD { 1.2 CHF }
-      //   -72 CHF
-      //
-      // And if we got 80 CHF for the sale, then our PnL would be 8 CHF:
-      //
-      //   Assets:Broker   -60 USD {}
-      //   Trading:Default  60 USD { 1.2 CHF }
-      //   Trading:Default -72 CHF
-      //   Assets:Broker    80 CHF
-      //   Income:Trading ; -8 CHF, inferred
-      //
-      const positionsToAdd = [
-        new Position(toAdd, position.cost),
-        ...position.cost.amounts.map(
-          cost => new Position(cost.mul(toAdd.amount).neg(), null),
-        ),
-      ];
+      const positionToAdd = new Position(toAdd, position.cost);
 
-      inventory = inventory.addPositions(positionsToAdd);
-      postings.push(
-        ...positionsToAdd.map(
-          (position): BookedPosting => ({
-            account,
-            amount: position.amount,
-            cost: position.cost,
-          }),
-        ),
-      );
+      inventory = inventory.addPosition(positionToAdd);
+      postings.push({
+        account,
+        amount: positionToAdd.amount,
+        cost: positionToAdd.cost,
+      });
 
       amount = amount.sub(toAdd);
     }

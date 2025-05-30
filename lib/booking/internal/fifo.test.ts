@@ -33,7 +33,7 @@ const posting = (
   cost,
 });
 
-const TestAccount = 'Trading:Test';
+const TestAccount = 'Assets:Test';
 const CHF = 'CHF';
 const USD = 'USD';
 
@@ -51,7 +51,6 @@ await describe('FIFO', async () => {
           amount(1, USD),
           cost('1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
-        position(amount('-1.1', CHF)),
         position(
           amount(1, USD),
           cost('1.2', CHF, new Date('2025-04-02T00:00:00Z')),
@@ -65,7 +64,6 @@ await describe('FIFO', async () => {
           amount(-1, USD),
           cost('1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
-        posting(TestAccount, amount('1.1', CHF), null),
       ];
 
       const wantInventory = inventory([
@@ -84,7 +82,6 @@ await describe('FIFO', async () => {
           amount(1, USD),
           cost('1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
-        position(amount('-1.1', CHF)),
         position(
           amount(1, USD),
           cost('1.2', CHF, new Date('2025-04-02T00:00:00Z')),
@@ -98,7 +95,6 @@ await describe('FIFO', async () => {
           amount('-0.5', USD),
           cost('1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
-        posting(TestAccount, amount('0.55', CHF), null),
       ];
 
       const wantInventory = inventory([
@@ -106,7 +102,6 @@ await describe('FIFO', async () => {
           amount('0.5', USD),
           cost('1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
-        position(amount('-0.55', CHF)),
         position(
           amount(1, USD),
           cost('1.2', CHF, new Date('2025-04-02T00:00:00Z')),
@@ -122,17 +117,14 @@ await describe('FIFO', async () => {
           amount(1, USD),
           cost('1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
-        position(amount('-1.1', CHF)),
         position(
           amount(1, USD),
           cost('1.2', CHF, new Date('2025-04-02T00:00:00Z')),
         ),
-        position(amount('-1.2', CHF)),
         position(
           amount(1, USD),
           cost('1.3', CHF, new Date('2025-04-03T00:00:00Z')),
         ),
-        position(amount('-1.3', CHF)),
       ]);
       const got = FIFO.book(TestAccount, amount('-2.5', USD), inventory0);
 
@@ -142,19 +134,16 @@ await describe('FIFO', async () => {
           amount(-1, USD),
           cost('1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
-        posting(TestAccount, amount('1.1', CHF), null),
         posting(
           TestAccount,
           amount(-1, USD),
           cost('1.2', CHF, new Date('2025-04-02T00:00:00Z')),
         ),
-        posting(TestAccount, amount('1.2', CHF), null),
         posting(
           TestAccount,
           amount('-0.5', USD),
           cost('1.3', CHF, new Date('2025-04-03T00:00:00Z')),
         ),
-        posting(TestAccount, amount('0.65', CHF), null),
       ];
 
       const wantInventory = inventory([
@@ -162,7 +151,6 @@ await describe('FIFO', async () => {
           amount('0.5', USD),
           cost('1.3', CHF, new Date('2025-04-03T00:00:00Z')),
         ),
-        position(amount('-0.65', CHF)),
       ]);
 
       assert.deepEqual(got, right([wantPostings, wantInventory]));
@@ -174,17 +162,14 @@ await describe('FIFO', async () => {
           amount(1, USD),
           cost('1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
-        position(amount('-1.1', CHF)),
         position(
           amount(1, USD),
           cost('1.2', CHF, new Date('2025-04-02T00:00:00Z')),
         ),
-        position(amount('-1.2', CHF)),
         position(
           amount(1, USD),
           cost('1.3', CHF, new Date('2025-04-03T00:00:00Z')),
         ),
-        position(amount('-1.3', CHF)),
       ]);
       const got = FIFO.book(TestAccount, amount(-3, USD), inventory0);
 
@@ -194,19 +179,16 @@ await describe('FIFO', async () => {
           amount(-1, USD),
           cost('1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
-        posting(TestAccount, amount('1.1', CHF), null),
         posting(
           TestAccount,
           amount(-1, USD),
           cost('1.2', CHF, new Date('2025-04-02T00:00:00Z')),
         ),
-        posting(TestAccount, amount('1.2', CHF), null),
         posting(
           TestAccount,
           amount(-1, USD),
           cost('1.3', CHF, new Date('2025-04-03T00:00:00Z')),
         ),
-        posting(TestAccount, amount('1.3', CHF), null),
       ];
 
       const wantInventory = inventory([]);
@@ -220,14 +202,13 @@ await describe('FIFO', async () => {
           amount(1, USD),
           cost('1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
-        position(amount('-1.1', CHF)),
       ]);
       const got = FIFO.book(TestAccount, amount('-1.1', USD), inventory0);
 
       assert(isLeft(got));
       assert.match(
         got.left.message,
-        /not enough positions to reduce: -0.1 USD from Trading:Test/i,
+        /not enough positions to reduce: -0.1 USD from Assets:Test/i,
       );
     });
 
@@ -238,7 +219,7 @@ await describe('FIFO', async () => {
       assert(isLeft(got));
       assert.match(
         got.left.message,
-        /not enough positions to reduce: -1 USD from Trading:Test/i,
+        /not enough positions to reduce: -1 USD from Assets:Test/i,
       );
     });
 
@@ -261,7 +242,6 @@ await describe('FIFO', async () => {
           amount(-1, USD),
           cost('1.2', CHF, new Date('2025-04-02T00:00:00Z')),
         ),
-        posting(TestAccount, amount('1.2', CHF), null),
       ];
 
       const wantInventory = inventory([
@@ -269,7 +249,6 @@ await describe('FIFO', async () => {
           amount(-1, USD),
           cost('1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
-        position(amount('1.2', CHF)),
       ]);
 
       assert.deepEqual(got, right([wantPostings, wantInventory]));
@@ -281,7 +260,6 @@ await describe('FIFO', async () => {
           amount(-1, USD),
           cost('1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
-        position(amount('1.1', CHF)),
       ]);
       const got = FIFO.book(TestAccount, amount(1, USD), inventory0);
 
@@ -291,7 +269,6 @@ await describe('FIFO', async () => {
           amount(1, USD),
           cost('1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
-        posting(TestAccount, amount('-1.1', CHF), null),
       ];
 
       const wantInventory = inventory([]);
@@ -305,7 +282,6 @@ await describe('FIFO', async () => {
           amount(1, USD),
           cost('-1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
-        position(amount('1.1', CHF)),
       ]);
       const got = FIFO.book(TestAccount, amount(-1, USD), inventory0);
 
@@ -315,7 +291,6 @@ await describe('FIFO', async () => {
           amount(-1, USD),
           cost('-1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
-        posting(TestAccount, amount('-1.1', CHF), null),
       ];
       const wantInventory = inventory([]);
 
@@ -331,8 +306,6 @@ await describe('FIFO', async () => {
             new Date('2025-04-01T00:00:00Z'),
           ),
         ),
-        position(amount(-2, 'BTC')),
-        position(amount(-40, 'ETH')),
       ]);
 
       const got = FIFO.book(TestAccount, amount(-2, 'ETHBTC-LP'), inventory0);
@@ -346,8 +319,6 @@ await describe('FIFO', async () => {
             new Date('2025-04-01T00:00:00Z'),
           ),
         ),
-        posting(TestAccount, amount(2, 'BTC'), null),
-        posting(TestAccount, amount(40, 'ETH'), null),
       ];
       const wantInventory = inventory([]);
 

@@ -12,14 +12,6 @@
               "amount": "10",
               "currency": "USD"
             },
-            "cost": null
-          },
-          {
-            "account": "Trading:Default",
-            "amount": {
-              "amount": "-10",
-              "currency": "USD"
-            },
             "cost": {
               "amounts": [
                 {
@@ -29,6 +21,14 @@
               ],
               "date": "2025-04-01T00:00:00.000Z"
             }
+          },
+          {
+            "account": "Trading:Default",
+            "amount": {
+              "amount": "-10",
+              "currency": "USD"
+            },
+            "cost": null
           },
           {
             "account": "Trading:Default",
@@ -54,7 +54,15 @@
                 "amount": "10",
                 "currency": "USD"
               },
-              "cost": null
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "0.9",
+                    "currency": "CHF"
+                  }
+                ],
+                "date": "2025-04-01T00:00:00.000Z"
+              }
             },
             {
               "amount": {
@@ -70,15 +78,7 @@
                 "amount": "-10",
                 "currency": "USD"
               },
-              "cost": {
-                "amounts": [
-                  {
-                    "amount": "0.9",
-                    "currency": "CHF"
-                  }
-                ],
-                "date": "2025-04-01T00:00:00.000Z"
-              }
+              "cost": null
             },
             {
               "amount": {
@@ -101,14 +101,6 @@
               "amount": "-10",
               "currency": "USD"
             },
-            "cost": null
-          },
-          {
-            "account": "Trading:Default",
-            "amount": {
-              "amount": "10",
-              "currency": "USD"
-            },
             "cost": {
               "amounts": [
                 {
@@ -118,6 +110,14 @@
               ],
               "date": "2025-04-01T00:00:00.000Z"
             }
+          },
+          {
+            "account": "Trading:Default",
+            "amount": {
+              "amount": "10",
+              "currency": "USD"
+            },
+            "cost": null
           },
           {
             "account": "Trading:Default",

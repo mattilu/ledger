@@ -1,6 +1,6 @@
 {
   "_tag": "Left",
   "left": {
-    "error": "While processing 'transaction' directive at lib/booking/testdata/cost-reduce-error.ledger:5: Not enough positions to reduce: 2 USD from Trading:Default"
+    "error": "While processing 'transaction' directive at lib/booking/testdata/cost-reduce-error.ledger:5: Not enough positions to reduce: -2 USD from Assets:Broker"
   }
 }
