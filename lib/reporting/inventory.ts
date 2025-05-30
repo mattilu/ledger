@@ -1,6 +1,5 @@
-import { Map, Seq } from 'immutable';
+import { Seq } from 'immutable';
 
-import { InventoryMap } from '../booking/inventory.js';
 import { BookedLedger } from '../booking/ledger.js';
 import { makeRegexp } from './internal/regexp-utils.js';
 import { Report } from './report.js';
@@ -37,11 +36,7 @@ export class InventoryReport implements Report {
   }
 
   run(ledger: BookedLedger): string {
-    const inventories = (
-      ledger.transactions.length > 0
-        ? ledger.transactions[ledger.transactions.length - 1].inventoriesAfter
-        : (Map() as InventoryMap)
-    )
+    const inventories = ledger.inventories
       .entrySeq()
       .filterNot(
         ([account]) =>

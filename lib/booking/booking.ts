@@ -18,16 +18,25 @@ import { Cost } from './cost.js';
 import { BookingError } from './error.js';
 import { FIFO } from './internal/fifo.js';
 import { Inventory, InventoryMap } from './inventory.js';
-import { BookedLedger } from './ledger.js';
+import { AccountMap, BookedLedger } from './ledger.js';
 import { Position } from './position.js';
 import { BookedPosting, Transaction } from './transaction.js';
 
-type AccountMap = Map<string, OpenDirective | CloseDirective>;
-
-export function book(ledger: Ledger): Either<BookingError, BookedLedger> {
+/**
+ * Runs booking logic, transforming a Ledger to a BookedLedger.
+ *
+ * @param ledger Ledger containing directives to evaluate.
+ * @param start Optional, starting state to book from. Can be used to execute
+ *   additional directives on top of a previous `book` result.
+ * @returns A BookedLedger, or a BookingError in case of failure.
+ */
+export function book(
+  ledger: Ledger,
+  start?: BookedLedger,
+): Either<BookingError, BookedLedger> {
   const transactions: Transaction[] = [];
-  let accountMap: AccountMap = Map();
-  let inventories: InventoryMap = Map();
+  let accountMap: AccountMap = start?.accountMap ?? Map();
+  let inventories: InventoryMap = start?.inventories ?? Map();
 
   for (const directive of ledger.directives) {
     switch (directive.type) {
@@ -128,6 +137,8 @@ Delta: ${balance.amount.sub(amount)}`,
 
   return right({
     transactions,
+    accountMap,
+    inventories,
   });
 }
 
