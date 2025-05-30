@@ -72,9 +72,14 @@ async function doLoad(
   const contents = await read(filePath);
   if (isLeft(contents)) {
     return left(
-      new LoadError(contents.left.message, ctx.stackTrace[0], ctx.stackTrace, {
-        cause: contents.left,
-      }),
+      new LoadError(
+        contents.left.message,
+        ctx.stackTrace.length > 0
+          ? ctx.stackTrace[0]
+          : { filePath, row: 0, col: 0 },
+        ctx.stackTrace,
+        { cause: contents.left },
+      ),
     );
   }
   const result = parse(contents.right);

@@ -2,12 +2,23 @@ import { strict as assert } from 'node:assert';
 import { basename } from 'node:path';
 import { describe, test } from 'node:test';
 
-import { bimap } from 'fp-ts/lib/Either.js';
+import { bimap, isLeft } from 'fp-ts/lib/Either.js';
 import { pipe } from 'fp-ts/lib/function.js';
 import { glob, readFile } from 'fs/promises';
 
 import { Ledger } from './ledger.js';
 import { load } from './loader.js';
+
+const loadForTest = async (path: string) =>
+  pipe(
+    await load(path),
+    bimap(
+      err => ({
+        error: `${err.message} at ${err.srcCtx.filePath}:${err.srcCtx.row}`,
+      }),
+      res => canonicalize(cleanup(res)),
+    ),
+  );
 
 await describe('load', async () => {
   const tests = [];
@@ -28,19 +39,16 @@ await describe('load', async () => {
   for (const t of tests) {
     await test(t.testName, async () => {
       const wantContent = await readFile(t.wantPath, { encoding: 'utf-8' });
-      const got = pipe(
-        await load(t.srcPath),
-        bimap(
-          err => ({
-            error: `${err.message} at ${err.srcCtx.filePath}:${err.srcCtx.row}`,
-          }),
-          res => canonicalize(cleanup(res)),
-        ),
-      );
-
+      const got = await loadForTest(t.srcPath);
       assert.deepEqual(got, JSON.parse(wantContent), t.wantPath);
     });
   }
+
+  await test('non-existing file', async () => {
+    const got = await loadForTest('non-existing.ledger');
+    assert(isLeft(got));
+    assert.match(got.left.error, /no such file or directory/);
+  });
 });
 
 function cleanup(ledger: Ledger) {
