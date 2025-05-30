@@ -16,7 +16,7 @@
  *  `cmp(items[i], value)` returns `true`, or `hi` if not found.
  */
 export function lowerBound<T, A>(
-  items: T[],
+  items: readonly T[],
   value: A,
   cmp: (elem: T, value: A) => boolean,
   lo = 0,
@@ -51,7 +51,7 @@ export function lowerBound<T, A>(
  *   `cmp(value, items[i])` returns `true`, or `hi` if not found.
  */
 export function upperBound<T, A>(
-  items: T[],
+  items: readonly T[],
   value: A,
   cmp: (value: A, elem: T) => boolean,
   lo = 0,

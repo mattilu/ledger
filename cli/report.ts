@@ -22,7 +22,7 @@ import {
 import { flow, identity, pipe } from 'fp-ts/lib/function.js';
 
 import { book } from '../lib/booking/booking.js';
-import { BookedLedger } from '../lib/booking/ledger.js';
+import { Ledger } from '../lib/loading/ledger.js';
 import { load } from '../lib/loading/loader.js';
 import { InventoryReport } from '../lib/reporting/inventory.js';
 import { Report } from '../lib/reporting/report.js';
@@ -92,8 +92,8 @@ async function runReport(
   return pipe(
     await load(inputFile),
     mapLeft(CommandError.fromLoadError),
-    flatMap(flow(book, mapLeft(CommandError.fromBookingError))),
     map(date ? dropAfter(date) : identity),
+    flatMap(flow(book, mapLeft(CommandError.fromBookingError))),
     tap(flow(l => report.run(l), console.log, right)),
     asUnit,
   );
@@ -101,11 +101,11 @@ async function runReport(
 
 const dropAfter =
   (date: Date) =>
-  (ledger: BookedLedger): BookedLedger => ({
-    transactions: ledger.transactions.slice(
+  (ledger: Ledger): Ledger => ({
+    directives: ledger.directives.slice(
       0,
       lowerBound(
-        ledger.transactions,
+        ledger.directives,
         date,
         t => t.date.getTime() <= date.getTime(),
       ),
