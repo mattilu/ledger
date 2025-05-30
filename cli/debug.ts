@@ -52,7 +52,7 @@ export const debug = command({
     return pipe(
       await load(inputFile),
       mapLeft(CommandError.fromLoadError),
-      tap(debugLoadResult(file, line)),
+      flatMap(debugLoadResultAndFilter(file, line)),
       flatMap(flow(book, mapLeft(CommandError.fromBookingError))),
       tap(debugBookResult(file, line)),
       asUnit,
@@ -60,24 +60,28 @@ export const debug = command({
   },
 });
 
-const debugLoadResult = (file: string, line: number) => (ledger: Ledger) => {
-  const directive = find(ledger.directives, file, line);
+const debugLoadResultAndFilter =
+  (file: string, line: number) =>
+  (ledger: Ledger): Either<CommandError, Ledger> => {
+    const [directive, index] = find(ledger.directives, file, line);
 
-  if (!directive) {
-    return left(new CommandError(`No directive found at ${file}:${line}`));
-  }
+    if (!directive) {
+      return left(new CommandError(`No directive found at ${file}:${line}`));
+    }
 
-  console.log(
-    'Directive: %s',
-    inspect(directive, { depth: null, colors: true }),
-  );
+    console.log(
+      'Directive: %s',
+      inspect(directive, { depth: null, colors: true }),
+    );
 
-  return right(undefined);
-};
+    return right({
+      directives: ledger.directives.slice(0, index + 1),
+    });
+  };
 
 const debugBookResult =
   (file: string, line: number) => (ledger: BookedLedger) => {
-    const transaction = find(ledger.transactions, file, line);
+    const [transaction] = find(ledger.transactions, file, line);
 
     if (!transaction) {
       return left(new CommandError(`No transaction found at ${file}:${line}`));
@@ -123,22 +127,24 @@ function find<T extends { srcCtx: SourceContext }>(
   items: readonly T[],
   file: string,
   line: number,
-): T | undefined {
+): [T | undefined, number] {
   let found: T | undefined;
+  let foundIndex = -1;
 
-  for (const item of items) {
+  for (const [i, item] of items.entries()) {
     if (item.srcCtx.filePath !== file) {
       continue;
     }
     if (item.srcCtx.row === line) {
-      return item;
+      return [item, i];
     }
     if (item.srcCtx.row < line) {
       if (!found || found.srcCtx.row < item.srcCtx.row) {
         found = item;
+        foundIndex = i;
       }
     }
   }
 
-  return found;
+  return [found, foundIndex];
 }
