@@ -64,7 +64,7 @@ export function book(
           if (!amount.eq(balance.amount)) {
             return left(
               new BookingError(
-                `Balance does not match.
+                `Balance for ${balance.account} does not match.
 Expected: ${balance.amount}
 Actual: ${amount}
 Delta: ${balance.amount.sub(amount)}`,
