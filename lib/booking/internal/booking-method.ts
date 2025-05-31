@@ -1,4 +1,4 @@
-import { Either } from 'fp-ts/lib/Either.js';
+import { either as E } from 'fp-ts';
 
 import { Amount } from '../../core/amount.js';
 import { Inventory } from '../inventory.js';
@@ -21,5 +21,5 @@ export interface BookingMethod {
     account: string,
     amount: Amount,
     inventory: Inventory,
-  ): Either<Error, [postings: BookedPosting[], newInventory: Inventory]>;
+  ): E.Either<Error, [postings: BookedPosting[], newInventory: Inventory]>;
 }

@@ -10,16 +10,7 @@ import {
   subcommands,
 } from 'cmd-ts';
 import { ArgParser, ParsingInto } from 'cmd-ts/dist/cjs/argparser.js';
-import {
-  asUnit,
-  Either,
-  flatMap,
-  map,
-  mapLeft,
-  right,
-  tap,
-} from 'fp-ts/lib/Either.js';
-import { flow, identity, pipe } from 'fp-ts/lib/function.js';
+import { either as E, function as F } from 'fp-ts';
 
 import { book } from '../lib/booking/booking.js';
 import { Ledger } from '../lib/loading/ledger.js';
@@ -88,14 +79,14 @@ const transactions = command({
 async function runReport(
   report: Report,
   { inputFile, date }: Output<typeof commonArgs>,
-): Promise<Either<CommandError, void>> {
-  return pipe(
+): Promise<E.Either<CommandError, void>> {
+  return F.pipe(
     await load(inputFile),
-    mapLeft(CommandError.fromLoadError),
-    map(date ? dropAfter(date) : identity),
-    flatMap(flow(book, mapLeft(CommandError.fromBookingError))),
-    tap(flow(l => report.run(l), console.log, right)),
-    asUnit,
+    E.mapLeft(CommandError.fromLoadError),
+    E.map(date ? dropAfter(date) : F.identity),
+    E.flatMap(F.flow(book, E.mapLeft(CommandError.fromBookingError))),
+    E.tap(F.flow(l => report.run(l), console.log, E.right)),
+    E.asUnit,
   );
 }
 

@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 
-import { Either, isLeft, left, right } from 'fp-ts/lib/Either.js';
+import { either as E } from 'fp-ts';
 import { Map } from 'immutable';
 
 import { Amount } from '../core/amount.js';
@@ -33,7 +33,7 @@ import { BookedPosting, Transaction } from './transaction.js';
 export function book(
   ledger: Ledger,
   start?: BookedLedger,
-): Either<BookingError, BookedLedger> {
+): E.Either<BookingError, BookedLedger> {
   const transactions: Transaction[] = [];
   let accountMap: AccountMap = start?.accountMap ?? Map();
   let inventories: InventoryMap = start?.inventories ?? Map();
@@ -50,8 +50,8 @@ export function book(
             // optionally add an implicit check that it's empty at close.
             { allowClosed: true },
           );
-          if (isLeft(accountCheck)) {
-            return left(enrichError(accountCheck.left, directive));
+          if (E.isLeft(accountCheck)) {
+            return E.left(enrichError(accountCheck.left, directive));
           }
 
           const inventory = inventories.get(balance.account, Inventory.Empty);
@@ -62,7 +62,7 @@ export function book(
               Amount.zero(balance.amount.currency),
             );
           if (!amount.eq(balance.amount)) {
-            return left(
+            return E.left(
               new BookingError(
                 `Balance for ${balance.account} does not match.
 Expected: ${balance.amount}
@@ -83,11 +83,11 @@ Delta: ${balance.amount.sub(amount)}`,
           // Don't fail if closed, so we can provide a better error message.
           { allowClosed: true },
         );
-        if (isLeft(accountCheck)) {
-          return left(enrichError(accountCheck.left, directive));
+        if (E.isLeft(accountCheck)) {
+          return E.left(enrichError(accountCheck.left, directive));
         }
         if (accountCheck.right?.type === 'close') {
-          return left(
+          return E.left(
             new BookingError(
               `Account ${directive.account} is already closed (at ` +
                 `${formatSourceContext(accountCheck.right.srcCtx)})`,
@@ -102,7 +102,7 @@ Delta: ${balance.amount.sub(amount)}`,
         // Note: reopening a closed account is allowed.
         const account = accountMap.get(directive.account, null);
         if (account?.type === 'open') {
-          return left(
+          return E.left(
             new BookingError(
               `Account ${directive.account} is already open (at ` +
                 `${formatSourceContext(account.srcCtx)})`,
@@ -115,8 +115,8 @@ Delta: ${balance.amount.sub(amount)}`,
       }
       case 'transaction': {
         const got = bookTransaction(directive, inventories, accountMap);
-        if (isLeft(got)) {
-          return left(enrichError(got.left, directive));
+        if (E.isLeft(got)) {
+          return E.left(enrichError(got.left, directive));
         }
 
         transactions.push(got.right);
@@ -125,7 +125,7 @@ Delta: ${balance.amount.sub(amount)}`,
       }
       default: {
         const d = directive as DirectiveCommon<string>;
-        return left(
+        return E.left(
           new BookingError(
             `${d.type} directive not implemented yet`,
             directive,
@@ -135,7 +135,7 @@ Delta: ${balance.amount.sub(amount)}`,
     }
   }
 
-  return right({
+  return E.right({
     transactions,
     accountMap,
     inventories,
@@ -147,7 +147,7 @@ function checkValidAccount(
   optionMap: Map<string, string>,
   account: string,
   options?: { allowClosed: boolean },
-): Either<Error, OpenDirective | CloseDirective | null> {
+): E.Either<Error, OpenDirective | CloseDirective | null> {
   const state = accountMap.get(account, null);
   const referenceChecksMode = optionMap.get(
     'account-reference-checks',
@@ -156,7 +156,7 @@ function checkValidAccount(
 
   const validModes = ['none', 'lenient', 'strict'];
   if (validModes.indexOf(referenceChecksMode) === -1) {
-    return left(
+    return E.left(
       new Error(
         `Invalid account-reference-checks mode: ${referenceChecksMode}, ` +
           `expected one of ${validModes.join(', ')}`,
@@ -165,11 +165,11 @@ function checkValidAccount(
   }
 
   if (referenceChecksMode === 'none') {
-    return right(state);
+    return E.right(state);
   }
 
   if (state?.type === 'close' && !(options?.allowClosed ?? false)) {
-    return left(
+    return E.left(
       new Error(
         `Account ${account} has been closed ` +
           `(at ${formatSourceContext(state.srcCtx)})`,
@@ -178,10 +178,10 @@ function checkValidAccount(
   }
 
   if (state === null && referenceChecksMode === 'strict') {
-    return left(new Error(`Account ${account} has not been opened`));
+    return E.left(new Error(`Account ${account} has not been opened`));
   }
 
-  return right(state);
+  return E.right(state);
 }
 
 function enrichError(error: Error, directive: Directive) {
@@ -192,7 +192,7 @@ function bookTransaction(
   transaction: TransactionDirective,
   inventories: InventoryMap,
   accountMap: AccountMap,
-): Either<Error, Transaction> {
+): E.Either<Error, Transaction> {
   const inventoriesBefore = inventories;
   const postings: BookedPosting[] = [];
   let balance = Inventory.Empty;
@@ -203,12 +203,12 @@ function bookTransaction(
       transaction.optionMap,
       posting.account,
     );
-    if (isLeft(accountCheck)) {
+    if (E.isLeft(accountCheck)) {
       return accountCheck;
     }
 
     const got = bookPosting(transaction, posting, inventories, balance);
-    if (isLeft(got)) {
+    if (E.isLeft(got)) {
       return got;
     }
 
@@ -220,7 +220,7 @@ function bookTransaction(
     if (allowedCurrencies.length > 0) {
       for (const posting of bookedPostings) {
         if (allowedCurrencies.indexOf(posting.amount.currency) === -1) {
-          return left(
+          return E.left(
             new Error(
               `Currency ${posting.amount.currency} not allowed in account ${posting.account}`,
             ),
@@ -233,12 +233,12 @@ function bookTransaction(
   }
 
   if (!balance.isEmpty()) {
-    return left(
+    return E.left(
       new Error(`Transaction does not balance. Residual:\n${balance}`),
     );
   }
 
-  return right({
+  return E.right({
     date: transaction.date,
     description: transaction.description,
     postings,
@@ -253,7 +253,7 @@ function bookPosting(
   posting: Posting,
   inventories: InventoryMap,
   balance: Inventory,
-): Either<Error, [BookedPosting[], InventoryMap, balance: Inventory]> {
+): E.Either<Error, [BookedPosting[], InventoryMap, balance: Inventory]> {
   if (posting.costSpec !== null) {
     const tradingAccount = 'Trading:Default';
     if (posting.amount !== null && posting.costSpec.amounts.length > 0) {
@@ -277,7 +277,7 @@ function bookPosting(
       //   Assets:Broker ; -300 CHF, inferred
       const postingAmount = posting.amount;
       const costSpec = posting.costSpec;
-      return right(
+      return E.right(
         doBook(
           inventories,
           balance,
@@ -331,7 +331,7 @@ function bookPosting(
         posting.amount,
         inventories.get(posting.account) ?? Inventory.Empty,
       );
-      if (isLeft(bookResult)) {
+      if (E.isLeft(bookResult)) {
         return bookResult;
       }
 
@@ -379,17 +379,17 @@ function bookPosting(
       // cost of positions.
       inventories = inventories.set(posting.account, bookResult.right[1]);
 
-      return right([postings, inventories, balance]);
+      return E.right([postings, inventories, balance]);
     }
 
-    return left(
+    return E.left(
       new Error('Booking with cost spec inference not implemented yet'),
     );
   }
 
   if (posting.amount !== null) {
     // Posting is fully specified, we can just book it.
-    return right(
+    return E.right(
       doBook(inventories, balance, {
         account: posting.account,
         amount: posting.amount,
@@ -407,7 +407,7 @@ function bookPosting(
       cost: null,
     }),
   );
-  return right(doBook(inventories, balance, ...balancePostings));
+  return E.right(doBook(inventories, balance, ...balancePostings));
 }
 
 function doBook(

@@ -1,7 +1,6 @@
 import { dirname, isAbsolute, join } from 'node:path';
 
-import { Either, isLeft, left, map, right, tap } from 'fp-ts/lib/Either.js';
-import { flow, pipe } from 'fp-ts/lib/function.js';
+import { either as E, function as F } from 'fp-ts';
 import { readFile } from 'fs/promises';
 import { Map as ImmutableMap } from 'immutable';
 import { resolve } from 'path';
@@ -23,7 +22,7 @@ import { makeSourceContext, SourceContext } from './source-context.js';
  */
 export async function load(
   filePath: string,
-): Promise<Either<LoadError, Ledger>> {
+): Promise<E.Either<LoadError, Ledger>> {
   const directives: Directive[] = [];
   const context: LoadContext = {
     stackTrace: [],
@@ -32,15 +31,15 @@ export async function load(
     optionMap: ImmutableMap(),
   };
 
-  return pipe(
+  return F.pipe(
     await doLoad(filePath, directives, context),
-    tap(
-      flow(
+    E.tap(
+      F.flow(
         () => directives.sort((a, b) => a.date.getTime() - b.date.getTime()),
-        right,
+        E.right,
       ),
     ),
-    map((): Ledger => ({ directives })),
+    E.map((): Ledger => ({ directives })),
   );
 }
 
@@ -68,10 +67,10 @@ async function doLoad(
   filePath: string,
   directives: Directive[],
   ctx: LoadContext,
-): Promise<Either<LoadError, unknown>> {
+): Promise<E.Either<LoadError, unknown>> {
   const contents = await read(filePath);
-  if (isLeft(contents)) {
-    return left(
+  if (E.isLeft(contents)) {
+    return E.left(
       new LoadError(
         contents.left.message,
         ctx.stackTrace.length > 0
@@ -84,8 +83,8 @@ async function doLoad(
   }
   const result = parse(contents.right);
 
-  if (isLeft(result)) {
-    return left(
+  if (E.isLeft(result)) {
+    return E.left(
       new LoadError(
         result.left.message,
         makeSourceContext(filePath, result.left.srcPos),
@@ -100,13 +99,13 @@ async function doLoad(
   const makeDate = (directive: {
     readonly date: DateSpec;
     readonly srcPos: SourcePosition;
-  }): Either<LoadError, Date> => {
+  }): E.Either<LoadError, Date> => {
     const dateStr = directive.date.time
       ? `${directive.date.date}T${directive.date.time}${directive.date.timezone ?? ctx.defaultTimezone}`
       : directive.date.date;
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) {
-      return left(
+      return E.left(
         new LoadError(
           `Invalid date '${dateStr}'`,
           makeSourceContext(filePath, directive.srcPos),
@@ -114,14 +113,14 @@ async function doLoad(
         ),
       );
     }
-    return right(date);
+    return E.right(date);
   };
 
   for (const directive of result.right.directives) {
     switch (directive.type) {
       case 'balance': {
         const date = makeDate(directive);
-        if (isLeft(date)) {
+        if (E.isLeft(date)) {
           return date;
         }
         directives.push({
@@ -135,7 +134,7 @@ async function doLoad(
       }
       case 'close': {
         const date = makeDate(directive);
-        if (isLeft(date)) {
+        if (E.isLeft(date)) {
           return date;
         }
         directives.push({
@@ -151,7 +150,7 @@ async function doLoad(
         const toLoad = makeRelativePath(filePath, directive.path);
         const loadedFrom = ctx.loadedMap.get(toLoad);
         if (loadedFrom !== undefined) {
-          return left(
+          return E.left(
             new LoadError(
               `Circular load dependency detected: ${toLoad} was already ` +
                 `loaded (at ${formatSourceContext(loadedFrom)})`,
@@ -167,14 +166,14 @@ async function doLoad(
             ...ctx.stackTrace,
           ],
         });
-        if (isLeft(loadResult)) {
+        if (E.isLeft(loadResult)) {
           return loadResult;
         }
         break;
       }
       case 'open': {
         const date = makeDate(directive);
-        if (isLeft(date)) {
+        if (E.isLeft(date)) {
           return date;
         }
         directives.push({
@@ -201,7 +200,7 @@ async function doLoad(
         break;
       case 'transaction': {
         const date = makeDate(directive);
-        if (isLeft(date)) {
+        if (E.isLeft(date)) {
           return date;
         }
         directives.push({
@@ -216,7 +215,7 @@ async function doLoad(
       }
       default: {
         const d = directive as DirectiveCommonSpec<string>;
-        return left(
+        return E.left(
           new LoadError(
             `${d.type} directive not implemented yet`,
             makeSourceContext(filePath, d.srcPos),
@@ -227,15 +226,15 @@ async function doLoad(
     }
   }
 
-  return right(undefined);
+  return E.right(undefined);
 }
 
-async function read(filePath: string): Promise<Either<Error, string>> {
+async function read(filePath: string): Promise<E.Either<Error, string>> {
   try {
-    return right(await readFile(resolve(filePath), { encoding: 'utf-8' }));
+    return E.right(await readFile(resolve(filePath), { encoding: 'utf-8' }));
   } catch (e) {
     if (e instanceof Error) {
-      return left(e);
+      return E.left(e);
     }
     throw e;
   }

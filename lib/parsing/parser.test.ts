@@ -1,8 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 
-import { bimap } from 'fp-ts/lib/Either.js';
-import { pipe } from 'fp-ts/lib/function.js';
+import { either as E, function as F } from 'fp-ts';
 import { glob, readFile } from 'fs/promises';
 
 import { parse } from './parser.js';
@@ -26,9 +25,9 @@ await describe('parse', async () => {
     await test(t.testName, async () => {
       const srcContent = await readFile(t.srcPath, { encoding: 'utf-8' });
       const wantContent = await readFile(t.wantPath, { encoding: 'utf-8' });
-      const got = pipe(
+      const got = F.pipe(
         parse(srcContent),
-        bimap(
+        E.bimap(
           err => ({
             error: `${err.message} at ${t.srcPath}:${err.srcPos.row}`,
           }),

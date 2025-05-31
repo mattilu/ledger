@@ -1,5 +1,4 @@
-import { Either, tryCatchK } from 'fp-ts/lib/Either.js';
-import { flow, pipe } from 'fp-ts/lib/function.js';
+import { either as E, function as F } from 'fp-ts';
 import { expectSingleResult, TokenError } from 'typescript-parsec';
 
 import { ParseError } from './error.js';
@@ -11,11 +10,11 @@ export interface ParseContext {
   readonly filePath: string;
 }
 
-export function parse(contents: string): Either<ParseError, LedgerSpec> {
-  return pipe(
+export function parse(contents: string): E.Either<ParseError, LedgerSpec> {
+  return F.pipe(
     contents,
-    tryCatchK(
-      flow(tokenize, ledgerParser.parse, expectSingleResult),
+    E.tryCatchK(
+      F.flow(tokenize, ledgerParser.parse, expectSingleResult),
       (ex: unknown) => {
         if (ex instanceof Error) {
           const tokenError = ex as Partial<TokenError>;

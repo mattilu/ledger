@@ -2,7 +2,7 @@ import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
 
 import { ExactNumber } from 'exactnumber';
-import { isLeft, right } from 'fp-ts/lib/Either.js';
+import { either as E } from 'fp-ts';
 
 import { Amount } from '../../core/amount.js';
 import { Cost } from '../cost.js';
@@ -42,7 +42,7 @@ await describe('FIFO', async () => {
     await it('returns no posting when amount is zero', () => {
       const inventory0 = inventory([]);
       const got = FIFO.book(TestAccount, amount(0, CHF), inventory0);
-      assert.deepEqual(got, right([[], inventory0]));
+      assert.deepEqual(got, E.right([[], inventory0]));
     });
 
     await it('fully reduces the oldest value of the inventory', () => {
@@ -73,7 +73,7 @@ await describe('FIFO', async () => {
         ),
       ]);
 
-      assert.deepEqual(got, right([wantPostings, wantInventory]));
+      assert.deepEqual(got, E.right([wantPostings, wantInventory]));
     });
 
     await it('partially reduces the oldest value of the inventory', () => {
@@ -108,7 +108,7 @@ await describe('FIFO', async () => {
         ),
       ]);
 
-      assert.deepEqual(got, right([wantPostings, wantInventory]));
+      assert.deepEqual(got, E.right([wantPostings, wantInventory]));
     });
 
     await it('reduces multiple values of the inventory, oldest first', () => {
@@ -153,7 +153,7 @@ await describe('FIFO', async () => {
         ),
       ]);
 
-      assert.deepEqual(got, right([wantPostings, wantInventory]));
+      assert.deepEqual(got, E.right([wantPostings, wantInventory]));
     });
 
     await it('fully reduces multiple postings', () => {
@@ -193,7 +193,7 @@ await describe('FIFO', async () => {
 
       const wantInventory = inventory([]);
 
-      assert.deepEqual(got, right([wantPostings, wantInventory]));
+      assert.deepEqual(got, E.right([wantPostings, wantInventory]));
     });
 
     await it('fails when there are not enough positions to reduce', () => {
@@ -205,7 +205,7 @@ await describe('FIFO', async () => {
       ]);
       const got = FIFO.book(TestAccount, amount('-1.1', USD), inventory0);
 
-      assert(isLeft(got));
+      assert(E.isLeft(got));
       assert.match(
         got.left.message,
         /not enough positions to reduce: -0.1 USD from Assets:Test/i,
@@ -216,7 +216,7 @@ await describe('FIFO', async () => {
       const inventory0 = inventory([position(amount(1, USD))]);
       const got = FIFO.book(TestAccount, amount(-1, USD), inventory0);
 
-      assert(isLeft(got));
+      assert(E.isLeft(got));
       assert.match(
         got.left.message,
         /not enough positions to reduce: -1 USD from Assets:Test/i,
@@ -251,7 +251,7 @@ await describe('FIFO', async () => {
         ),
       ]);
 
-      assert.deepEqual(got, right([wantPostings, wantInventory]));
+      assert.deepEqual(got, E.right([wantPostings, wantInventory]));
     });
 
     await it('correctly books positive amounts', () => {
@@ -273,7 +273,7 @@ await describe('FIFO', async () => {
 
       const wantInventory = inventory([]);
 
-      assert.deepEqual(got, right([wantPostings, wantInventory]));
+      assert.deepEqual(got, E.right([wantPostings, wantInventory]));
     });
 
     await it('correctly books negative costs', () => {
@@ -294,7 +294,7 @@ await describe('FIFO', async () => {
       ];
       const wantInventory = inventory([]);
 
-      assert.deepEqual(got, right([wantPostings, wantInventory]));
+      assert.deepEqual(got, E.right([wantPostings, wantInventory]));
     });
 
     await it('correctly books costs with multiple amounts', () => {
@@ -322,7 +322,7 @@ await describe('FIFO', async () => {
       ];
       const wantInventory = inventory([]);
 
-      assert.deepEqual(got, right([wantPostings, wantInventory]));
+      assert.deepEqual(got, E.right([wantPostings, wantInventory]));
     });
   });
 });

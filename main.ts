@@ -1,8 +1,7 @@
 import { exit } from 'node:process';
 
 import { run } from 'cmd-ts';
-import { mapLeft } from 'fp-ts/lib/Either.js';
-import { pipe } from 'fp-ts/lib/function.js';
+import { either as E, function as F } from 'fp-ts';
 
 import { app } from './cli/app.js';
 
@@ -28,10 +27,10 @@ async function flattenCommandResult<T>(result: Promise<T> | T) {
 
 async function main() {
   const result = await flattenCommandResult(run(app, process.argv.slice(2)));
-  pipe(
+  F.pipe(
     result,
-    mapLeft(err => console.error(err.message)),
-    mapLeft(() => exit(1)),
+    E.mapLeft(err => console.error(err.message)),
+    E.mapLeft(() => exit(1)),
   );
 }
 

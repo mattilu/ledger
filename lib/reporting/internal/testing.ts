@@ -1,7 +1,6 @@
 import { strict as assert } from 'node:assert';
 
-import { flatMap, isRight } from 'fp-ts/lib/Either.js';
-import { pipe } from 'fp-ts/lib/function.js';
+import { either as E, function as F } from 'fp-ts';
 import { glob, readFile } from 'fs/promises';
 import path, { dirname } from 'path';
 
@@ -25,8 +24,8 @@ export async function collectTests(scenario: string): Promise<TestCase[]> {
     const srcPath = path.join(dataDir, testName, 'main.ledger');
     const wantContent = await readFile(wantPath, { encoding: 'utf-8' });
 
-    const got = pipe(await load(srcPath), flatMap(book));
-    assert(isRight(got));
+    const got = F.pipe(await load(srcPath), E.flatMap(book));
+    assert(E.isRight(got));
 
     tests.push({
       testName,

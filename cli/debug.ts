@@ -1,15 +1,5 @@
 import { command, number, option, optional, positional, string } from 'cmd-ts';
-import {
-  asUnit,
-  Either,
-  flatMap,
-  left,
-  mapLeft,
-  right,
-  tap,
-} from 'fp-ts/lib/Either.js';
-import { flow, pipe } from 'fp-ts/lib/function.js';
-import { fst } from 'fp-ts/lib/Tuple.js';
+import { either as E, function as F, tuple as T } from 'fp-ts';
 import { Map, Set } from 'immutable';
 import { inspect } from 'util';
 
@@ -47,26 +37,26 @@ export const debug = command({
     inputFile,
     file,
     line,
-  }): Promise<Either<CommandError, void>> => {
+  }): Promise<E.Either<CommandError, void>> => {
     file = file ?? inputFile;
-    return pipe(
+    return F.pipe(
       await load(inputFile),
-      mapLeft(CommandError.fromLoadError),
-      flatMap(debugLoadResultAndFilter(file, line)),
-      flatMap(flow(book, mapLeft(CommandError.fromBookingError))),
-      tap(debugBookResult(file, line)),
-      asUnit,
+      E.mapLeft(CommandError.fromLoadError),
+      E.flatMap(debugLoadResultAndFilter(file, line)),
+      E.flatMap(F.flow(book, E.mapLeft(CommandError.fromBookingError))),
+      E.tap(debugBookResult(file, line)),
+      E.asUnit,
     );
   },
 });
 
 const debugLoadResultAndFilter =
   (file: string, line: number) =>
-  (ledger: Ledger): Either<CommandError, Ledger> => {
+  (ledger: Ledger): E.Either<CommandError, Ledger> => {
     const [directive, index] = find(ledger.directives, file, line);
 
     if (!directive) {
-      return left(new CommandError(`No directive found at ${file}:${line}`));
+      return E.left(new CommandError(`No directive found at ${file}:${line}`));
     }
 
     console.log(
@@ -74,7 +64,7 @@ const debugLoadResultAndFilter =
       inspect(directive, { depth: null, colors: true }),
     );
 
-    return right({
+    return E.right({
       directives: ledger.directives.slice(0, index + 1),
     });
   };
@@ -84,7 +74,9 @@ const debugBookResult =
     const [transaction] = find(ledger.transactions, file, line);
 
     if (!transaction) {
-      return left(new CommandError(`No transaction found at ${file}:${line}`));
+      return E.left(
+        new CommandError(`No transaction found at ${file}:${line}`),
+      );
     }
 
     const accounts = Set(transaction.postings.map(x => x.account));
@@ -100,7 +92,7 @@ const debugBookResult =
         inventories
           .entrySeq()
           .filter(([account]) => accounts.has(account))
-          .sortBy(fst)
+          .sortBy(T.fst)
           .map(([account, inventory]) => [
             account,
             currencies.flatMap(currency =>
@@ -120,7 +112,7 @@ const debugBookResult =
       ),
     );
 
-    return right(undefined);
+    return E.right(undefined);
   };
 
 function find<T extends { srcCtx: SourceContext }>(

@@ -2,17 +2,16 @@ import { strict as assert } from 'node:assert';
 import { basename } from 'node:path';
 import { describe, test } from 'node:test';
 
-import { bimap, isLeft } from 'fp-ts/lib/Either.js';
-import { pipe } from 'fp-ts/lib/function.js';
+import { either as E, function as F } from 'fp-ts';
 import { glob, readFile } from 'fs/promises';
 
 import { Ledger } from './ledger.js';
 import { load } from './loader.js';
 
 const loadForTest = async (path: string) =>
-  pipe(
+  F.pipe(
     await load(path),
-    bimap(
+    E.bimap(
       err => ({
         error: `${err.message} at ${err.srcCtx.filePath}:${err.srcCtx.row}`,
       }),
@@ -46,7 +45,7 @@ await describe('load', async () => {
 
   await test('non-existing file', async () => {
     const got = await loadForTest('non-existing.ledger');
-    assert(isLeft(got));
+    assert(E.isLeft(got));
     assert.match(got.left.error, /no such file or directory/);
   });
 });

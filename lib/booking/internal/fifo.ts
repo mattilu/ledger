@@ -1,4 +1,4 @@
-import { Either, left, right } from 'fp-ts/lib/Either.js';
+import { either as E } from 'fp-ts';
 
 import { Amount } from '../../core/amount.js';
 import { makeHeap, popHeap } from '../../utils/heap.js';
@@ -21,7 +21,7 @@ class FifoBookingMethod implements BookingMethod {
     account: string,
     amount: Amount,
     inventory: Inventory,
-  ): Either<Error, [postings: BookedPosting[], newInventory: Inventory]> {
+  ): E.Either<Error, [postings: BookedPosting[], newInventory: Inventory]> {
     const postings: BookedPosting[] = [];
 
     const positions = inventory
@@ -33,7 +33,7 @@ class FifoBookingMethod implements BookingMethod {
 
     while (!amount.isZero()) {
       if (positions.length === 0) {
-        return left(
+        return E.left(
           new Error(
             `Not enough positions to reduce: ${amount} from ${account}`,
           ),
@@ -67,7 +67,7 @@ class FifoBookingMethod implements BookingMethod {
       amount = amount.sub(toAdd);
     }
 
-    return right([postings, inventory]);
+    return E.right([postings, inventory]);
   }
 }
 

@@ -1,8 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 
-import { bimap, isRight } from 'fp-ts/lib/Either.js';
-import { pipe } from 'fp-ts/lib/function.js';
+import { either as E, function as F } from 'fp-ts';
 import { glob, readFile } from 'fs/promises';
 
 import { load } from '../loading/loader.js';
@@ -27,11 +26,11 @@ await describe('book', async () => {
     await test(t.testName, async () => {
       const wantContent = await readFile(t.wantPath, { encoding: 'utf-8' });
       const ledger = await load(t.srcPath);
-      assert(isRight(ledger));
+      assert(E.isRight(ledger));
 
-      const got = pipe(
+      const got = F.pipe(
         book(ledger.right),
-        bimap(
+        E.bimap(
           ({ directive, message }) => ({
             error:
               `While processing '${directive.type}' directive at ` +
