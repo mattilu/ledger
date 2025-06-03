@@ -10,5 +10,6 @@ export interface Posting {
 
 export interface TransactionDirective extends DirectiveCommon<'transaction'> {
   readonly description: string;
+  readonly flag: string;
   readonly postings: readonly Posting[];
 }

@@ -207,6 +207,7 @@ async function doLoad(
           type: 'transaction',
           date: date.right,
           description: directive.description,
+          flag: directive.flag,
           postings: directive.postings,
           srcCtx: makeSourceContext(filePath, directive.srcPos),
           optionMap: ctx.optionMap,
