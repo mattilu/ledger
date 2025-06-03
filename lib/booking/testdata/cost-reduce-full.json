@@ -5,6 +5,7 @@
       {
         "date": "2025-04-01T00:00:00.000Z",
         "description": "Open Position",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Broker",
@@ -93,7 +94,7 @@
       {
         "date": "2025-04-02T00:00:00.000Z",
         "description": "Close Position",
-
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Broker",

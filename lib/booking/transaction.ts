@@ -12,6 +12,7 @@ export interface BookedPosting {
 export interface Transaction {
   readonly date: Date;
   readonly description: string;
+  readonly flag: string;
   readonly postings: BookedPosting[];
   readonly inventoriesBefore: InventoryMap;
   readonly inventoriesAfter: InventoryMap;

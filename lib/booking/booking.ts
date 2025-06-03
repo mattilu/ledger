@@ -241,6 +241,7 @@ function bookTransaction(
   return E.right({
     date: transaction.date,
     description: transaction.description,
+    flag: transaction.flag,
     postings,
     inventoriesBefore,
     inventoriesAfter: inventories,

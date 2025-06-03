@@ -5,6 +5,7 @@
       {
         "date": "2025-04-01T00:00:00.000Z",
         "description": "Long USD (with CHF, total)",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Broker",
@@ -93,6 +94,7 @@
       {
         "date": "2025-04-02T00:00:00.000Z",
         "description": "Long USD (with CHF, per-unit)",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Broker",
@@ -196,6 +198,7 @@
       {
         "date": "2025-04-03T00:00:00.000Z",
         "description": "Short USD (with CHF, total)",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Broker",
@@ -314,6 +317,7 @@
       {
         "date": "2025-04-04T00:00:00.000Z",
         "description": "Short USD (with CHF, per-unit)",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Broker",

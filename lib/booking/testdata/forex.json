@@ -5,6 +5,7 @@
       {
         "date": "2025-04-01T00:00:00.000Z",
         "description": "Buy USD with CHF",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Broker",
