@@ -12,5 +12,5 @@
 2025-01-25T00:00:00.000Z * "Salary"
   Assets:Bank 5000 CHF
 
-2025-01-25T00:00:00.000Z * "Rent"
+2025-01-25T00:00:00.000Z ! "Rent"
   Assets:Bank -1250 CHF

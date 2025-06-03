@@ -65,7 +65,7 @@ export class TransactionsReport implements Report {
 
       if (postings.length > 0) {
         report.push(
-          `${transaction.date.toJSON()} * "${transaction.description}"`,
+          `${transaction.date.toJSON()} ${transaction.flag} "${transaction.description}"`,
         );
 
         const postingsToReport = this.options.allPostings
