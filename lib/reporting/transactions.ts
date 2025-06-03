@@ -21,6 +21,11 @@ export interface TransactionsReportOptions {
   readonly currencies?: readonly string[];
 
   /**
+   * If specified, limits reporting transactions that match these flags.
+   */
+  readonly flags?: string[];
+
+  /**
    * If specified, report all postings from a transaction that matches the other
    * filters, even if the posting themselves don't match the filter. Default is
    * false.
@@ -44,8 +49,13 @@ export class TransactionsReport implements Report {
 
   run(ledger: BookedLedger): string {
     const report: string[] = [];
+    const flags = new Set(this.options.flags ?? []);
 
     for (const transaction of ledger.transactions) {
+      if (flags.size > 0 && !flags.has(transaction.flag)) {
+        continue;
+      }
+
       const postings: BookedPosting[] = [];
       for (const posting of transaction.postings) {
         if (
