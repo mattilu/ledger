@@ -26,3 +26,7 @@
 2025-04-07 * "Posting with cost spec, empty"
   Assets:Foo  -10 CHF {}
   Assets:Foo
+
+2025-06-01 txn "Txn Syntax"
+
+2025-06-01 ! "ExclamationMark Flag"

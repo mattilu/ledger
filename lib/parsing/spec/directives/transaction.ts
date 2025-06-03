@@ -17,5 +17,6 @@ export interface TransactionDirectiveSpec
   extends DirectiveCommonSpec<'transaction'> {
   readonly date: DateSpec;
   readonly description: string;
+  readonly flag: string;
   readonly postings: readonly PostingSpec[];
 }
