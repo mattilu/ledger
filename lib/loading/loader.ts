@@ -208,7 +208,11 @@ async function doLoad(
           date: date.right,
           description: directive.description,
           flag: directive.flag,
-          postings: directive.postings,
+          postings: directive.postings.map(posting => ({
+            account: posting.account,
+            amount: posting.amount,
+            costSpec: posting.costSpec,
+          })),
           srcCtx: makeSourceContext(filePath, directive.srcPos),
           optionMap: ctx.optionMap,
         });

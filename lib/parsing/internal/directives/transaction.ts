@@ -47,9 +47,15 @@ const costSpecParser = apply(
 );
 
 const postingParser = apply(
-  seq(accountParser, opt_sc(amountParser), opt_sc(costSpecParser)),
-  ([account, amount, costSpec]): PostingSpec => ({
+  seq(
+    opt_sc(alt_sc(tok(TokenKind.Star), tok(TokenKind.ExclamationMark))),
+    accountParser,
+    opt_sc(amountParser),
+    opt_sc(costSpecParser),
+  ),
+  ([flag, account, amount, costSpec]): PostingSpec => ({
     account,
+    flag: flag?.text ?? null,
     amount: amount ?? null,
     costSpec: costSpec ?? null,
   }),

@@ -30,3 +30,6 @@
 2025-06-01 txn "Txn Syntax"
 
 2025-06-01 ! "ExclamationMark Flag"
+
+2025-06-01 * "Posting Flag"
+  ! Assets:Foo

@@ -9,6 +9,7 @@ export interface CostSpec {
 
 export interface PostingSpec {
   readonly account: string;
+  readonly flag: string | null;
   readonly amount: Amount | null;
   readonly costSpec: CostSpec | null;
 }
