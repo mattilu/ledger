@@ -52,7 +52,12 @@ export class TransactionsReport implements Report {
     const flags = new Set(this.options.flags ?? []);
 
     for (const transaction of ledger.transactions) {
-      if (flags.size > 0 && !flags.has(transaction.flag)) {
+      const transactionFlagMatches =
+        flags.size === 0 || flags.has(transaction.flag);
+      if (
+        !transactionFlagMatches &&
+        !transaction.postings.some(p => flags.has(p.flag))
+      ) {
         continue;
       }
 
@@ -67,7 +72,10 @@ export class TransactionsReport implements Report {
 
         if (
           matches(posting.account, this.accountsRegex) &&
-          matches(posting.amount.currency, this.currenciesRegex)
+          matches(posting.amount.currency, this.currenciesRegex) &&
+          (flags.size === 0 ||
+            flags.has(posting.flag) ||
+            transactionFlagMatches)
         ) {
           postings.push(posting);
         }
