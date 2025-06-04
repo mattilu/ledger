@@ -4,6 +4,7 @@ import { DirectiveCommon } from '../directive.js';
 
 export interface Posting {
   readonly account: string;
+  readonly flag: string;
   readonly amount: Amount | null;
   readonly costSpec: CostSpec | null;
 }

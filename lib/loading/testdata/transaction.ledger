@@ -20,3 +20,6 @@
   Assets:Foo
 
 2025-06-01 ! "ExclamationMark Flag"
+
+2025-06-01 * "Posting Flag"
+  ! Assets:Foo

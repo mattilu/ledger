@@ -210,6 +210,7 @@ async function doLoad(
           flag: directive.flag,
           postings: directive.postings.map(posting => ({
             account: posting.account,
+            flag: posting.flag ?? directive.flag,
             amount: posting.amount,
             costSpec: posting.costSpec,
           })),
