@@ -19,6 +19,7 @@ const cmp = (a: PositionWithCost, b: PositionWithCost): boolean =>
 class FifoBookingMethod implements BookingMethod {
   book(
     account: string,
+    flag: string,
     amount: Amount,
     inventory: Inventory,
   ): E.Either<Error, [postings: BookedPosting[], newInventory: Inventory]> {
@@ -60,6 +61,7 @@ class FifoBookingMethod implements BookingMethod {
       inventory = inventory.addPosition(positionToAdd);
       postings.push({
         account,
+        flag,
         amount: positionToAdd.amount,
         cost: positionToAdd.cost,
       });

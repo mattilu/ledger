@@ -30,6 +30,7 @@
         "postings": [
           {
             "account": "Assets:Foo",
+            "flag": "!",
             "amount": {
               "amount": "10",
               "currency": "CHF"
@@ -38,6 +39,7 @@
           },
           {
             "account": "Income:Foo",
+            "flag": "*",
             "amount": {
               "amount": "-10",
               "currency": "CHF"
@@ -73,6 +75,7 @@
         "postings": [
           {
             "account": "Assets:Foo",
+            "flag": "*",
             "amount": {
               "amount": "-10",
               "currency": "CHF"
@@ -81,6 +84,7 @@
           },
           {
             "account": "Assets:Bar",
+            "flag": "*",
             "amount": {
               "amount": "10",
               "currency": "CHF"
@@ -117,6 +121,7 @@
         "postings": [
           {
             "account": "Assets:Foo",
+            "flag": "*",
             "amount": {
               "amount": "-10",
               "currency": "CHF"
@@ -125,6 +130,7 @@
           },
           {
             "account": "Assets:Bar",
+            "flag": "*",
             "amount": {
               "amount": "10",
               "currency": "CHF"
@@ -133,6 +139,7 @@
           },
           {
             "account": "Assets:Foo",
+            "flag": "*",
             "amount": {
               "amount": "-1",
               "currency": "CHF"
@@ -141,6 +148,7 @@
           },
           {
             "account": "Expenses:Fee",
+            "flag": "*",
             "amount": {
               "amount": "1",
               "currency": "CHF"

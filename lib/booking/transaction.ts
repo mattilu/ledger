@@ -5,6 +5,7 @@ import { InventoryMap } from './inventory.js';
 
 export interface BookedPosting {
   readonly account: string;
+  readonly flag: string;
   readonly amount: Amount;
   readonly cost: Cost | null;
 }
