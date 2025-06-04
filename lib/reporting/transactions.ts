@@ -82,10 +82,12 @@ export class TransactionsReport implements Report {
           ? transaction.postings
           : postings;
         for (const posting of postingsToReport) {
+          const flag =
+            posting.flag !== transaction.flag ? `${posting.flag} ` : '';
           report.push(
             posting.cost !== null
-              ? `  ${posting.account} ${posting.amount} ${posting.cost}`
-              : `  ${posting.account} ${posting.amount}`,
+              ? `  ${flag}${posting.account} ${posting.amount} ${posting.cost}`
+              : `  ${flag}${posting.account} ${posting.amount}`,
           );
         }
 
