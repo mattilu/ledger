@@ -7,6 +7,7 @@
         "date": "2025-04-01T00:00:00.000Z",
         "optionMap": {},
         "description": "No Postings",
+        "flag": "*",
         "postings": []
       },
       {
@@ -14,9 +15,11 @@
         "date": "2025-04-02T00:00:00.000Z",
         "optionMap": {},
         "description": "Posting without amount",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Foo",
+            "flag": "*",
             "amount": null,
             "costSpec": null
           }
@@ -27,9 +30,11 @@
         "date": "2025-04-03T00:00:00.000Z",
         "optionMap": {},
         "description": "Postings with amount",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Foo",
+            "flag": "*",
             "amount": {
               "amount": "10",
               "currency": "CHF"
@@ -38,6 +43,7 @@
           },
           {
             "account": "Income:Foo",
+            "flag": "*",
             "amount": {
               "amount": "-10",
               "currency": "CHF"
@@ -51,9 +57,11 @@
         "date": "2025-04-04T00:00:00.000Z",
         "optionMap": {},
         "description": "Postings with and without amount",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Foo",
+            "flag": "*",
             "amount": {
               "amount": "-10",
               "currency": "CHF"
@@ -62,6 +70,7 @@
           },
           {
             "account": "Assets:Bar",
+            "flag": "*",
             "amount": null,
             "costSpec": null
           }
@@ -72,9 +81,11 @@
         "date": "2025-04-05T00:00:00.000Z",
         "optionMap": {},
         "description": "Posting with total cost spec",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Foo",
+            "flag": "*",
             "amount": {
               "amount": "10",
               "currency": "CHF"
@@ -91,6 +102,7 @@
           },
           {
             "account": "Assets:Foo",
+            "flag": "*",
             "amount": null,
             "costSpec": null
           }
@@ -101,9 +113,11 @@
         "date": "2025-04-05T00:00:00.000Z",
         "optionMap": {},
         "description": "Posting with per-unit cost spec",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Foo",
+            "flag": "*",
             "amount": {
               "amount": "10",
               "currency": "CHF"
@@ -120,6 +134,30 @@
           },
           {
             "account": "Assets:Foo",
+            "flag": "*",
+            "amount": null,
+            "costSpec": null
+          }
+        ]
+      },
+      {
+        "type": "transaction",
+        "date": "2025-06-01T00:00:00.000Z",
+        "optionMap": {},
+        "description": "ExclamationMark Flag",
+        "flag": "!",
+        "postings": []
+      },
+      {
+        "type": "transaction",
+        "date": "2025-06-01T00:00:00.000Z",
+        "optionMap": {},
+        "description": "Posting Flag",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "flag": "!",
             "amount": null,
             "costSpec": null
           }

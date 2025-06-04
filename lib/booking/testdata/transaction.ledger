@@ -1,18 +1,20 @@
 2025-04-01 * "No Postings"
 
+2025-04-01 ! "ExclamationMark Flag"
+
 2025-04-02 * "Posting without amount"
   Assets:Foo
 
 2025-04-03 * "Postings with amount"
-  Assets:Foo  10 CHF
-  Income:Foo  -10 CHF
+  ! Assets:Foo   10 CHF
+  * Income:Foo  -10 CHF
 
 2025-04-04 * "Postings with amount interpolation"
-  Assets:Foo  -10 CHF
+  Assets:Foo    -10 CHF
   Assets:Bar
 
 2025-04-05 * "Postings with multiple amount interpolations"
-  Assets:Foo   -10 CHF
+  Assets:Foo    -10 CHF
   Assets:Bar
-  Assets:Foo    -1 CHF
+  Assets:Foo     -1 CHF
   Expenses:Fee

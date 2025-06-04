@@ -13,12 +13,15 @@ export interface BookingMethod {
    * state of the inventory.
    *
    * @param account The account to be booked.
+   * @param flag Flag to be used for the posting. Implementation is not required
+   *   to use this.
    * @param amount Amount to be booked.
    * @param inventory Current state of the inventory for the account.
    * @returns A pair of [postings, newInventory].
    */
   book(
     account: string,
+    flag: string,
     amount: Amount,
     inventory: Inventory,
   ): E.Either<Error, [postings: BookedPosting[], newInventory: Inventory]>;

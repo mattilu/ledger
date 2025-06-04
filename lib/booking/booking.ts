@@ -241,6 +241,7 @@ function bookTransaction(
   return E.right({
     date: transaction.date,
     description: transaction.description,
+    flag: transaction.flag,
     postings,
     inventoriesBefore,
     inventoriesAfter: inventories,
@@ -283,6 +284,7 @@ function bookPosting(
           balance,
           {
             account: posting.account,
+            flag: posting.flag,
             amount: posting.amount,
             cost: new Cost(
               posting.costSpec.amounts.map(amount =>
@@ -293,11 +295,13 @@ function bookPosting(
           },
           {
             account: tradingAccount,
+            flag: posting.flag,
             amount: posting.amount.neg(),
             cost: null,
           },
           ...posting.costSpec.amounts.map(amount => ({
             account: tradingAccount,
+            flag: posting.flag,
             amount: getTotalAmount(amount, postingAmount, costSpec),
             cost: null,
           })),
@@ -328,6 +332,7 @@ function bookPosting(
       //   Income:Trading ; -50 CHF, inferred
       const bookResult = FIFO.book(
         posting.account,
+        posting.flag,
         posting.amount,
         inventories.get(posting.account) ?? Inventory.Empty,
       );
@@ -362,11 +367,13 @@ function bookPosting(
           //
           {
             account: tradingAccount,
+            flag: posting.flag,
             amount: posting.amount.neg(),
             cost: null,
           },
           ...(posting.cost?.amounts ?? []).map(cost => ({
             account: tradingAccount,
+            flag: posting.flag,
             amount: cost.mul(posting.amount.amount),
             cost: null,
           })),
@@ -392,6 +399,7 @@ function bookPosting(
     return E.right(
       doBook(inventories, balance, {
         account: posting.account,
+        flag: posting.flag,
         amount: posting.amount,
         cost: null,
       }),
@@ -403,6 +411,7 @@ function bookPosting(
   const balancePostings = balance.getPositions().map(
     (amount): BookedPosting => ({
       account: posting.account,
+      flag: posting.flag,
       amount: amount.amount.neg(),
       cost: null,
     }),

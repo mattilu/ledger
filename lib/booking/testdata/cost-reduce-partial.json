@@ -5,9 +5,11 @@
       {
         "date": "2025-04-01T00:00:00.000Z",
         "description": "Open Position",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Broker",
+            "flag": "*",
             "amount": {
               "amount": "10",
               "currency": "USD"
@@ -24,6 +26,7 @@
           },
           {
             "account": "Trading:Default",
+            "flag": "*",
             "amount": {
               "amount": "-10",
               "currency": "USD"
@@ -32,6 +35,7 @@
           },
           {
             "account": "Trading:Default",
+            "flag": "*",
             "amount": {
               "amount": "9",
               "currency": "CHF"
@@ -40,6 +44,7 @@
           },
           {
             "account": "Assets:Broker",
+            "flag": "*",
             "amount": {
               "amount": "-9",
               "currency": "CHF"
@@ -93,9 +98,11 @@
       {
         "date": "2025-04-02T00:00:00.000Z",
         "description": "Close Position",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Broker",
+            "flag": "*",
             "amount": {
               "amount": "-5",
               "currency": "USD"
@@ -112,6 +119,7 @@
           },
           {
             "account": "Trading:Default",
+            "flag": "*",
             "amount": {
               "amount": "5",
               "currency": "USD"
@@ -120,6 +128,7 @@
           },
           {
             "account": "Trading:Default",
+            "flag": "*",
             "amount": {
               "amount": "-4.5",
               "currency": "CHF"
@@ -128,6 +137,7 @@
           },
           {
             "account": "Assets:Broker",
+            "flag": "*",
             "amount": {
               "amount": "5",
               "currency": "CHF"
@@ -136,6 +146,7 @@
           },
           {
             "account": "Income:Profit",
+            "flag": "*",
             "amount": {
               "amount": "-0.5",
               "currency": "CHF"

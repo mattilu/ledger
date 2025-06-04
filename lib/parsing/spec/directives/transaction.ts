@@ -9,6 +9,7 @@ export interface CostSpec {
 
 export interface PostingSpec {
   readonly account: string;
+  readonly flag: string | null;
   readonly amount: Amount | null;
   readonly costSpec: CostSpec | null;
 }
@@ -17,5 +18,6 @@ export interface TransactionDirectiveSpec
   extends DirectiveCommonSpec<'transaction'> {
   readonly date: DateSpec;
   readonly description: string;
+  readonly flag: string;
   readonly postings: readonly PostingSpec[];
 }

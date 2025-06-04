@@ -68,6 +68,12 @@ const transactions = command({
   name: 'transactions',
   args: {
     ...commonArgs,
+    flags: multioption({
+      long: 'flag',
+      short: 'f',
+      type: array(string),
+      description: 'Flag to filter transactions to include; can be repeated',
+    }),
     allPostings: flag({
       long: 'all-postings',
       description: 'Whether to display all the postings',

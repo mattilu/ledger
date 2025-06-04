@@ -31,6 +31,11 @@ await describe('InventoryReport', async () => {
         options: { currencies: ['VT'] },
       },
       {
+        name: 'with flags filter',
+        scenario: 'transactions-flags-filter',
+        options: { flags: ['!'] },
+      },
+      {
         name: 'with all postings',
         scenario: 'transactions-all-postings',
         options: { currencies: ['VT'], allPostings: true },

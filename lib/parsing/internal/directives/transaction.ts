@@ -47,20 +47,39 @@ const costSpecParser = apply(
 );
 
 const postingParser = apply(
-  seq(accountParser, opt_sc(amountParser), opt_sc(costSpecParser)),
-  ([account, amount, costSpec]): PostingSpec => ({
+  seq(
+    opt_sc(alt_sc(tok(TokenKind.Star), tok(TokenKind.ExclamationMark))),
+    accountParser,
+    opt_sc(amountParser),
+    opt_sc(costSpecParser),
+  ),
+  ([flag, account, amount, costSpec]): PostingSpec => ({
     account,
+    flag: flag?.text ?? null,
     amount: amount ?? null,
     costSpec: costSpec ?? null,
   }),
 );
 
 export const transactionDirectiveParser = apply(
-  seq(dateParser, tok(TokenKind.Star), stringParser, rep_sc(postingParser)),
-  ([date, , description, postings], tokenRange): TransactionDirectiveSpec => ({
+  seq(
+    dateParser,
+    alt_sc(
+      tok(TokenKind.KEYWORD_txn),
+      tok(TokenKind.Star),
+      tok(TokenKind.ExclamationMark),
+    ),
+    stringParser,
+    rep_sc(postingParser),
+  ),
+  (
+    [date, token, description, postings],
+    tokenRange,
+  ): TransactionDirectiveSpec => ({
     type: 'transaction',
     date,
     description,
+    flag: token.kind === TokenKind.ExclamationMark ? '!' : '*',
     postings,
     srcPos: makeSourcePosition(tokenRange),
   }),

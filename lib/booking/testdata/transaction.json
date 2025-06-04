@@ -5,21 +5,32 @@
       {
         "date": "2025-04-01T00:00:00.000Z",
         "description": "No Postings",
+        "flag": "*",
+        "postings": [],
+        "inventoriesAfter": {}
+      },
+      {
+        "date": "2025-04-01T00:00:00.000Z",
+        "description": "ExclamationMark Flag",
+        "flag": "!",
         "postings": [],
         "inventoriesAfter": {}
       },
       {
         "date": "2025-04-02T00:00:00.000Z",
         "description": "Posting without amount",
+        "flag": "*",
         "postings": [],
         "inventoriesAfter": {}
       },
       {
         "date": "2025-04-03T00:00:00.000Z",
         "description": "Postings with amount",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Foo",
+            "flag": "!",
             "amount": {
               "amount": "10",
               "currency": "CHF"
@@ -28,6 +39,7 @@
           },
           {
             "account": "Income:Foo",
+            "flag": "*",
             "amount": {
               "amount": "-10",
               "currency": "CHF"
@@ -59,9 +71,11 @@
       {
         "date": "2025-04-04T00:00:00.000Z",
         "description": "Postings with amount interpolation",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Foo",
+            "flag": "*",
             "amount": {
               "amount": "-10",
               "currency": "CHF"
@@ -70,6 +84,7 @@
           },
           {
             "account": "Assets:Bar",
+            "flag": "*",
             "amount": {
               "amount": "10",
               "currency": "CHF"
@@ -102,9 +117,11 @@
       {
         "date": "2025-04-05T00:00:00.000Z",
         "description": "Postings with multiple amount interpolations",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Foo",
+            "flag": "*",
             "amount": {
               "amount": "-10",
               "currency": "CHF"
@@ -113,6 +130,7 @@
           },
           {
             "account": "Assets:Bar",
+            "flag": "*",
             "amount": {
               "amount": "10",
               "currency": "CHF"
@@ -121,6 +139,7 @@
           },
           {
             "account": "Assets:Foo",
+            "flag": "*",
             "amount": {
               "amount": "-1",
               "currency": "CHF"
@@ -129,6 +148,7 @@
           },
           {
             "account": "Expenses:Fee",
+            "flag": "*",
             "amount": {
               "amount": "1",
               "currency": "CHF"

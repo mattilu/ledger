@@ -21,6 +21,11 @@ export interface TransactionsReportOptions {
   readonly currencies?: readonly string[];
 
   /**
+   * If specified, limits reporting transactions that match these flags.
+   */
+  readonly flags?: string[];
+
+  /**
    * If specified, report all postings from a transaction that matches the other
    * filters, even if the posting themselves don't match the filter. Default is
    * false.
@@ -44,8 +49,18 @@ export class TransactionsReport implements Report {
 
   run(ledger: BookedLedger): string {
     const report: string[] = [];
+    const flags = new Set(this.options.flags ?? []);
 
     for (const transaction of ledger.transactions) {
+      const transactionFlagMatches =
+        flags.size === 0 || flags.has(transaction.flag);
+      if (
+        !transactionFlagMatches &&
+        !transaction.postings.some(p => flags.has(p.flag))
+      ) {
+        continue;
+      }
+
       const postings: BookedPosting[] = [];
       for (const posting of transaction.postings) {
         if (
@@ -57,7 +72,10 @@ export class TransactionsReport implements Report {
 
         if (
           matches(posting.account, this.accountsRegex) &&
-          matches(posting.amount.currency, this.currenciesRegex)
+          matches(posting.amount.currency, this.currenciesRegex) &&
+          (flags.size === 0 ||
+            flags.has(posting.flag) ||
+            transactionFlagMatches)
         ) {
           postings.push(posting);
         }
@@ -65,17 +83,19 @@ export class TransactionsReport implements Report {
 
       if (postings.length > 0) {
         report.push(
-          `${transaction.date.toJSON()} * "${transaction.description}"`,
+          `${transaction.date.toJSON()} ${transaction.flag} "${transaction.description}"`,
         );
 
         const postingsToReport = this.options.allPostings
           ? transaction.postings
           : postings;
         for (const posting of postingsToReport) {
+          const flag =
+            posting.flag !== transaction.flag ? `${posting.flag} ` : '';
           report.push(
             posting.cost !== null
-              ? `  ${posting.account} ${posting.amount} ${posting.cost}`
-              : `  ${posting.account} ${posting.amount}`,
+              ? `  ${flag}${posting.account} ${posting.amount} ${posting.cost}`
+              : `  ${flag}${posting.account} ${posting.amount}`,
           );
         }
 
