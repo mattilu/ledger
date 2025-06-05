@@ -1,6 +1,6 @@
 import { dirname, isAbsolute, join } from 'node:path';
 
-import { either as E, function as F } from 'fp-ts';
+import { either as E, function as F, readonlyArray as A } from 'fp-ts';
 import { readFile } from 'fs/promises';
 import { Map as ImmutableMap } from 'immutable';
 import { resolve } from 'path';
@@ -9,9 +9,12 @@ import { parse } from '../parsing/parser.js';
 import { SourcePosition } from '../parsing/source-position.js';
 import { DateSpec } from '../parsing/spec/date.js';
 import { DirectiveCommonSpec } from '../parsing/spec/directive.js';
+import { MetadataSpec } from '../parsing/spec/metadata.js';
 import { Directive } from './directive.js';
+import { Posting } from './directives/transaction.js';
 import { LoadError } from './error.js';
 import { Ledger } from './ledger.js';
+import { Metadata, MetadataValue } from './metadata.js';
 import { makeSourceContext, SourceContext } from './source-context.js';
 
 /**
@@ -116,7 +119,31 @@ async function doLoad(
     return E.right(date);
   };
 
+  const makeMeta = (directive: {
+    readonly meta: MetadataSpec;
+    readonly srcPos: SourcePosition;
+  }): E.Either<LoadError, Metadata> => {
+    const entries: [string, MetadataValue][] = [];
+    for (const [key, value] of directive.meta.entries()) {
+      if (value.type === 'date') {
+        const date = makeDate({ date: value.value, srcPos: directive.srcPos });
+        if (E.isLeft(date)) {
+          return date;
+        }
+        entries.push([key, { type: 'date', value: date.right }]);
+      } else {
+        entries.push([key, value]);
+      }
+    }
+    return E.right(ImmutableMap(entries));
+  };
+
   for (const directive of result.right.directives) {
+    const meta = makeMeta(directive);
+    if (E.isLeft(meta)) {
+      return meta;
+    }
+
     switch (directive.type) {
       case 'balance': {
         const date = makeDate(directive);
@@ -126,6 +153,7 @@ async function doLoad(
         directives.push({
           type: 'balance',
           date: date.right,
+          meta: meta.right,
           balances: directive.balances,
           srcCtx: makeSourceContext(filePath, directive.srcPos),
           optionMap: ctx.optionMap,
@@ -140,6 +168,7 @@ async function doLoad(
         directives.push({
           type: 'close',
           date: date.right,
+          meta: meta.right,
           account: directive.account,
           srcCtx: makeSourceContext(filePath, directive.srcPos),
           optionMap: ctx.optionMap,
@@ -179,6 +208,7 @@ async function doLoad(
         directives.push({
           type: 'open',
           date: date.right,
+          meta: meta.right,
           account: directive.account,
           currencies: directive.currencies,
           srcCtx: makeSourceContext(filePath, directive.srcPos),
@@ -203,17 +233,32 @@ async function doLoad(
         if (E.isLeft(date)) {
           return date;
         }
+        const postings: E.Either<LoadError, readonly Posting[]> = F.pipe(
+          directive.postings,
+          A.traverse(E.Applicative)(posting =>
+            F.pipe(
+              makeMeta({ meta: posting.meta, srcPos: directive.srcPos }),
+              E.map((meta: Metadata) => ({
+                account: posting.account,
+                flag: posting.flag ?? directive.flag,
+                amount: posting.amount,
+                costSpec: posting.costSpec,
+                meta,
+              })),
+            ),
+          ),
+        );
+        if (E.isLeft(postings)) {
+          return postings;
+        }
+
         directives.push({
           type: 'transaction',
           date: date.right,
+          meta: meta.right,
           description: directive.description,
           flag: directive.flag,
-          postings: directive.postings.map(posting => ({
-            account: posting.account,
-            flag: posting.flag ?? directive.flag,
-            amount: posting.amount,
-            costSpec: posting.costSpec,
-          })),
+          postings: postings.right,
           srcCtx: makeSourceContext(filePath, directive.srcPos),
           optionMap: ctx.optionMap,
         });

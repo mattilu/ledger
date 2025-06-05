@@ -7,6 +7,7 @@ import { glob, readFile } from 'fs/promises';
 
 import { Ledger } from './ledger.js';
 import { load } from './loader.js';
+import { Metadata } from './metadata.js';
 
 const loadForTest = async (path: string) =>
   F.pipe(
@@ -54,9 +55,24 @@ function cleanup(ledger: Ledger) {
   return {
     directives: ledger.directives.map(x => ({
       ...x,
+      postings:
+        x.type === 'transaction'
+          ? x.postings.map(p => ({ ...p, meta: cleanupMeta(p.meta) }))
+          : undefined,
       srcCtx: undefined,
+      meta: cleanupMeta(x.meta),
     })),
   };
+}
+
+function cleanupMeta(meta: Metadata) {
+  if (meta.isEmpty()) {
+    return undefined;
+  }
+  return meta.map(value => ({
+    type: value.type,
+    value: value.type === 'number' ? value.value.toNumber() : value.value,
+  }));
 }
 
 function canonicalize<T>(x: T): T {

@@ -1,0 +1,64 @@
+{
+  "_tag": "Right",
+  "right": {
+    "transactions": [
+      {
+        "description": "Test",
+        "date": "2025-06-01T00:00:00.000Z",
+        "flag": "*",
+        "meta": {
+          "test": {
+            "type": "string",
+            "value": "transaction-metadata"
+          }
+        },
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "1",
+              "currency": "CHF"
+            },
+            "cost": null,
+            "flag": "*",
+            "meta": {
+              "test": {
+                "type": "string",
+                "value": "posting-metadata"
+              }
+            }
+          },
+          {
+            "account": "Assets:Bar",
+            "amount": {
+              "amount": "-1",
+              "currency": "CHF"
+            },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Bar": [
+            {
+              "amount": {
+                "amount": "-1",
+                "currency": "CHF"
+              },
+              "cost": null
+            }
+          ],
+          "Assets:Foo": [
+            {
+              "amount": {
+                "amount": "1",
+                "currency": "CHF"
+              },
+              "cost": null
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

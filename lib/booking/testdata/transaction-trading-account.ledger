@@ -1,0 +1,21 @@
+2025-06-01 * "Global Default"
+  Assets:Foo  1 CHF {{ 1 USD }}
+  Assets:Bar
+
+2025-06-01 open Assets:Foo
+  trading-account: Trading:Foo
+
+2025-06-01 * "Account Default"
+  Assets:Foo  1 CHF {{ 1 USD }}
+  Assets:Bar
+
+2025-06-01 * "Transaction Override"
+  trading-account: Trading:Baz
+  Assets:Foo  1 CHF {{ 1 USD }}
+  Assets:Baz
+
+2025-06-01 * "Posting Override"
+  trading-account: Trading:Baz
+  Assets:Foo  1 CHF {{ 1 USD }}
+    trading-account: Trading:Qux
+  Assets:Qux

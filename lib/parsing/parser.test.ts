@@ -6,6 +6,7 @@ import { glob, readFile } from 'fs/promises';
 
 import { parse } from './parser.js';
 import { LedgerSpec } from './spec/ledger.js';
+import { MetadataSpec } from './spec/metadata.js';
 
 await describe('parse', async () => {
   const tests = [];
@@ -42,8 +43,26 @@ await describe('parse', async () => {
 
 function cleanup(ledger: LedgerSpec) {
   return {
-    directives: ledger.directives.map(x => ({ ...x, srcPos: undefined })),
+    directives: ledger.directives.map(x => ({
+      ...x,
+      postings:
+        x.type === 'transaction'
+          ? x.postings.map(p => ({ ...p, meta: cleanupMeta(p.meta) }))
+          : undefined,
+      srcPos: undefined,
+      meta: cleanupMeta(x.meta),
+    })),
   };
+}
+
+function cleanupMeta(meta: MetadataSpec) {
+  if (meta.isEmpty()) {
+    return undefined;
+  }
+  return meta.map(value => ({
+    type: value.type,
+    value: value.type === 'number' ? value.value.toNumber() : value.value,
+  }));
 }
 
 function canonicalize<T>(x: T): T {

@@ -12,6 +12,7 @@ import {
   TransactionDirective,
 } from '../loading/directives/transaction.js';
 import { Ledger } from '../loading/ledger.js';
+import { Metadata } from '../loading/metadata.js';
 import { SourceContext } from '../loading/source-context.js';
 import { CostSpec } from '../parsing/spec/directives/transaction.js';
 import { Cost } from './cost.js';
@@ -207,7 +208,13 @@ function bookTransaction(
       return accountCheck;
     }
 
-    const got = bookPosting(transaction, posting, inventories, balance);
+    const got = bookPosting(
+      transaction,
+      posting,
+      inventories,
+      balance,
+      accountCheck.right,
+    );
     if (E.isLeft(got)) {
       return got;
     }
@@ -243,6 +250,7 @@ function bookTransaction(
     description: transaction.description,
     flag: transaction.flag,
     postings,
+    meta: transaction.meta,
     inventoriesBefore,
     inventoriesAfter: inventories,
     srcCtx: transaction.srcCtx,
@@ -254,9 +262,14 @@ function bookPosting(
   posting: Posting,
   inventories: InventoryMap,
   balance: Inventory,
+  accountDirective: OpenDirective | CloseDirective | null,
 ): E.Either<Error, [BookedPosting[], InventoryMap, balance: Inventory]> {
   if (posting.costSpec !== null) {
-    const tradingAccount = 'Trading:Default';
+    const tradingAccount = getTradingAccount(
+      transaction,
+      posting,
+      accountDirective?.type === 'open' ? accountDirective : null,
+    );
     if (posting.amount !== null && posting.costSpec.amounts.length > 0) {
       // Both cost and amount are known. We increase the account by the amount
       // at-cost, and post the opposite, and the cost, to the trading account.
@@ -292,18 +305,21 @@ function bookPosting(
               ),
               transaction.date,
             ),
+            meta: posting.meta,
           },
           {
             account: tradingAccount,
             flag: posting.flag,
             amount: posting.amount.neg(),
             cost: null,
+            meta: Map(),
           },
           ...posting.costSpec.amounts.map(amount => ({
             account: tradingAccount,
             flag: posting.flag,
             amount: getTotalAmount(amount, postingAmount, costSpec),
             cost: null,
+            meta: Map() as Metadata,
           })),
         ),
       );
@@ -333,6 +349,7 @@ function bookPosting(
       const bookResult = FIFO.book(
         posting.account,
         posting.flag,
+        posting.meta,
         posting.amount,
         inventories.get(posting.account) ?? Inventory.Empty,
       );
@@ -370,12 +387,14 @@ function bookPosting(
             flag: posting.flag,
             amount: posting.amount.neg(),
             cost: null,
+            meta: Map(),
           },
           ...(posting.cost?.amounts ?? []).map(cost => ({
             account: tradingAccount,
             flag: posting.flag,
             amount: cost.mul(posting.amount.amount),
             cost: null,
+            meta: Map() as Metadata,
           })),
         );
         postings.push(...postings1);
@@ -402,6 +421,7 @@ function bookPosting(
         flag: posting.flag,
         amount: posting.amount,
         cost: null,
+        meta: posting.meta,
       }),
     );
   }
@@ -414,6 +434,7 @@ function bookPosting(
       flag: posting.flag,
       amount: amount.amount.neg(),
       cost: null,
+      meta: posting.meta,
     }),
   );
   return E.right(doBook(inventories, balance, ...balancePostings));
@@ -459,6 +480,21 @@ function getPerUnitAmount(
   } else {
     return amount.div(baseAmount.amount);
   }
+}
+
+function getTradingAccount(
+  transaction: TransactionDirective,
+  posting: Posting,
+  openDirective: OpenDirective | null,
+): string {
+  for (const meta of [posting.meta, transaction.meta, openDirective?.meta]) {
+    const acc = meta?.get('trading-account');
+    if (acc?.type === 'account') {
+      return acc.value;
+    }
+  }
+
+  return 'Trading:Default';
 }
 
 function formatSourceContext(srcCtx: SourceContext) {

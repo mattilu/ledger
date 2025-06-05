@@ -16,6 +16,7 @@ import {
 import { accountParser } from '../account.js';
 import { amountParser } from '../amount.js';
 import { dateParser } from '../date.js';
+import { metadataParser } from '../metadata.js';
 import { makeSourcePosition } from '../source-position.js';
 import { stringParser } from '../string.js';
 import { TokenKind } from '../tokenizer.js';
@@ -52,12 +53,14 @@ const postingParser = apply(
     accountParser,
     opt_sc(amountParser),
     opt_sc(costSpecParser),
+    metadataParser,
   ),
-  ([flag, account, amount, costSpec]): PostingSpec => ({
+  ([flag, account, amount, costSpec, meta]): PostingSpec => ({
     account,
     flag: flag?.text ?? null,
     amount: amount ?? null,
     costSpec: costSpec ?? null,
+    meta,
   }),
 );
 
@@ -70,16 +73,18 @@ export const transactionDirectiveParser = apply(
       tok(TokenKind.ExclamationMark),
     ),
     stringParser,
+    metadataParser,
     rep_sc(postingParser),
   ),
   (
-    [date, token, description, postings],
+    [date, token, description, meta, postings],
     tokenRange,
   ): TransactionDirectiveSpec => ({
     type: 'transaction',
     date,
     description,
     flag: token.kind === TokenKind.ExclamationMark ? '!' : '*',
+    meta,
     postings,
     srcPos: makeSourcePosition(tokenRange),
   }),

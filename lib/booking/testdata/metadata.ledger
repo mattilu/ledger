@@ -1,0 +1,5 @@
+2025-06-01 * "Test"
+  test:  "transaction-metadata"
+  Assets:Foo  1 CHF
+    test: "posting-metadata"
+  Assets:Bar
