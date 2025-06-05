@@ -94,10 +94,6 @@
           "number-key": {
             "type": "number",
             "value": 1234.5
-          },
-          "amount-key": {
-            "type": "number",
-            "value": 1
           }
         },
         "postings": [
@@ -108,7 +104,13 @@
               "amount": "1",
               "currency": "CHF"
             },
-            "costSpec": null
+            "costSpec": null,
+            "meta": {
+              "amount-key": {
+                "type": "number",
+                "value": 1
+              }
+            }
           }
         ]
       }

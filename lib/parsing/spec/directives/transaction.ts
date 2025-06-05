@@ -1,6 +1,7 @@
 import { Amount } from '../../../core/amount.js';
 import { DateSpec } from '../date.js';
 import { DirectiveCommonSpec } from '../directive.js';
+import { MetadataSpec } from '../metadata.js';
 
 export interface CostSpec {
   readonly kind: 'per-unit' | 'total';
@@ -12,6 +13,7 @@ export interface PostingSpec {
   readonly flag: string | null;
   readonly amount: Amount | null;
   readonly costSpec: CostSpec | null;
+  readonly meta: MetadataSpec;
 }
 
 export interface TransactionDirectiveSpec

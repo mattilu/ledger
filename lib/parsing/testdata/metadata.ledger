@@ -16,5 +16,5 @@ option "foo" "bar"
 
 2025-06-01 * "Test"
   number-key: 1,234.5
-  amount-key:  1
   Assets:Foo  1 CHF
+    amount-key:  1

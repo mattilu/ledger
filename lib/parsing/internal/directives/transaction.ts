@@ -53,12 +53,14 @@ const postingParser = apply(
     accountParser,
     opt_sc(amountParser),
     opt_sc(costSpecParser),
+    metadataParser,
   ),
-  ([flag, account, amount, costSpec]): PostingSpec => ({
+  ([flag, account, amount, costSpec, meta]): PostingSpec => ({
     account,
     flag: flag?.text ?? null,
     amount: amount ?? null,
     costSpec: costSpec ?? null,
+    meta,
   }),
 );
 

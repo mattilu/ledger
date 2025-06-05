@@ -45,6 +45,10 @@ function cleanup(ledger: LedgerSpec) {
   return {
     directives: ledger.directives.map(x => ({
       ...x,
+      postings:
+        x.type === 'transaction'
+          ? x.postings.map(p => ({ ...p, meta: cleanupMeta(p.meta) }))
+          : undefined,
       srcPos: undefined,
       meta: cleanupMeta(x.meta),
     })),
