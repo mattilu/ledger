@@ -1,0 +1,528 @@
+{
+  "_tag": "Right",
+  "right": {
+    "transactions": [
+      {
+        "date": "2025-06-01T00:00:00.000Z",
+        "description": "Global Default",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "1",
+              "currency": "CHF"
+            },
+            "cost": {
+              "amounts": [
+                {
+                  "amount": "1",
+                  "currency": "USD"
+                }
+              ],
+              "date": "2025-06-01T00:00:00.000Z"
+            },
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": {
+              "amount": "-1",
+              "currency": "CHF"
+            },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": {
+              "amount": "1",
+              "currency": "USD"
+            },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Bar",
+            "amount": {
+              "amount": "-1",
+              "currency": "USD"
+            },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Bar": [
+            {
+              "amount": {
+                "amount": "-1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "Assets:Foo": [
+            {
+              "amount": {
+                "amount": "1",
+                "currency": "CHF"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "1",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2025-06-01T00:00:00.000Z"
+              }
+            }
+          ],
+          "Trading:Default": [
+            {
+              "amount": {
+                "amount": "-1",
+                "currency": "CHF"
+              },
+              "cost": null
+            },
+            {
+              "amount": {
+                "amount": "1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ]
+        }
+      },
+      {
+        "date": "2025-06-01T00:00:00.000Z",
+        "description": "Account Default",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "1",
+              "currency": "CHF"
+            },
+            "cost": {
+              "amounts": [
+                {
+                  "amount": "1",
+                  "currency": "USD"
+                }
+              ],
+              "date": "2025-06-01T00:00:00.000Z"
+            },
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Foo",
+            "amount": {
+              "amount": "-1",
+              "currency": "CHF"
+            },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Foo",
+            "amount": {
+              "amount": "1",
+              "currency": "USD"
+            },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Bar",
+            "amount": {
+              "amount": "-1",
+              "currency": "USD"
+            },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Bar": [
+            {
+              "amount": {
+                "amount": "-2",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "Assets:Foo": [
+            {
+              "amount": {
+                "amount": "2",
+                "currency": "CHF"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "1",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2025-06-01T00:00:00.000Z"
+              }
+            }
+          ],
+          "Trading:Default": [
+            {
+              "amount": {
+                "amount": "-1",
+                "currency": "CHF"
+              },
+              "cost": null
+            },
+            {
+              "amount": {
+                "amount": "1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "Trading:Foo": [
+            {
+              "amount": {
+                "amount": "-1",
+                "currency": "CHF"
+              },
+              "cost": null
+            },
+            {
+              "amount": {
+                "amount": "1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ]
+        }
+      },
+      {
+        "date": "2025-06-01T00:00:00.000Z",
+        "description": "Transaction Override",
+        "flag": "*",
+        "meta": {
+          "trading-account": {
+            "type": "account",
+            "value": "Trading:Baz"
+          }
+        },
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "1",
+              "currency": "CHF"
+            },
+            "cost": {
+              "amounts": [
+                {
+                  "amount": "1",
+                  "currency": "USD"
+                }
+              ],
+              "date": "2025-06-01T00:00:00.000Z"
+            },
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Baz",
+            "amount": {
+              "amount": "-1",
+              "currency": "CHF"
+            },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Baz",
+            "amount": {
+              "amount": "1",
+              "currency": "USD"
+            },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Baz",
+            "amount": {
+              "amount": "-1",
+              "currency": "USD"
+            },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Bar": [
+            {
+              "amount": {
+                "amount": "-2",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "Assets:Baz": [
+            {
+              "amount": {
+                "amount": "-1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "Assets:Foo": [
+            {
+              "amount": {
+                "amount": "3",
+                "currency": "CHF"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "1",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2025-06-01T00:00:00.000Z"
+              }
+            }
+          ],
+          "Trading:Baz": [
+            {
+              "amount": {
+                "amount": "-1",
+                "currency": "CHF"
+              },
+              "cost": null
+            },
+            {
+              "amount": {
+                "amount": "1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "Trading:Default": [
+            {
+              "amount": {
+                "amount": "-1",
+                "currency": "CHF"
+              },
+              "cost": null
+            },
+            {
+              "amount": {
+                "amount": "1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "Trading:Foo": [
+            {
+              "amount": {
+                "amount": "-1",
+                "currency": "CHF"
+              },
+              "cost": null
+            },
+            {
+              "amount": {
+                "amount": "1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ]
+        }
+      },
+      {
+        "date": "2025-06-01T00:00:00.000Z",
+        "description": "Posting Override",
+        "flag": "*",
+        "meta": {
+          "trading-account": {
+            "type": "account",
+            "value": "Trading:Baz"
+          }
+        },
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "1",
+              "currency": "CHF"
+            },
+            "cost": {
+              "amounts": [
+                {
+                  "amount": "1",
+                  "currency": "USD"
+                }
+              ],
+              "date": "2025-06-01T00:00:00.000Z"
+            },
+            "flag": "*",
+            "meta": {
+              "trading-account": {
+                "type": "account",
+                "value": "Trading:Qux"
+              }
+            }
+          },
+          {
+            "account": "Trading:Qux",
+            "amount": {
+              "amount": "-1",
+              "currency": "CHF"
+            },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Qux",
+            "amount": {
+              "amount": "1",
+              "currency": "USD"
+            },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Qux",
+            "amount": {
+              "amount": "-1",
+              "currency": "USD"
+            },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Bar": [
+            {
+              "amount": {
+                "amount": "-2",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "Assets:Baz": [
+            {
+              "amount": {
+                "amount": "-1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "Assets:Foo": [
+            {
+              "amount": {
+                "amount": "4",
+                "currency": "CHF"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "1",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2025-06-01T00:00:00.000Z"
+              }
+            }
+          ],
+          "Assets:Qux": [
+            {
+              "amount": {
+                "amount": "-1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "Trading:Baz": [
+            {
+              "amount": {
+                "amount": "-1",
+                "currency": "CHF"
+              },
+              "cost": null
+            },
+            {
+              "amount": {
+                "amount": "1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "Trading:Default": [
+            {
+              "amount": {
+                "amount": "-1",
+                "currency": "CHF"
+              },
+              "cost": null
+            },
+            {
+              "amount": {
+                "amount": "1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "Trading:Foo": [
+            {
+              "amount": {
+                "amount": "-1",
+                "currency": "CHF"
+              },
+              "cost": null
+            },
+            {
+              "amount": {
+                "amount": "1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "Trading:Qux": [
+            {
+              "amount": {
+                "amount": "-1",
+                "currency": "CHF"
+              },
+              "cost": null
+            },
+            {
+              "amount": {
+                "amount": "1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

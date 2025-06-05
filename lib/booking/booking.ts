@@ -208,7 +208,13 @@ function bookTransaction(
       return accountCheck;
     }
 
-    const got = bookPosting(transaction, posting, inventories, balance);
+    const got = bookPosting(
+      transaction,
+      posting,
+      inventories,
+      balance,
+      accountCheck.right,
+    );
     if (E.isLeft(got)) {
       return got;
     }
@@ -256,9 +262,14 @@ function bookPosting(
   posting: Posting,
   inventories: InventoryMap,
   balance: Inventory,
+  accountDirective: OpenDirective | CloseDirective | null,
 ): E.Either<Error, [BookedPosting[], InventoryMap, balance: Inventory]> {
   if (posting.costSpec !== null) {
-    const tradingAccount = 'Trading:Default';
+    const tradingAccount = getTradingAccount(
+      transaction,
+      posting,
+      accountDirective?.type === 'open' ? accountDirective : null,
+    );
     if (posting.amount !== null && posting.costSpec.amounts.length > 0) {
       // Both cost and amount are known. We increase the account by the amount
       // at-cost, and post the opposite, and the cost, to the trading account.
@@ -469,6 +480,21 @@ function getPerUnitAmount(
   } else {
     return amount.div(baseAmount.amount);
   }
+}
+
+function getTradingAccount(
+  transaction: TransactionDirective,
+  posting: Posting,
+  openDirective: OpenDirective | null,
+): string {
+  for (const meta of [posting.meta, transaction.meta, openDirective?.meta]) {
+    const acc = meta?.get('trading-account');
+    if (acc?.type === 'account') {
+      return acc.value;
+    }
+  }
+
+  return 'Trading:Default';
 }
 
 function formatSourceContext(srcCtx: SourceContext) {
