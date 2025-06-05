@@ -5,6 +5,7 @@ import { either as E, function as F } from 'fp-ts';
 import { glob, readFile } from 'fs/promises';
 
 import { load } from '../loading/loader.js';
+import { Metadata } from '../loading/metadata.js';
 import { book } from './booking.js';
 import { BookedLedger } from './ledger.js';
 
@@ -49,11 +50,23 @@ function cleanup(ledger: BookedLedger) {
   return {
     transactions: ledger.transactions.map(x => ({
       ...x,
+      meta: cleanupMeta(x.meta),
+      postings: x.postings.map(p => ({ ...p, meta: cleanupMeta(p.meta) })),
       inventoriesBefore: undefined,
       inventoriesAfter: x.inventoriesAfter.map(x => x.getPositions()),
       srcCtx: undefined,
     })),
   };
+}
+
+function cleanupMeta(meta: Metadata) {
+  if (meta.isEmpty()) {
+    return undefined;
+  }
+  return meta.map(value => ({
+    type: value.type,
+    value: value.type === 'number' ? value.value.toNumber() : value.value,
+  }));
 }
 
 function canonicalize<T>(x: T): T {

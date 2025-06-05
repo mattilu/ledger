@@ -3,8 +3,10 @@ import { describe, it } from 'node:test';
 
 import { ExactNumber } from 'exactnumber';
 import { either as E } from 'fp-ts';
+import { Map } from 'immutable';
 
 import { Amount } from '../../core/amount.js';
+import { Metadata } from '../../loading/metadata.js';
 import { Cost } from '../cost.js';
 import { Inventory } from '../inventory.js';
 import { Position } from '../position.js';
@@ -28,22 +30,41 @@ const posting = (
   amount: Amount,
   cost: Cost | null,
   flag = '*',
+  meta: Metadata = Map(),
 ): BookedPosting => ({
   account,
   flag,
   amount,
   cost,
+  meta,
 });
 
 const TestAccount = 'Assets:Test';
 const CHF = 'CHF';
 const USD = 'USD';
 
+const book = (
+  amount: Amount,
+  inventory: Inventory,
+  options?: {
+    account?: string;
+    flag?: string;
+    meta?: Metadata;
+  },
+) =>
+  FIFO.book(
+    options?.account ?? TestAccount,
+    options?.flag ?? '*',
+    options?.meta ?? Map(),
+    amount,
+    inventory,
+  );
+
 await describe('FIFO', async () => {
   await describe('#book', async () => {
     await it('returns no posting when amount is zero', () => {
       const inventory0 = inventory([]);
-      const got = FIFO.book(TestAccount, '*', amount(0, CHF), inventory0);
+      const got = book(amount(0, CHF), inventory0);
       assert.deepEqual(got, E.right([[], inventory0]));
     });
 
@@ -58,14 +79,13 @@ await describe('FIFO', async () => {
           cost('1.2', CHF, new Date('2025-04-02T00:00:00Z')),
         ),
       ]);
-      const got = FIFO.book(TestAccount, '!', amount(-1, USD), inventory0);
+      const got = book(amount(-1, USD), inventory0);
 
       const wantPostings = [
         posting(
           TestAccount,
           amount(-1, USD),
           cost('1.1', CHF, new Date('2025-04-01T00:00:00Z')),
-          '!',
         ),
       ];
 
@@ -90,7 +110,7 @@ await describe('FIFO', async () => {
           cost('1.2', CHF, new Date('2025-04-02T00:00:00Z')),
         ),
       ]);
-      const got = FIFO.book(TestAccount, '*', amount('-0.5', USD), inventory0);
+      const got = book(amount('-0.5', USD), inventory0);
 
       const wantPostings = [
         posting(
@@ -129,7 +149,7 @@ await describe('FIFO', async () => {
           cost('1.3', CHF, new Date('2025-04-03T00:00:00Z')),
         ),
       ]);
-      const got = FIFO.book(TestAccount, '*', amount('-2.5', USD), inventory0);
+      const got = book(amount('-2.5', USD), inventory0);
 
       const wantPostings = [
         posting(
@@ -174,7 +194,7 @@ await describe('FIFO', async () => {
           cost('1.3', CHF, new Date('2025-04-03T00:00:00Z')),
         ),
       ]);
-      const got = FIFO.book(TestAccount, '*', amount(-3, USD), inventory0);
+      const got = book(amount(-3, USD), inventory0);
 
       const wantPostings = [
         posting(
@@ -206,7 +226,7 @@ await describe('FIFO', async () => {
           cost('1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
       ]);
-      const got = FIFO.book(TestAccount, '*', amount('-1.1', USD), inventory0);
+      const got = book(amount('-1.1', USD), inventory0);
 
       assert(E.isLeft(got));
       assert.match(
@@ -217,7 +237,7 @@ await describe('FIFO', async () => {
 
     await it('ignores positions not held at cost', () => {
       const inventory0 = inventory([position(amount(1, USD))]);
-      const got = FIFO.book(TestAccount, '*', amount(-1, USD), inventory0);
+      const got = book(amount(-1, USD), inventory0);
 
       assert(E.isLeft(got));
       assert.match(
@@ -237,7 +257,7 @@ await describe('FIFO', async () => {
           cost('1.2', CHF, new Date('2025-04-02T00:00:00Z')),
         ),
       ]);
-      const got = FIFO.book(TestAccount, '*', amount(-1, USD), inventory0);
+      const got = book(amount(-1, USD), inventory0);
 
       const wantPostings = [
         posting(
@@ -264,7 +284,7 @@ await describe('FIFO', async () => {
           cost('1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
       ]);
-      const got = FIFO.book(TestAccount, '*', amount(1, USD), inventory0);
+      const got = book(amount(1, USD), inventory0);
 
       const wantPostings = [
         posting(
@@ -286,7 +306,7 @@ await describe('FIFO', async () => {
           cost('-1.1', CHF, new Date('2025-04-01T00:00:00Z')),
         ),
       ]);
-      const got = FIFO.book(TestAccount, '*', amount(-1, USD), inventory0);
+      const got = book(amount(-1, USD), inventory0);
 
       const wantPostings = [
         posting(
@@ -311,12 +331,7 @@ await describe('FIFO', async () => {
         ),
       ]);
 
-      const got = FIFO.book(
-        TestAccount,
-        '*',
-        amount(-2, 'ETHBTC-LP'),
-        inventory0,
-      );
+      const got = book(amount(-2, 'ETHBTC-LP'), inventory0);
 
       const wantPostings = [
         posting(
@@ -328,6 +343,55 @@ await describe('FIFO', async () => {
           ),
         ),
       ];
+      const wantInventory = inventory([]);
+
+      assert.deepEqual(got, E.right([wantPostings, wantInventory]));
+    });
+
+    await it('propagates the flag', () => {
+      const inventory0 = inventory([
+        position(
+          amount(1, USD),
+          cost('1', CHF, new Date('2025-06-01T00:00:00Z')),
+        ),
+      ]);
+      const got = book(amount(-1, USD), inventory0, { flag: '!' });
+
+      const wantPostings = [
+        posting(
+          TestAccount,
+          amount(-1, USD),
+          cost('1', CHF, new Date('2025-06-01T00:00:00Z')),
+          '!',
+        ),
+      ];
+
+      const wantInventory = inventory([]);
+
+      assert.deepEqual(got, E.right([wantPostings, wantInventory]));
+    });
+
+    await it('propagates the metadata', () => {
+      const inventory0 = inventory([
+        position(
+          amount(1, USD),
+          cost('1', CHF, new Date('2025-06-01T00:00:00Z')),
+        ),
+      ]);
+      const got = book(amount(-1, USD), inventory0, {
+        meta: Map([['test-key', { type: 'string', value: 'test-value' }]]),
+      });
+
+      const wantPostings = [
+        posting(
+          TestAccount,
+          amount(-1, USD),
+          cost('1', CHF, new Date('2025-06-01T00:00:00Z')),
+          '*',
+          Map([['test-key', { type: 'string', value: 'test-value' }]]),
+        ),
+      ];
+
       const wantInventory = inventory([]);
 
       assert.deepEqual(got, E.right([wantPostings, wantInventory]));

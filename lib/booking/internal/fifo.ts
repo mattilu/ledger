@@ -1,6 +1,7 @@
 import { either as E } from 'fp-ts';
 
 import { Amount } from '../../core/amount.js';
+import { Metadata } from '../../loading/metadata.js';
 import { makeHeap, popHeap } from '../../utils/heap.js';
 import { Cost } from '../cost.js';
 import { Inventory } from '../inventory.js';
@@ -20,6 +21,7 @@ class FifoBookingMethod implements BookingMethod {
   book(
     account: string,
     flag: string,
+    meta: Metadata,
     amount: Amount,
     inventory: Inventory,
   ): E.Either<Error, [postings: BookedPosting[], newInventory: Inventory]> {
@@ -64,6 +66,7 @@ class FifoBookingMethod implements BookingMethod {
         flag,
         amount: positionToAdd.amount,
         cost: positionToAdd.cost,
+        meta,
       });
 
       amount = amount.sub(toAdd);

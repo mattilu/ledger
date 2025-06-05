@@ -12,6 +12,7 @@ import {
   TransactionDirective,
 } from '../loading/directives/transaction.js';
 import { Ledger } from '../loading/ledger.js';
+import { Metadata } from '../loading/metadata.js';
 import { SourceContext } from '../loading/source-context.js';
 import { CostSpec } from '../parsing/spec/directives/transaction.js';
 import { Cost } from './cost.js';
@@ -243,6 +244,7 @@ function bookTransaction(
     description: transaction.description,
     flag: transaction.flag,
     postings,
+    meta: transaction.meta,
     inventoriesBefore,
     inventoriesAfter: inventories,
     srcCtx: transaction.srcCtx,
@@ -292,18 +294,21 @@ function bookPosting(
               ),
               transaction.date,
             ),
+            meta: posting.meta,
           },
           {
             account: tradingAccount,
             flag: posting.flag,
             amount: posting.amount.neg(),
             cost: null,
+            meta: Map(),
           },
           ...posting.costSpec.amounts.map(amount => ({
             account: tradingAccount,
             flag: posting.flag,
             amount: getTotalAmount(amount, postingAmount, costSpec),
             cost: null,
+            meta: Map() as Metadata,
           })),
         ),
       );
@@ -333,6 +338,7 @@ function bookPosting(
       const bookResult = FIFO.book(
         posting.account,
         posting.flag,
+        posting.meta,
         posting.amount,
         inventories.get(posting.account) ?? Inventory.Empty,
       );
@@ -370,12 +376,14 @@ function bookPosting(
             flag: posting.flag,
             amount: posting.amount.neg(),
             cost: null,
+            meta: Map(),
           },
           ...(posting.cost?.amounts ?? []).map(cost => ({
             account: tradingAccount,
             flag: posting.flag,
             amount: cost.mul(posting.amount.amount),
             cost: null,
+            meta: Map() as Metadata,
           })),
         );
         postings.push(...postings1);
@@ -402,6 +410,7 @@ function bookPosting(
         flag: posting.flag,
         amount: posting.amount,
         cost: null,
+        meta: posting.meta,
       }),
     );
   }
@@ -414,6 +423,7 @@ function bookPosting(
       flag: posting.flag,
       amount: amount.amount.neg(),
       cost: null,
+      meta: posting.meta,
     }),
   );
   return E.right(doBook(inventories, balance, ...balancePostings));
