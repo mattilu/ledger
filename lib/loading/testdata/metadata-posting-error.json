@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "Invalid date '2025-06-66' at lib/loading/testdata/metadata-posting-error.ledger:1"
+  }
+}

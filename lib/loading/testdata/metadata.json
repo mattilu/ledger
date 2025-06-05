@@ -56,10 +56,6 @@
           "amount-key": {
             "type": "number",
             "value": 1
-          },
-          "number-key": {
-            "type": "number",
-            "value": 1234.5
           }
         },
         "postings": [
@@ -70,7 +66,13 @@
               "currency": "CHF"
             },
             "costSpec": null,
-            "flag": "*"
+            "flag": "*",
+            "meta": {
+              "number-key": {
+                "type": "number",
+                "value": 1234.5
+              }
+            }
           }
         ],
         "optionMap": {}
