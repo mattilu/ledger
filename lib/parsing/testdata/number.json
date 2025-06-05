@@ -13,42 +13,404 @@
           {
             "account": "Assets:Foo",
             "amount": {
-              "amount": "0",
+              "amount": {
+                "type": "literal",
+                "value": "0"
+              },
               "currency": "CHF"
             }
           },
           {
             "account": "Assets:Foo",
             "amount": {
-              "amount": "0",
+              "amount": {
+                "type": "literal",
+                "value": "0"
+              },
               "currency": "CHF"
             }
           },
           {
             "account": "Assets:Foo",
             "amount": {
-              "amount": "0",
+              "amount": {
+                "type": "literal",
+                "value": "0"
+              },
               "currency": "CHF"
             }
           },
           {
             "account": "Assets:Foo",
             "amount": {
-              "amount": "1000",
+              "amount": {
+                "type": "literal",
+                "value": "1000"
+              },
               "currency": "CHF"
             }
           },
           {
             "account": "Assets:Foo",
             "amount": {
-              "amount": "1000",
+              "amount": {
+                "type": "literal",
+                "value": "1000"
+              },
               "currency": "CHF"
             }
           },
           {
             "account": "Assets:Foo",
             "amount": {
-              "amount": "1000000",
+              "amount": {
+                "type": "literal",
+                "value": "1000000"
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "literal",
+                "value": "-1000000"
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "literal",
+                "value": "-1000"
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "literal",
+                "value": "-1000"
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "literal",
+                "value": "0"
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "literal",
+                "value": "0"
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "literal",
+                "value": "0"
+              },
+              "currency": "CHF"
+            }
+          }
+        ]
+      },
+      {
+        "type": "balance",
+        "date": {
+          "date": "2025-06-01",
+          "time": null,
+          "timezone": null
+        },
+        "balances": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "unary",
+                "op": "+",
+                "expr": {
+                  "type": "literal",
+                  "value": "1"
+                }
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "unary",
+                "op": "-",
+                "expr": {
+                  "type": "literal",
+                  "value": "1"
+                }
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "literal",
+                "value": "1"
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "unary",
+                "op": "+",
+                "expr": {
+                  "type": "literal",
+                  "value": "1"
+                }
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "unary",
+                "op": "-",
+                "expr": {
+                  "type": "literal",
+                  "value": "1"
+                }
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "binary",
+                "op": "+",
+                "expr1": {
+                  "type": "literal",
+                  "value": "2"
+                },
+                "expr2": {
+                  "type": "literal",
+                  "value": "1"
+                }
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "binary",
+                "op": "-",
+                "expr1": {
+                  "type": "literal",
+                  "value": "2"
+                },
+                "expr2": {
+                  "type": "literal",
+                  "value": "1"
+                }
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "binary",
+                "op": "*",
+                "expr1": {
+                  "type": "literal",
+                  "value": "2"
+                },
+                "expr2": {
+                  "type": "literal",
+                  "value": "1"
+                }
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "binary",
+                "op": "/",
+                "expr1": {
+                  "type": "literal",
+                  "value": "2"
+                },
+                "expr2": {
+                  "type": "literal",
+                  "value": "1"
+                }
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "binary",
+                "op": "+",
+                "expr1": {
+                  "type": "binary",
+                  "op": "+",
+                  "expr1": {
+                    "type": "literal",
+                    "value": "1"
+                  },
+                  "expr2": {
+                    "type": "binary",
+                    "op": "*",
+                    "expr1": {
+                      "type": "literal",
+                      "value": "2"
+                    },
+                    "expr2": {
+                      "type": "literal",
+                      "value": "3"
+                    }
+                  }
+                },
+                "expr2": {
+                  "type": "literal",
+                  "value": "4"
+                }
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "binary",
+                "op": "+",
+                "expr1": {
+                  "type": "binary",
+                  "op": "*",
+                  "expr1": {
+                    "type": "binary",
+                    "op": "+",
+                    "expr1": {
+                      "type": "literal",
+                      "value": "1"
+                    },
+                    "expr2": {
+                      "type": "literal",
+                      "value": "2"
+                    }
+                  },
+                  "expr2": {
+                    "type": "literal",
+                    "value": "3"
+                  }
+                },
+                "expr2": {
+                  "type": "literal",
+                  "value": "4"
+                }
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "binary",
+                "op": "+",
+                "expr1": {
+                  "type": "literal",
+                  "value": "1"
+                },
+                "expr2": {
+                  "type": "binary",
+                  "op": "*",
+                  "expr1": {
+                    "type": "literal",
+                    "value": "2"
+                  },
+                  "expr2": {
+                    "type": "binary",
+                    "op": "+",
+                    "expr1": {
+                      "type": "literal",
+                      "value": "3"
+                    },
+                    "expr2": {
+                      "type": "literal",
+                      "value": "4"
+                    }
+                  }
+                }
+              },
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": {
+                "type": "binary",
+                "op": "*",
+                "expr1": {
+                  "type": "binary",
+                  "op": "+",
+                  "expr1": {
+                    "type": "literal",
+                    "value": "1"
+                  },
+                  "expr2": {
+                    "type": "literal",
+                    "value": "2"
+                  }
+                },
+                "expr2": {
+                  "type": "binary",
+                  "op": "+",
+                  "expr1": {
+                    "type": "literal",
+                    "value": "3"
+                  },
+                  "expr2": {
+                    "type": "literal",
+                    "value": "4"
+                  }
+                }
+              },
               "currency": "CHF"
             }
           }

@@ -8,13 +8,13 @@ import { Directive, DirectiveCommon } from '../loading/directive.js';
 import { CloseDirective } from '../loading/directives/close.js';
 import { OpenDirective } from '../loading/directives/open.js';
 import {
+  CostSpec,
   Posting,
   TransactionDirective,
 } from '../loading/directives/transaction.js';
 import { Ledger } from '../loading/ledger.js';
 import { Metadata } from '../loading/metadata.js';
 import { SourceContext } from '../loading/source-context.js';
-import { CostSpec } from '../parsing/spec/directives/transaction.js';
 import { Cost } from './cost.js';
 import { BookingError } from './error.js';
 import { FIFO } from './internal/fifo.js';

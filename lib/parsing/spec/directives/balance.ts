@@ -1,4 +1,4 @@
-import { Amount } from '../../../core/amount.js';
+import { AmountSpec } from '../amount.js';
 import { DateSpec } from '../date.js';
 import { DirectiveCommonSpec } from '../directive.js';
 
@@ -10,6 +10,6 @@ export interface BalanceDirectiveSpec extends DirectiveCommonSpec<'balance'> {
   readonly date: DateSpec;
   readonly balances: ReadonlyArray<{
     readonly account: string;
-    readonly amount: Amount;
+    readonly amount: AmountSpec;
   }>;
 }

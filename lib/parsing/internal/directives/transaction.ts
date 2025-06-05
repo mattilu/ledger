@@ -49,7 +49,7 @@ const costSpecParser = apply(
 
 const postingParser = apply(
   seq(
-    opt_sc(alt_sc(tok(TokenKind.Star), tok(TokenKind.ExclamationMark))),
+    opt_sc(alt_sc(tok(TokenKind.Times), tok(TokenKind.ExclamationMark))),
     accountParser,
     opt_sc(amountParser),
     opt_sc(costSpecParser),
@@ -69,7 +69,7 @@ export const transactionDirectiveParser = apply(
     dateParser,
     alt_sc(
       tok(TokenKind.KEYWORD_txn),
-      tok(TokenKind.Star),
+      tok(TokenKind.Times),
       tok(TokenKind.ExclamationMark),
     ),
     stringParser,

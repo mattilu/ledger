@@ -1,17 +1,25 @@
 import { dirname, isAbsolute, join } from 'node:path';
 
+import { ExactNumberType } from 'exactnumber';
 import { either as E, function as F, readonlyArray as A } from 'fp-ts';
 import { readFile } from 'fs/promises';
 import { Map as ImmutableMap } from 'immutable';
 import { resolve } from 'path';
 
+import { Amount } from '../core/amount.js';
 import { parse } from '../parsing/parser.js';
 import { SourcePosition } from '../parsing/source-position.js';
+import { AmountSpec } from '../parsing/spec/amount.js';
 import { DateSpec } from '../parsing/spec/date.js';
 import { DirectiveCommonSpec } from '../parsing/spec/directive.js';
+import { CostSpec } from '../parsing/spec/directives/transaction.js';
+import { Expression } from '../parsing/spec/expression.js';
 import { MetadataSpec } from '../parsing/spec/metadata.js';
 import { Directive } from './directive.js';
-import { Posting } from './directives/transaction.js';
+import {
+  CostSpec as EvaluatedCostSpec,
+  Posting,
+} from './directives/transaction.js';
 import { LoadError } from './error.js';
 import { Ledger } from './ledger.js';
 import { Metadata, MetadataValue } from './metadata.js';
@@ -131,6 +139,16 @@ async function doLoad(
           return date;
         }
         entries.push([key, { type: 'date', value: date.right }]);
+      } else if (value.type === 'number') {
+        entries.push([
+          key,
+          { type: 'number', value: evaluateExpression(value.value) },
+        ]);
+      } else if (value.type === 'amount') {
+        entries.push([
+          key,
+          { type: 'amount', value: evaluateAmount(value.value) },
+        ]);
       } else {
         entries.push([key, value]);
       }
@@ -154,7 +172,10 @@ async function doLoad(
           type: 'balance',
           date: date.right,
           meta: meta.right,
-          balances: directive.balances,
+          balances: directive.balances.map(balance => ({
+            account: balance.account,
+            amount: evaluateAmount(balance.amount),
+          })),
           srcCtx: makeSourceContext(filePath, directive.srcPos),
           optionMap: ctx.optionMap,
         });
@@ -238,13 +259,19 @@ async function doLoad(
           A.traverse(E.Applicative)(posting =>
             F.pipe(
               makeMeta({ meta: posting.meta, srcPos: directive.srcPos }),
-              E.map((meta: Metadata) => ({
-                account: posting.account,
-                flag: posting.flag ?? directive.flag,
-                amount: posting.amount,
-                costSpec: posting.costSpec,
-                meta,
-              })),
+              E.map(
+                (meta: Metadata): Posting => ({
+                  account: posting.account,
+                  flag: posting.flag ?? directive.flag,
+                  amount: posting.amount
+                    ? evaluateAmount(posting.amount)
+                    : null,
+                  costSpec: posting.costSpec
+                    ? evaluateCostSpec(posting.costSpec)
+                    : null,
+                  meta,
+                }),
+              ),
             ),
           ),
         );
@@ -302,4 +329,40 @@ function formatSourceContext(stackTrace: readonly SourceContext[]) {
   return stackTrace.length > 0
     ? `${stackTrace[0].filePath}:${stackTrace[0].row}`
     : '<main>';
+}
+
+function evaluateExpression(expression: Expression): ExactNumberType {
+  switch (expression.type) {
+    case 'literal':
+      return expression.value;
+    case 'unary': {
+      const expr = evaluateExpression(expression.expr);
+      return expression.op === '+' ? expr : expr.neg();
+    }
+    case 'binary': {
+      const expr1 = evaluateExpression(expression.expr1);
+      const expr2 = evaluateExpression(expression.expr2);
+      switch (expression.op) {
+        case '+':
+          return expr1.add(expr2);
+        case '-':
+          return expr1.sub(expr2);
+        case '*':
+          return expr1.mul(expr2);
+        case '/':
+          return expr1.div(expr2);
+      }
+    }
+  }
+}
+
+function evaluateAmount(amount: AmountSpec): Amount {
+  return new Amount(evaluateExpression(amount.amount), amount.currency);
+}
+
+function evaluateCostSpec(costSpec: CostSpec): EvaluatedCostSpec {
+  return {
+    kind: costSpec.kind,
+    amounts: costSpec.amounts.map(evaluateAmount),
+  };
 }

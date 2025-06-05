@@ -13,7 +13,10 @@
           {
             "account": "Assets:Foo",
             "amount": {
-              "amount": "1",
+              "amount": {
+                "type": "literal",
+                "value": "1"
+              },
               "currency": "CHF"
             }
           }
@@ -30,21 +33,30 @@
           {
             "account": "Assets:Bar",
             "amount": {
-              "amount": "1",
+              "amount": {
+                "type": "literal",
+                "value": "1"
+              },
               "currency": "CHF"
             }
           },
           {
             "account": "Assets:Bar",
             "amount": {
-              "amount": "1",
+              "amount": {
+                "type": "literal",
+                "value": "1"
+              },
               "currency": "EUR"
             }
           },
           {
             "account": "Assets:Baz",
             "amount": {
-              "amount": "1",
+              "amount": {
+                "type": "literal",
+                "value": "1"
+              },
               "currency": "USD"
             }
           }

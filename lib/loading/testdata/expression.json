@@ -1,0 +1,105 @@
+{
+  "_tag": "Right",
+  "right": {
+    "directives": [
+      {
+        "type": "balance",
+        "date": "2025-06-01T00:00:00.000Z",
+        "optionMap": {},
+        "balances": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "1",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "-1",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "1",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "1",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "-1",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "5",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "1",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "6",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "1.5",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "11",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "13",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "15",
+              "currency": "CHF"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "21",
+              "currency": "CHF"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

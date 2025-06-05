@@ -1,0 +1,14 @@
+2025-06-01 balance
+  Assets:Foo                + 1 CHF
+  Assets:Foo                - 1 CHF
+  Assets:Foo                (1) CHF
+  Assets:Foo               +(1) CHF
+  Assets:Foo               -(1) CHF
+  Assets:Foo              3 + 2 CHF
+  Assets:Foo              3 - 2 CHF
+  Assets:Foo              3 * 2 CHF
+  Assets:Foo              3 / 2 CHF
+  Assets:Foo      1 + 2 * 3 + 4 CHF
+  Assets:Foo    (1 + 2) * 3 + 4 CHF
+  Assets:Foo    1 + 2 * (3 + 4) CHF
+  Assets:Foo  (1 + 2) * (3 + 4) CHF

@@ -1,7 +1,11 @@
 import { Amount } from '../../core/amount.js';
-import { CostSpec } from '../../parsing/spec/directives/transaction.js';
 import { DirectiveCommon } from '../directive.js';
 import { Metadata } from '../metadata.js';
+
+export interface CostSpec {
+  readonly kind: 'per-unit' | 'total';
+  readonly amounts: Amount[];
+}
 
 export interface Posting {
   readonly account: string;

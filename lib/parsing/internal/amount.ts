@@ -1,10 +1,10 @@
 import { apply, seq } from 'typescript-parsec';
 
-import { Amount } from '../../core/amount.js';
+import { AmountSpec } from '../spec/amount.js';
 import { currencyParser } from './currency.js';
-import { numberParser } from './number.js';
+import { expressionParser } from './expression.js';
 
 export const amountParser = apply(
-  seq(numberParser, currencyParser),
-  ([amount, currency]) => new Amount(amount, currency),
+  seq(expressionParser, currencyParser),
+  ([amount, currency]): AmountSpec => ({ amount, currency }),
 );

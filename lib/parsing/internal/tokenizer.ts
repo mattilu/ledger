@@ -19,7 +19,13 @@ export enum TokenKind {
   Account,
   Currency,
 
-  Star,
+  Plus,
+  Minus,
+  Times,
+  Divide,
+
+  OpenParen,
+  CloseParen,
   OpenBrace,
   CloseBrace,
   DoubleOpenBrace,
@@ -33,7 +39,7 @@ export enum TokenKind {
 }
 
 const tokenizer = buildLexer([
-  [true, /^[+-]?\d+(?:,\d{3})*(?:[.]\d*)?/g, TokenKind.NumberLiteral],
+  [true, /^[-]?\d+(?:,\d{3})*(?:[.]\d*)?/g, TokenKind.NumberLiteral],
   [true, /^\d{4}-\d{2}-\d{2}/g, TokenKind.DateLiteral],
   [true, /^\d{2}:\d{2}(?::\d{2})?/g, TokenKind.TimeLiteral],
   [true, /^[+-]\d{2}:\d{2}|^Z\b/g, TokenKind.TimeZoneLiteral],
@@ -55,7 +61,13 @@ const tokenizer = buildLexer([
   ],
   [true, /^[A-Z][A-Z0-9._-]+/g, TokenKind.Currency],
 
-  [true, /^[*]/g, TokenKind.Star],
+  [true, /^[+]/g, TokenKind.Plus],
+  [true, /^[-]/g, TokenKind.Minus],
+  [true, /^[*]/g, TokenKind.Times],
+  [true, /^[/]/g, TokenKind.Divide],
+
+  [true, /^[(]/g, TokenKind.OpenParen],
+  [true, /^[)]/g, TokenKind.CloseParen],
   [true, /^{/g, TokenKind.OpenBrace],
   [true, /^}/g, TokenKind.CloseBrace],
   [true, /^{{/g, TokenKind.DoubleOpenBrace],

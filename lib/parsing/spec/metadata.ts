@@ -1,16 +1,16 @@
-import { ExactNumberType } from 'exactnumber';
 import { Map } from 'immutable';
 
-import { Amount } from '../../core/amount.js';
+import { AmountSpec } from './amount.js';
 import { DateSpec } from './date.js';
+import { Expression } from './expression.js';
 
 export type MetadataValueSpec = Readonly<
   | { type: 'string'; value: string }
   | { type: 'account'; value: string }
   | { type: 'currency'; value: string }
   | { type: 'date'; value: DateSpec }
-  | { type: 'number'; value: ExactNumberType }
-  | { type: 'amount'; value: Amount }
+  | { type: 'number'; value: Expression }
+  | { type: 'amount'; value: AmountSpec }
 >;
 
 export type MetadataSpec = Map<string, MetadataValueSpec>;

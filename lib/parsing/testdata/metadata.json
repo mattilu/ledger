@@ -69,7 +69,10 @@
           {
             "account": "Assets:Foo",
             "amount": {
-              "amount": "0",
+              "amount": {
+                "type": "literal",
+                "value": "0"
+              },
               "currency": "CHF"
             }
           }
@@ -93,7 +96,10 @@
         "meta": {
           "number-key": {
             "type": "number",
-            "value": 1234.5
+            "value": {
+              "type": "literal",
+              "value": "1234.5"
+            }
           }
         },
         "postings": [
@@ -101,14 +107,20 @@
             "account": "Assets:Foo",
             "flag": null,
             "amount": {
-              "amount": "1",
+              "amount": {
+                "type": "literal",
+                "value": "1"
+              },
               "currency": "CHF"
             },
             "costSpec": null,
             "meta": {
               "amount-key": {
                 "type": "number",
-                "value": 1
+                "value": {
+                  "type": "literal",
+                  "value": "1"
+                }
               }
             }
           }

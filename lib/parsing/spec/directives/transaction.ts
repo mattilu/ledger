@@ -1,17 +1,17 @@
-import { Amount } from '../../../core/amount.js';
+import { AmountSpec } from '../amount.js';
 import { DateSpec } from '../date.js';
 import { DirectiveCommonSpec } from '../directive.js';
 import { MetadataSpec } from '../metadata.js';
 
 export interface CostSpec {
   readonly kind: 'per-unit' | 'total';
-  readonly amounts: Amount[];
+  readonly amounts: AmountSpec[];
 }
 
 export interface PostingSpec {
   readonly account: string;
   readonly flag: string | null;
-  readonly amount: Amount | null;
+  readonly amount: AmountSpec | null;
   readonly costSpec: CostSpec | null;
   readonly meta: MetadataSpec;
 }

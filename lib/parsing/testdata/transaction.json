@@ -45,7 +45,10 @@
             "account": "Assets:Foo",
             "flag": null,
             "amount": {
-              "amount": "10",
+              "amount": {
+                "type": "literal",
+                "value": "10"
+              },
               "currency": "CHF"
             },
             "costSpec": null
@@ -54,7 +57,10 @@
             "account": "Income:Foo",
             "flag": null,
             "amount": {
-              "amount": "-10",
+              "amount": {
+                "type": "literal",
+                "value": "-10"
+              },
               "currency": "CHF"
             },
             "costSpec": null
@@ -75,7 +81,10 @@
             "account": "Assets:Foo",
             "flag": null,
             "amount": {
-              "amount": "-10",
+              "amount": {
+                "type": "literal",
+                "value": "-10"
+              },
               "currency": "CHF"
             },
             "costSpec": null
@@ -102,14 +111,20 @@
             "account": "Assets:Foo",
             "flag": null,
             "amount": {
-              "amount": "10",
+              "amount": {
+                "type": "literal",
+                "value": "10"
+              },
               "currency": "CHF"
             },
             "costSpec": {
               "kind": "total",
               "amounts": [
                 {
-                  "amount": "10",
+                  "amount": {
+                    "type": "literal",
+                    "value": "10"
+                  },
                   "currency": "EUR"
                 }
               ]
@@ -137,14 +152,20 @@
             "account": "Assets:Foo",
             "flag": null,
             "amount": {
-              "amount": "10",
+              "amount": {
+                "type": "literal",
+                "value": "10"
+              },
               "currency": "CHF"
             },
             "costSpec": {
               "kind": "per-unit",
               "amounts": [
                 {
-                  "amount": "1",
+                  "amount": {
+                    "type": "literal",
+                    "value": "1"
+                  },
                   "currency": "EUR"
                 }
               ]
@@ -172,18 +193,27 @@
             "account": "Assets:Foo",
             "flag": null,
             "amount": {
-              "amount": "1",
+              "amount": {
+                "type": "literal",
+                "value": "1"
+              },
               "currency": "ETHBTC-LP"
             },
             "costSpec": {
               "kind": "per-unit",
               "amounts": [
                 {
-                  "amount": "1",
+                  "amount": {
+                    "type": "literal",
+                    "value": "1"
+                  },
                   "currency": "BTC"
                 },
                 {
-                  "amount": "50",
+                  "amount": {
+                    "type": "literal",
+                    "value": "50"
+                  },
                   "currency": "ETH"
                 }
               ]
@@ -211,7 +241,10 @@
             "account": "Assets:Foo",
             "flag": null,
             "amount": {
-              "amount": "-10",
+              "amount": {
+                "type": "literal",
+                "value": "-10"
+              },
               "currency": "CHF"
             },
             "costSpec": {

@@ -6,7 +6,7 @@ import { accountParser } from './account.js';
 import { amountParser } from './amount.js';
 import { currencyParser } from './currency.js';
 import { dateParser } from './date.js';
-import { numberParser } from './number.js';
+import { expressionParser } from './expression.js';
 import { stringParser } from './string.js';
 import { TokenKind } from './tokenizer.js';
 
@@ -15,7 +15,7 @@ const valueParser: Parser<TokenKind, MetadataValueSpec> = alt_sc(
   apply(accountParser, value => ({ type: 'account', value })),
   apply(currencyParser, value => ({ type: 'currency', value })),
   apply(dateParser, value => ({ type: 'date', value })),
-  apply(numberParser, value => ({ type: 'number', value })),
+  apply(expressionParser, value => ({ type: 'number', value })),
   apply(amountParser, value => ({ type: 'amount', value })),
 );
 

@@ -59,10 +59,7 @@ function cleanupMeta(meta: MetadataSpec) {
   if (meta.isEmpty()) {
     return undefined;
   }
-  return meta.map(value => ({
-    type: value.type,
-    value: value.type === 'number' ? value.value.toNumber() : value.value,
-  }));
+  return meta;
 }
 
 function canonicalize<T>(x: T): T {
