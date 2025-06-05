@@ -1,0 +1,80 @@
+{
+  "_tag": "Right",
+  "right": {
+    "directives": [
+      {
+        "type": "open",
+        "date": "2025-06-01T00:00:00.000Z",
+        "account": "Assets:Bar",
+        "currencies": [],
+        "meta": {
+          "currency-key": {
+            "type": "currency",
+            "value": "CHF"
+          }
+        },
+        "optionMap": {}
+      },
+      {
+        "type": "close",
+        "date": "2025-06-01T00:00:00.000Z",
+        "account": "Assets:Bar",
+        "meta": {
+          "date-key": {
+            "type": "date",
+            "value": "2025-06-02T00:00:00.000Z"
+          }
+        },
+        "optionMap": {}
+      },
+      {
+        "type": "balance",
+        "date": "2025-06-01T00:00:00.000Z",
+        "balances": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "0",
+              "currency": "CHF"
+            }
+          }
+        ],
+        "meta": {
+          "string-key": {
+            "type": "string",
+            "value": "string-value"
+          }
+        },
+        "optionMap": {}
+      },
+      {
+        "type": "transaction",
+        "date": "2025-06-01T00:00:00.000Z",
+        "description": "Test",
+        "flag": "*",
+        "meta": {
+          "amount-key": {
+            "type": "number",
+            "value": 1
+          },
+          "number-key": {
+            "type": "number",
+            "value": 1234.5
+          }
+        },
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "amount": {
+              "amount": "1",
+              "currency": "CHF"
+            },
+            "costSpec": null,
+            "flag": "*"
+          }
+        ],
+        "optionMap": {}
+      }
+    ]
+  }
+}
