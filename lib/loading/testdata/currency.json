@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "currency directive not implemented yet at lib/loading/testdata/currency.ledger:1"
+  }
+}

@@ -9,6 +9,8 @@ export enum TokenKind {
 
   KEYWORD_balance,
   KEYWORD_close,
+  KEYWORD_commodity,
+  KEYWORD_currency,
   KEYWORD_load,
   KEYWORD_open,
   KEYWORD_option,
@@ -47,6 +49,8 @@ const tokenizer = buildLexer([
 
   [true, /^balance\b/g, TokenKind.KEYWORD_balance],
   [true, /^close\b/g, TokenKind.KEYWORD_close],
+  [true, /^commodity\b/g, TokenKind.KEYWORD_commodity],
+  [true, /^currency\b/g, TokenKind.KEYWORD_currency],
   [true, /^load\b/g, TokenKind.KEYWORD_load],
   [true, /^open\b/g, TokenKind.KEYWORD_open],
   [true, /^option\b/g, TokenKind.KEYWORD_option],

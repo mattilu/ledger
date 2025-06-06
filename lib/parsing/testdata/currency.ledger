@@ -1,6 +1,6 @@
-2025-05-01 balance
-  Assets:Foo  0 CHF
-  Assets:Foo  0 FOO-BAR
-  Assets:Foo  0 FOO_BAR
-  Assets:Foo  0 FOO.BAR
-  Assets:Foo  0 FOO-2.0
+2026-06-01 currency CHF
+
+2026-06-01 commodity FOO-BAR
+2026-06-01 commodity FOO_BAR
+2026-06-01 commodity FOO.BAR
+2026-06-01 commodity FOO-2.0
