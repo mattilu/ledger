@@ -107,6 +107,7 @@ const dropAfter =
         t => t.date.getTime() <= date.getTime(),
       ),
     ),
+    currencyMap: ledger.currencyMap,
   });
 
 export const report = subcommands({

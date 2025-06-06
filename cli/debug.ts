@@ -66,6 +66,7 @@ const debugLoadResultAndFilter =
 
     return E.right({
       directives: ledger.directives.slice(0, index + 1),
+      currencyMap: ledger.currencyMap,
     });
   };
 
