@@ -37,6 +37,7 @@ export function book(
 ): E.Either<BookingError, BookedLedger> {
   const transactions: Transaction[] = [];
   let accountMap: AccountMap = start?.accountMap ?? Map();
+  const currencyMap = start?.currencyMap ?? ledger.currencyMap;
   let inventories: InventoryMap = start?.inventories ?? Map();
 
   for (const directive of ledger.directives) {
@@ -139,6 +140,7 @@ Delta: ${balance.amount.sub(amount)}`,
   return E.right({
     transactions,
     accountMap,
+    currencyMap,
     inventories,
   });
 }

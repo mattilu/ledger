@@ -1,6 +1,20 @@
 {
   "_tag": "Right",
   "right": {
-    "transactions": []
+    "transactions": [],
+    "currencyMap": {
+      "EUR": {
+        "type": "currency",
+        "currency": "EUR",
+        "date": "2025-06-01T00:00:00.000Z",
+        "meta": {
+          "name": {
+            "type": "string",
+            "value": "Euro"
+          }
+        },
+        "optionMap": {}
+      }
+    }
   }
 }
