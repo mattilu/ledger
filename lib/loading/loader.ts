@@ -183,6 +183,10 @@ async function doLoad(
           balances: directive.balances.map(balance => ({
             account: balance.account,
             amount: evaluateAmount(balance.amount),
+            approx:
+              balance.approx === null
+                ? null
+                : evaluateExpression(balance.approx),
           })),
           srcCtx: makeSourceContext(filePath, directive.srcPos),
           optionMap: ctx.optionMap,

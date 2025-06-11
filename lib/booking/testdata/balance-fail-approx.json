@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "While processing 'balance' directive at lib/booking/testdata/balance-fail-approx.ledger:1: Balance for Assets:Foo does not match.\nExpected: 1 USD\nActual: 0 USD\nDelta: 1 USD\nMaxDelta: 0.5 USD"
+  }
+}

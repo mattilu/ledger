@@ -35,6 +35,7 @@ export enum TokenKind {
   Comma,
   Colon,
   ExclamationMark,
+  Tilde,
 
   Space,
   Comment,
@@ -79,6 +80,7 @@ const tokenizer = buildLexer([
   [true, /^,/g, TokenKind.Comma],
   [true, /^:/g, TokenKind.Colon],
   [true, /^!/g, TokenKind.ExclamationMark],
+  [true, /^~/g, TokenKind.Tilde],
 
   [false, /^\s+/g, TokenKind.Space],
   [false, /^;[^\n]*(\n|$)/g, TokenKind.Comment],

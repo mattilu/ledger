@@ -69,6 +69,10 @@ function cleanupDirective(directive: Directive | CurrencyDirective) {
       directive.type === 'transaction'
         ? directive.postings.map(p => ({ ...p, meta: cleanupMeta(p.meta) }))
         : undefined,
+    balances:
+      directive.type === 'balance'
+        ? directive.balances.map(b => ({ ...b, approx: b.approx?.toNumber() }))
+        : undefined,
     srcCtx: undefined,
     meta: cleanupMeta(directive.meta),
   };

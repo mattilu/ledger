@@ -1,5 +1,6 @@
 import { strict as assert } from 'node:assert';
 
+import { ExactNumber } from 'exactnumber';
 import { either as E } from 'fp-ts';
 import { Map } from 'immutable';
 
@@ -22,6 +23,8 @@ import { Inventory, InventoryMap } from './inventory.js';
 import { AccountMap, BookedLedger } from './ledger.js';
 import { Position } from './position.js';
 import { BookedPosting, Transaction } from './transaction.js';
+
+const ZERO = ExactNumber(0);
 
 /**
  * Runs booking logic, transforming a Ledger to a BookedLedger.
@@ -63,13 +66,18 @@ export function book(
               (acc, v) => acc.add(v.amount),
               Amount.zero(balance.amount.currency),
             );
-          if (!amount.eq(balance.amount)) {
+          const delta = balance.amount.sub(amount);
+          const maxDelta = new Amount(
+            balance.approx?.abs() ?? ZERO,
+            balance.amount.currency,
+          );
+          if (delta.abs().gt(maxDelta)) {
             return E.left(
               new BookingError(
                 `Balance for ${balance.account} does not match.
 Expected: ${balance.amount}
 Actual: ${amount}
-Delta: ${balance.amount.sub(amount)}`,
+Delta: ${delta}` + (maxDelta.isZero() ? '' : `\nMaxDelta: ${maxDelta}`),
                 directive,
               ),
             );
