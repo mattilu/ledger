@@ -18,7 +18,8 @@
                 "value": "1"
               },
               "currency": "CHF"
-            }
+            },
+            "approx": null
           }
         ]
       },
@@ -38,7 +39,8 @@
                 "value": "1"
               },
               "currency": "CHF"
-            }
+            },
+            "approx": null
           },
           {
             "account": "Assets:Bar",
@@ -48,7 +50,8 @@
                 "value": "1"
               },
               "currency": "EUR"
-            }
+            },
+            "approx": null
           },
           {
             "account": "Assets:Baz",
@@ -58,6 +61,10 @@
                 "value": "1"
               },
               "currency": "USD"
+            },
+            "approx": {
+              "type": "literal",
+              "value": "0.01"
             }
           }
         ]

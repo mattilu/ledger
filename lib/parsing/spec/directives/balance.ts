@@ -1,6 +1,7 @@
 import { AmountSpec } from '../amount.js';
 import { DateSpec } from '../date.js';
 import { DirectiveCommonSpec } from '../directive.js';
+import { Expression } from '../expression.js';
 
 /**
  * Checks that the current balance of an account for a given currency matches
@@ -11,5 +12,6 @@ export interface BalanceDirectiveSpec extends DirectiveCommonSpec<'balance'> {
   readonly balances: ReadonlyArray<{
     readonly account: string;
     readonly amount: AmountSpec;
+    readonly approx: Expression | null;
   }>;
 }
