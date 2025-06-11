@@ -125,6 +125,36 @@
             }
           }
         ]
+      },
+      {
+        "type": "commodity",
+        "date": {
+          "date": "2025-06-01",
+          "time": null,
+          "timezone": null
+        },
+        "currency": "CHF",
+        "meta": {
+          "name": {
+            "type": "string",
+            "value": "Swiss Franc"
+          }
+        }
+      },
+      {
+        "type": "currency",
+        "date": {
+          "date": "2025-06-01",
+          "time": null,
+          "timezone": null
+        },
+        "currency": "EUR",
+        "meta": {
+          "name": {
+            "type": "string",
+            "value": "Euro"
+          }
+        }
       }
     ]
   }

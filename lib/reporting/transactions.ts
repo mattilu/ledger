@@ -1,5 +1,6 @@
 import { BookedLedger } from '../booking/ledger.js';
 import { BookedPosting } from '../booking/transaction.js';
+import { Formatter } from '../utils/formatting.js';
 import { makeRegexp } from './internal/regexp-utils.js';
 import { Report } from './report.js';
 
@@ -51,6 +52,8 @@ export class TransactionsReport implements Report {
     const report: string[] = [];
     const flags = new Set(this.options.flags ?? []);
 
+    const formatter = new Formatter({ currencyMap: ledger.currencyMap });
+
     for (const transaction of ledger.transactions) {
       const transactionFlagMatches =
         flags.size === 0 || flags.has(transaction.flag);
@@ -82,22 +85,15 @@ export class TransactionsReport implements Report {
       }
 
       if (postings.length > 0) {
-        report.push(
-          `${transaction.date.toJSON()} ${transaction.flag} "${transaction.description}"`,
-        );
-
         const postingsToReport = this.options.allPostings
           ? transaction.postings
           : postings;
-        for (const posting of postingsToReport) {
-          const flag =
-            posting.flag !== transaction.flag ? `${posting.flag} ` : '';
-          report.push(
-            posting.cost !== null
-              ? `  ${flag}${posting.account} ${posting.amount} ${posting.cost}`
-              : `  ${flag}${posting.account} ${posting.amount}`,
-          );
-        }
+        report.push(
+          formatter.formatTransaction({
+            ...transaction,
+            postings: postingsToReport,
+          }),
+        );
 
         report.push('');
       }

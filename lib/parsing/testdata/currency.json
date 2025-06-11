@@ -3,64 +3,49 @@
   "right": {
     "directives": [
       {
-        "type": "balance",
+        "type": "currency",
+        "currency": "CHF",
         "date": {
-          "date": "2025-05-01",
+          "date": "2026-06-01",
           "time": null,
           "timezone": null
-        },
-        "balances": [
-          {
-            "account": "Assets:Foo",
-            "amount": {
-              "amount": {
-                "type": "literal",
-                "value": "0"
-              },
-              "currency": "CHF"
-            }
-          },
-          {
-            "account": "Assets:Foo",
-            "amount": {
-              "amount": {
-                "type": "literal",
-                "value": "0"
-              },
-              "currency": "FOO-BAR"
-            }
-          },
-          {
-            "account": "Assets:Foo",
-            "amount": {
-              "amount": {
-                "type": "literal",
-                "value": "0"
-              },
-              "currency": "FOO_BAR"
-            }
-          },
-          {
-            "account": "Assets:Foo",
-            "amount": {
-              "amount": {
-                "type": "literal",
-                "value": "0"
-              },
-              "currency": "FOO.BAR"
-            }
-          },
-          {
-            "account": "Assets:Foo",
-            "amount": {
-              "amount": {
-                "type": "literal",
-                "value": "0"
-              },
-              "currency": "FOO-2.0"
-            }
-          }
-        ]
+        }
+      },
+      {
+        "type": "commodity",
+        "currency": "FOO-BAR",
+        "date": {
+          "date": "2026-06-01",
+          "time": null,
+          "timezone": null
+        }
+      },
+      {
+        "type": "commodity",
+        "currency": "FOO_BAR",
+        "date": {
+          "date": "2026-06-01",
+          "time": null,
+          "timezone": null
+        }
+      },
+      {
+        "type": "commodity",
+        "currency": "FOO.BAR",
+        "date": {
+          "date": "2026-06-01",
+          "time": null,
+          "timezone": null
+        }
+      },
+      {
+        "type": "commodity",
+        "currency": "FOO-2.0",
+        "date": {
+          "date": "2026-06-01",
+          "time": null,
+          "timezone": null
+        }
       }
     ]
   }

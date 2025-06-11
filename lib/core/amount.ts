@@ -1,6 +1,6 @@
 import { inspect, InspectOptionsStylized } from 'node:util';
 
-import { ExactNumber, ExactNumberType as N } from 'exactnumber';
+import { ExactNumber, ExactNumberType as N, RoundingMode } from 'exactnumber';
 
 const ZERO = ExactNumber(0);
 
@@ -137,6 +137,10 @@ export class Amount {
 
   toString() {
     return `${this.amount.toString(10, 18)} ${this.currency}`;
+  }
+
+  toFixed(decimals: number): string {
+    return `${this.amount.toFixed(decimals, RoundingMode.NEAREST_TO_ZERO, false)} ${this.currency}`;
   }
 
   toJSON() {

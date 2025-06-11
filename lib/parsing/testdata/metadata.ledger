@@ -18,3 +18,9 @@ option "foo" "bar"
   number-key: 1,234.5
   Assets:Foo  1 CHF
     amount-key:  1
+
+2025-06-01 commodity CHF
+  name: "Swiss Franc"
+
+2025-06-01 currency EUR
+  name: "Euro"

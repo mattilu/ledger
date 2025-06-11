@@ -56,6 +56,13 @@ function cleanup(ledger: BookedLedger) {
       inventoriesAfter: x.inventoriesAfter.map(x => x.getPositions()),
       srcCtx: undefined,
     })),
+    currencyMap: ledger.currencyMap.isEmpty()
+      ? undefined
+      : ledger.currencyMap.map(c => ({
+          ...c,
+          meta: cleanupMeta(c.meta),
+          srcCtx: undefined,
+        })),
   };
 }
 

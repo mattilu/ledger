@@ -1,6 +1,7 @@
 import { SourcePosition } from '../source-position.js';
 import { BalanceDirectiveSpec } from './directives/balance.js';
 import { CloseDirectiveSpec } from './directives/close.js';
+import { CurrencyDirectiveSpec } from './directives/currency.js';
 import { LoadDirectiveSpec } from './directives/load.js';
 import { OpenDirectiveSpec } from './directives/open.js';
 import { OptionDirectiveSpec } from './directives/option.js';
@@ -16,6 +17,7 @@ export interface DirectiveCommonSpec<T extends string> {
 export type DirectiveSpec =
   | BalanceDirectiveSpec
   | CloseDirectiveSpec
+  | CurrencyDirectiveSpec
   | LoadDirectiveSpec
   | OpenDirectiveSpec
   | OptionDirectiveSpec

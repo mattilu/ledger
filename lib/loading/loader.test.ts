@@ -5,6 +5,8 @@ import { describe, test } from 'node:test';
 import { either as E, function as F } from 'fp-ts';
 import { glob, readFile } from 'fs/promises';
 
+import { Directive } from './directive.js';
+import { CurrencyDirective } from './directives/currency.js';
 import { Ledger } from './ledger.js';
 import { load } from './loader.js';
 import { Metadata } from './metadata.js';
@@ -53,15 +55,22 @@ await describe('load', async () => {
 
 function cleanup(ledger: Ledger) {
   return {
-    directives: ledger.directives.map(x => ({
-      ...x,
-      postings:
-        x.type === 'transaction'
-          ? x.postings.map(p => ({ ...p, meta: cleanupMeta(p.meta) }))
-          : undefined,
-      srcCtx: undefined,
-      meta: cleanupMeta(x.meta),
-    })),
+    directives: ledger.directives.map(cleanupDirective),
+    currencyMap: ledger.currencyMap.isEmpty()
+      ? undefined
+      : ledger.currencyMap.map(cleanupDirective),
+  };
+}
+
+function cleanupDirective(directive: Directive | CurrencyDirective) {
+  return {
+    ...directive,
+    postings:
+      directive.type === 'transaction'
+        ? directive.postings.map(p => ({ ...p, meta: cleanupMeta(p.meta) }))
+        : undefined,
+    srcCtx: undefined,
+    meta: cleanupMeta(directive.meta),
   };
 }
 

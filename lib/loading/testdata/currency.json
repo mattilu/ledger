@@ -1,0 +1,20 @@
+{
+  "_tag": "Right",
+  "right": {
+    "directives": [],
+    "currencyMap": {
+      "EUR": {
+        "type": "currency",
+        "date": "2025-06-01T00:00:00.000Z",
+        "currency": "EUR",
+        "meta": {
+          "name": {
+            "type": "string",
+            "value": "Euro"
+          }
+        },
+        "optionMap": {}
+      }
+    }
+  }
+}

@@ -16,6 +16,7 @@ import { CostSpec } from '../parsing/spec/directives/transaction.js';
 import { Expression } from '../parsing/spec/expression.js';
 import { MetadataSpec } from '../parsing/spec/metadata.js';
 import { Directive } from './directive.js';
+import { CurrencyDirective } from './directives/currency.js';
 import {
   CostSpec as EvaluatedCostSpec,
   Posting,
@@ -35,6 +36,7 @@ export async function load(
   filePath: string,
 ): Promise<E.Either<LoadError, Ledger>> {
   const directives: Directive[] = [];
+  const currencyMap = new Map<string, CurrencyDirective>();
   const context: LoadContext = {
     stackTrace: [],
     loadedMap: new Map(),
@@ -43,14 +45,19 @@ export async function load(
   };
 
   return F.pipe(
-    await doLoad(filePath, directives, context),
+    await doLoad(filePath, directives, currencyMap, context),
     E.tap(
       F.flow(
         () => directives.sort((a, b) => a.date.getTime() - b.date.getTime()),
         E.right,
       ),
     ),
-    E.map((): Ledger => ({ directives })),
+    E.map(
+      (): Ledger => ({
+        directives,
+        currencyMap: ImmutableMap(currencyMap),
+      }),
+    ),
   );
 }
 
@@ -77,6 +84,7 @@ interface LoadContext {
 async function doLoad(
   filePath: string,
   directives: Directive[],
+  currencyMap: Map<string, CurrencyDirective>,
   ctx: LoadContext,
 ): Promise<E.Either<LoadError, unknown>> {
   const contents = await read(filePath);
@@ -196,6 +204,35 @@ async function doLoad(
         });
         break;
       }
+      case 'commodity':
+      case 'currency': {
+        const currencyValue = currencyMap.get(directive.currency);
+        if (currencyValue !== undefined) {
+          return E.left(
+            new LoadError(
+              `Currency ${directive.currency} already defined ` +
+                `(at ${formatSourceContext([currencyValue.srcCtx])})`,
+              makeSourceContext(filePath, directive.srcPos),
+              ctx.stackTrace,
+            ),
+          );
+        }
+
+        const date = makeDate(directive);
+        if (E.isLeft(date)) {
+          return date;
+        }
+
+        currencyMap.set(directive.currency, {
+          type: 'currency',
+          date: date.right,
+          currency: directive.currency,
+          meta: meta.right,
+          srcCtx: makeSourceContext(filePath, directive.srcPos),
+          optionMap: ctx.optionMap,
+        });
+        break;
+      }
       case 'load': {
         const toLoad = makeRelativePath(filePath, directive.path);
         const loadedFrom = ctx.loadedMap.get(toLoad);
@@ -209,7 +246,7 @@ async function doLoad(
             ),
           );
         }
-        const loadResult = await doLoad(toLoad, directives, {
+        const loadResult = await doLoad(toLoad, directives, currencyMap, {
           ...ctx,
           stackTrace: [
             makeSourceContext(filePath, directive.srcPos),
