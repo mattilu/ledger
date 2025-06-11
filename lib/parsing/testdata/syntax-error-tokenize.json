@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "Unable to tokenize the rest of the input: <invalid>\n at lib/parsing/testdata/syntax-error-tokenize.ledger:1"
+  }
+}

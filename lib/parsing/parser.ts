@@ -1,5 +1,5 @@
 import { either as E, function as F } from 'fp-ts';
-import { expectSingleResult, TokenError } from 'typescript-parsec';
+import { expectEOF, expectSingleResult, TokenError } from 'typescript-parsec';
 
 import { ParseError } from './error.js';
 import { ledgerParser } from './internal/ledger.js';
@@ -14,7 +14,7 @@ export function parse(contents: string): E.Either<ParseError, LedgerSpec> {
   return F.pipe(
     contents,
     E.tryCatchK(
-      F.flow(tokenize, ledgerParser.parse, expectSingleResult),
+      F.flow(tokenize, ledgerParser.parse, expectEOF, expectSingleResult),
       (ex: unknown) => {
         if (ex instanceof Error) {
           const tokenError = ex as Partial<TokenError>;

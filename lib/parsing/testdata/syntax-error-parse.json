@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "Unable to consume token: USD at lib/parsing/testdata/syntax-error-parse.ledger:2"
+  }
+}
