@@ -279,6 +279,31 @@ await describe('Amount', async () => {
     }
   });
 
+  await describe('#toFixed', async () => {
+    const tests: Array<{ amount: Amount; want: string }> = [
+      { amount: amount('1', 'USD'), want: '1.00 USD' },
+      { amount: amount('1/2', 'USD'), want: '0.50 USD' },
+      { amount: amount('1/3', 'USD'), want: '0.33 USD' },
+      { amount: amount('2/3', 'USD'), want: '0.67 USD' },
+      { amount: amount('1/4', 'USD'), want: '0.25 USD' },
+      { amount: amount('1/5', 'USD'), want: '0.20 USD' },
+      { amount: amount('1/6', 'USD'), want: '0.17 USD' },
+      { amount: amount('1/7', 'USD'), want: '0.14 USD' },
+      { amount: amount('1/8', 'USD'), want: '0.12 USD' },
+      { amount: amount('1/9', 'USD'), want: '0.11 USD' },
+      { amount: amount('1/10', 'USD'), want: '0.10 USD' },
+      { amount: amount('10', 'USD'), want: '10.00 USD' },
+      { amount: amount('100', 'USD'), want: '100.00 USD' },
+      { amount: amount('1000', 'USD'), want: '1000.00 USD' },
+    ];
+
+    for (const t of tests) {
+      await it(`converts to a string [${t.amount.amount}]`, () => {
+        assert.equal(t.amount.toFixed(2), t.want);
+      });
+    }
+  });
+
   await describe('#toJson', async () => {
     await it('converts to an object with amount and currency', () => {
       assert.deepEqual(amount('1/3', 'USD').toJSON(), {

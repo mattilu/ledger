@@ -1,6 +1,7 @@
 import { Seq } from 'immutable';
 
 import { BookedLedger } from '../booking/ledger.js';
+import { Formatter } from '../utils/formatting.js';
 import { makeRegexp } from './internal/regexp-utils.js';
 import { Report } from './report.js';
 
@@ -49,6 +50,7 @@ export class InventoryReport implements Report {
       )
       .sortBy(x => x[0]);
 
+    const formatter = new Formatter({ currencyMap: ledger.currencyMap });
     const report: string[] = [];
 
     for (const [account, inventory] of inventories) {
@@ -64,7 +66,7 @@ export class InventoryReport implements Report {
         .sortBy(a => Seq([a.amount.currency, a.cost?.date.getTime() ?? 0]));
 
       for (const position of positions) {
-        report.push(`${account} ${position}`);
+        report.push(`${account} ${formatter.formatPosition(position)}`);
       }
     }
 
