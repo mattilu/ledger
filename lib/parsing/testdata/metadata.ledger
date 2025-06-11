@@ -12,12 +12,12 @@ option "foo" "bar"
 
 2025-06-01 balance
   string-key: "string-value"
-  Assets:Foo  0 CHF
+  Assets:Foo     0 CHF
 
 2025-06-01 * "Test"
   number-key: 1,234.5
-  Assets:Foo  1 CHF
-    amount-key:  1
+  Assets:Foo     1 CHF
+    amount-key:  1 EUR
 
 2025-06-01 commodity CHF
   name: "Swiss Franc"

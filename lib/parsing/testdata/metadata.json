@@ -116,10 +116,13 @@
             "costSpec": null,
             "meta": {
               "amount-key": {
-                "type": "number",
+                "type": "amount",
                 "value": {
-                  "type": "literal",
-                  "value": "1"
+                  "amount": {
+                    "type": "literal",
+                    "value": "1"
+                  },
+                  "currency": "EUR"
                 }
               }
             }

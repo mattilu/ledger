@@ -15,8 +15,8 @@ const valueParser: Parser<TokenKind, MetadataValueSpec> = alt_sc(
   apply(accountParser, value => ({ type: 'account', value })),
   apply(currencyParser, value => ({ type: 'currency', value })),
   apply(dateParser, value => ({ type: 'date', value })),
-  apply(expressionParser, value => ({ type: 'number', value })),
   apply(amountParser, value => ({ type: 'amount', value })),
+  apply(expressionParser, value => ({ type: 'number', value })),
 );
 
 export const metadataParser: Parser<TokenKind, MetadataSpec> = apply(
