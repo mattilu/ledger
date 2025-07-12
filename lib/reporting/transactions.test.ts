@@ -16,6 +16,21 @@ await describe('InventoryReport', async () => {
     }> = [
       { name: 'without filters', scenario: 'transactions', options: {} },
       {
+        name: 'with dateFrom filter (before transaction)',
+        scenario: 'transactions-date-from-lte',
+        options: { dateFrom: new Date('2025-01-04T23:59:59Z') },
+      },
+      {
+        name: 'with dateFrom filter (at transaction)',
+        scenario: 'transactions-date-from-lte',
+        options: { dateFrom: new Date('2025-01-05T00:00:00Z') },
+      },
+      {
+        name: 'with dateFrom filter (after transaction)',
+        scenario: 'transactions-date-from-gt',
+        options: { dateFrom: new Date('2025-01-05T00:00:01Z') },
+      },
+      {
         name: 'with accounts filter',
         scenario: 'transactions-accounts-filter',
         options: { accounts: ['Assets:.*'] },

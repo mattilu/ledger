@@ -1,0 +1,17 @@
+2025-01-05 * "Transfer"
+  Assets:Bank -5000 CHF
+  Assets:Trading 5000 CHF
+
+2025-01-05 * "Trade"
+  Assets:Trading 25 VT { 100 CHF, 2025-01-05 }
+  Trading:Default -25 VT
+  Trading:Default 2500 CHF
+  Assets:Trading -2500 CHF
+
+2025-01-25 * "Salary"
+  ! Assets:Bank 5000 CHF
+  Income:Salary -5000 CHF
+
+2025-01-25 ! "Rent"
+  Assets:Bank -1250 CHF
+  Expenses:Rent 1250 CHF

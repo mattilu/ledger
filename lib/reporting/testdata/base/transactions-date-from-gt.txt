@@ -1,0 +1,7 @@
+2025-01-25 * "Salary"
+  ! Assets:Bank 5000 CHF
+  Income:Salary -5000 CHF
+
+2025-01-25 ! "Rent"
+  Assets:Bank -1250 CHF
+  Expenses:Rent 1250 CHF

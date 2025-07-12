@@ -1,10 +1,16 @@
 import { BookedLedger } from '../booking/ledger.js';
-import { BookedPosting } from '../booking/transaction.js';
+import { BookedPosting, Transaction } from '../booking/transaction.js';
+import { lowerBound } from '../utils/bounds.js';
 import { Formatter } from '../utils/formatting.js';
 import { makeRegexp } from './internal/regexp-utils.js';
 import { Report } from './report.js';
 
 export interface TransactionsReportOptions {
+  /**
+   * If specified, only process transactions from this date onwards.
+   */
+  readonly dateFrom?: Date;
+
   /**
    * If specified, limits reporting transactions that involve these accounts.
    */
@@ -53,8 +59,11 @@ export class TransactionsReport implements Report {
     const flags = new Set(this.options.flags ?? []);
 
     const formatter = new Formatter({ currencyMap: ledger.currencyMap });
+    const transactions = this.options.dateFrom
+      ? takeFrom(ledger.transactions, this.options.dateFrom)
+      : ledger.transactions;
 
-    for (const transaction of ledger.transactions) {
+    for (const transaction of transactions) {
       const transactionFlagMatches =
         flags.size === 0 || flags.has(transaction.flag);
       if (
@@ -105,4 +114,14 @@ export class TransactionsReport implements Report {
 
 function matches(value: string, regex: RegExp | null): boolean {
   return regex === null || regex.test(value);
+}
+
+function takeFrom(transactions: Transaction[], dateFrom: Date) {
+  return transactions.slice(
+    lowerBound(
+      transactions,
+      dateFrom,
+      t => t.date.getTime() < dateFrom.getTime(),
+    ),
+  );
 }

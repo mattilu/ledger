@@ -68,6 +68,12 @@ const transactions = command({
   name: 'transactions',
   args: {
     ...commonArgs,
+    dateFrom: option({
+      long: 'date-from',
+      short: 'd',
+      type: optional(date),
+      description: 'Only report transactions from this date onwards',
+    }),
     flags: multioption({
       long: 'flag',
       short: 'f',
