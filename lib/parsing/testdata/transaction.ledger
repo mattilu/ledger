@@ -33,3 +33,15 @@
 
 2025-06-01 * "Posting Flag"
   ! Assets:Foo
+
+2025-08-01 * "Posting with cost spec, with currencies"
+  Assets:Foo   10 CHF { EUR, USD }
+  Assets:Foo
+
+2025-08-02 * "Posting with cost spec, with date"
+  Assets:Foo  -10 CHF { 2025-08-01 }
+  Assets:Foo
+
+2025-08-03 * "Posting with cost spec, with tags"
+  Assets:Foo   10 CHF { "tag-1", "tag-2" }
+  Assets:Foo
