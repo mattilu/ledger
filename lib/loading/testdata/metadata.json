@@ -50,6 +50,11 @@
       {
         "type": "transaction",
         "date": "2025-06-01T00:00:00.000Z",
+        "dateSpec": {
+          "date": "2025-06-01",
+          "time": null,
+          "timezone": null
+        },
         "description": "Test",
         "flag": "*",
         "meta": {

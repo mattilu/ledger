@@ -300,16 +300,22 @@ async function doLoad(
           A.traverse(E.Applicative)(posting =>
             F.pipe(
               makeMeta({ meta: posting.meta, srcPos: directive.srcPos }),
+              E.bindTo('meta'),
+              E.bind('costSpec', () =>
+                posting.costSpec
+                  ? evaluateCostSpec(posting.costSpec, date =>
+                      makeDate({ date, srcPos: directive.srcPos }),
+                    )
+                  : E.right(null),
+              ),
               E.map(
-                (meta: Metadata): Posting => ({
+                ({ meta, costSpec }): Posting => ({
                   account: posting.account,
                   flag: posting.flag ?? directive.flag,
                   amount: posting.amount
                     ? evaluateAmount(posting.amount)
                     : null,
-                  costSpec: posting.costSpec
-                    ? evaluateCostSpec(posting.costSpec)
-                    : null,
+                  costSpec,
                   meta,
                 }),
               ),
@@ -323,6 +329,7 @@ async function doLoad(
         directives.push({
           type: 'transaction',
           date: date.right,
+          dateSpec: directive.date,
           meta: meta.right,
           description: directive.description,
           flag: directive.flag,
@@ -401,9 +408,20 @@ function evaluateAmount(amount: AmountSpec): Amount {
   return new Amount(evaluateExpression(amount.amount), amount.currency);
 }
 
-function evaluateCostSpec(costSpec: CostSpec): EvaluatedCostSpec {
-  return {
-    kind: costSpec.kind,
-    amounts: costSpec.amounts.map(evaluateAmount),
-  };
+function evaluateCostSpec(
+  costSpec: CostSpec,
+  makeDate: (date: DateSpec) => E.Either<LoadError, Date>,
+): E.Either<LoadError, EvaluatedCostSpec> {
+  return F.pipe(
+    costSpec.dates,
+    A.traverse(E.Applicative)(date => makeDate(date)),
+    E.map(dates => ({
+      kind: costSpec.kind,
+      amounts: costSpec.amounts.map(evaluateAmount),
+      currencies: costSpec.currencies,
+      dateSpecs: costSpec.dates,
+      dates: dates.slice(),
+      tags: costSpec.tags,
+    })),
+  );
 }

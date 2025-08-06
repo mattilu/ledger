@@ -5,6 +5,11 @@
       {
         "type": "transaction",
         "date": "2025-04-01T00:00:00.000Z",
+        "dateSpec": {
+          "date": "2025-04-01",
+          "time": null,
+          "timezone": null
+        },
         "optionMap": {},
         "description": "No Postings",
         "flag": "*",
@@ -13,6 +18,11 @@
       {
         "type": "transaction",
         "date": "2025-04-02T00:00:00.000Z",
+        "dateSpec": {
+          "date": "2025-04-02",
+          "time": null,
+          "timezone": null
+        },
         "optionMap": {},
         "description": "Posting without amount",
         "flag": "*",
@@ -28,6 +38,11 @@
       {
         "type": "transaction",
         "date": "2025-04-03T00:00:00.000Z",
+        "dateSpec": {
+          "date": "2025-04-03",
+          "time": null,
+          "timezone": null
+        },
         "optionMap": {},
         "description": "Postings with amount",
         "flag": "*",
@@ -55,6 +70,11 @@
       {
         "type": "transaction",
         "date": "2025-04-04T00:00:00.000Z",
+        "dateSpec": {
+          "date": "2025-04-04",
+          "time": null,
+          "timezone": null
+        },
         "optionMap": {},
         "description": "Postings with and without amount",
         "flag": "*",
@@ -79,6 +99,11 @@
       {
         "type": "transaction",
         "date": "2025-04-05T00:00:00.000Z",
+        "dateSpec": {
+          "date": "2025-04-05",
+          "time": null,
+          "timezone": null
+        },
         "optionMap": {},
         "description": "Posting with total cost spec",
         "flag": "*",
@@ -97,7 +122,11 @@
                   "amount": "10",
                   "currency": "EUR"
                 }
-              ]
+              ],
+              "currencies": [],
+              "dateSpecs": [],
+              "dates": [],
+              "tags": []
             }
           },
           {
@@ -111,6 +140,11 @@
       {
         "type": "transaction",
         "date": "2025-04-05T00:00:00.000Z",
+        "dateSpec": {
+          "date": "2025-04-05",
+          "time": null,
+          "timezone": null
+        },
         "optionMap": {},
         "description": "Posting with per-unit cost spec",
         "flag": "*",
@@ -129,7 +163,11 @@
                   "amount": "1",
                   "currency": "EUR"
                 }
-              ]
+              ],
+              "currencies": [],
+              "dateSpecs": [],
+              "dates": [],
+              "tags": []
             }
           },
           {
@@ -143,6 +181,11 @@
       {
         "type": "transaction",
         "date": "2025-06-01T00:00:00.000Z",
+        "dateSpec": {
+          "date": "2025-06-01",
+          "time": null,
+          "timezone": null
+        },
         "optionMap": {},
         "description": "ExclamationMark Flag",
         "flag": "!",
@@ -151,6 +194,11 @@
       {
         "type": "transaction",
         "date": "2025-06-01T00:00:00.000Z",
+        "dateSpec": {
+          "date": "2025-06-01",
+          "time": null,
+          "timezone": null
+        },
         "optionMap": {},
         "description": "Posting Flag",
         "flag": "*",
@@ -158,6 +206,48 @@
           {
             "account": "Assets:Foo",
             "flag": "!",
+            "amount": null,
+            "costSpec": null
+          }
+        ]
+      },
+      {
+        "type": "transaction",
+        "date": "2025-08-01T00:00:00.000Z",
+        "dateSpec": {
+          "date": "2025-08-01",
+          "time": null,
+          "timezone": null
+        },
+        "optionMap": {},
+        "description": "Posting with cost spec filtering specs",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "flag": "*",
+            "amount": {
+              "amount": "10",
+              "currency": "CHF"
+            },
+            "costSpec": {
+              "kind": "per-unit",
+              "amounts": [],
+              "currencies": ["EUR"],
+              "dateSpecs": [
+                {
+                  "date": "2025-08-01",
+                  "time": null,
+                  "timezone": null
+                }
+              ],
+              "dates": ["2025-08-01T00:00:00.000Z"],
+              "tags": ["tag-1"]
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "flag": "*",
             "amount": null,
             "costSpec": null
           }
