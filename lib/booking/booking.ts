@@ -282,9 +282,9 @@ function bookPosting(
     );
     if (posting.amount !== null && posting.costSpec.amounts.length > 0) {
       // Both cost and amount are known. We increase the account by the amount
-      // at-cost, and post the opposite, and the cost, to the trading account.
-      // This leaves the amount of the cost in the running balance, which is
-      // usually balanced with a posting without amount.
+      // at-cost, and post the opposite amount to the trading account. This
+      // leaves the amount of the cost in the running balance, which is usually
+      // balanced with a posting without amount.
       //
       // Example:
       //
