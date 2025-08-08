@@ -45,38 +45,14 @@
           }
         ],
         "inventoriesAfter": {
-          "Assets:Broker": [
-            {
-              "amount": {
-                "amount": "-10",
-                "currency": "CHF"
-              },
-              "cost": null
-            },
-            {
-              "amount": {
-                "amount": "12",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ],
-          "Trading:Broker": [
-            {
-              "amount": {
-                "amount": "10",
-                "currency": "CHF"
-              },
-              "cost": null
-            },
-            {
-              "amount": {
-                "amount": "-12",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ]
+          "Assets:Broker": {
+            "CHF": [{ "amount": "-10", "cost": null }],
+            "USD": [{ "amount": "12", "cost": null }]
+          },
+          "Trading:Broker": {
+            "CHF": [{ "amount": "10", "cost": null }],
+            "USD": [{ "amount": "-12", "cost": null }]
+          }
         }
       }
     ]
