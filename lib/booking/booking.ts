@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 
 import { ExactNumber } from 'exactnumber';
-import { either as E } from 'fp-ts';
+import { either as E, function as F } from 'fp-ts';
 import { Map } from 'immutable';
 
 import { Amount } from '../core/amount.js';
@@ -16,6 +16,7 @@ import {
 import { Ledger } from '../loading/ledger.js';
 import { Metadata } from '../loading/metadata.js';
 import { SourceContext } from '../loading/source-context.js';
+import { DateSpec } from '../parsing/spec/date.js';
 import { Cost } from './cost.js';
 import { BookingError } from './error.js';
 import { FIFO } from './internal/fifo.js';
@@ -282,9 +283,9 @@ function bookPosting(
     );
     if (posting.amount !== null && posting.costSpec.amounts.length > 0) {
       // Both cost and amount are known. We increase the account by the amount
-      // at-cost, and post the opposite, and the cost, to the trading account.
-      // This leaves the amount of the cost in the running balance, which is
-      // usually balanced with a posting without amount.
+      // at-cost, and post the opposite amount to the trading account. This
+      // leaves the amount of the cost in the running balance, which is usually
+      // balanced with a posting without amount.
       //
       // Example:
       //
@@ -301,36 +302,45 @@ function bookPosting(
       //   Assets:Broker ; -300 CHF, inferred
       const postingAmount = posting.amount;
       const costSpec = posting.costSpec;
-      return E.right(
-        doBook(
-          inventories,
-          balance,
-          {
-            account: posting.account,
-            flag: posting.flag,
-            amount: posting.amount,
-            cost: new Cost(
-              posting.costSpec.amounts.map(amount =>
-                getPerUnitAmount(amount, postingAmount, costSpec),
+      return F.pipe(
+        validateCostSpecForAugmentation(costSpec),
+        E.map(() =>
+          doBook(
+            inventories,
+            balance,
+            {
+              account: posting.account,
+              flag: posting.flag,
+              amount: postingAmount,
+              cost: new Cost(
+                costSpec.amounts.map(amount =>
+                  getPerUnitAmount(amount, postingAmount, costSpec),
+                ),
+                costSpec.dates.length === 1
+                  ? costSpec.dates[0]
+                  : transaction.date,
+                costSpec.dateSpecs.length === 1
+                  ? costSpec.dateSpecs[0]
+                  : transaction.dateSpec,
+                costSpec.tags,
               ),
-              transaction.date,
-            ),
-            meta: posting.meta,
-          },
-          {
-            account: tradingAccount,
-            flag: posting.flag,
-            amount: posting.amount.neg(),
-            cost: null,
-            meta: Map(),
-          },
-          ...posting.costSpec.amounts.map(amount => ({
-            account: tradingAccount,
-            flag: posting.flag,
-            amount: getTotalAmount(amount, postingAmount, costSpec),
-            cost: null,
-            meta: Map() as Metadata,
-          })),
+              meta: posting.meta,
+            },
+            {
+              account: tradingAccount,
+              flag: posting.flag,
+              amount: postingAmount.neg(),
+              cost: null,
+              meta: Map(),
+            },
+            ...costSpec.amounts.map(amount => ({
+              account: tradingAccount,
+              flag: posting.flag,
+              amount: getTotalAmount(amount, postingAmount, costSpec),
+              cost: null,
+              meta: Map() as Metadata,
+            })),
+          ),
         ),
       );
     }
@@ -356,12 +366,18 @@ function bookPosting(
       //   Trading:Default -300 CHF
       //   Assets:Broker    350 CHF
       //   Income:Trading ; -50 CHF, inferred
+
+      const [inventoryUsable, inventoryRest] = filterInventoryForReduction(
+        inventories.get(posting.account) ?? Inventory.Empty,
+        posting.costSpec,
+      );
+
       const bookResult = FIFO.book(
         posting.account,
         posting.flag,
         posting.meta,
         posting.amount,
-        inventories.get(posting.account) ?? Inventory.Empty,
+        inventoryUsable,
       );
       if (E.isLeft(bookResult)) {
         return bookResult;
@@ -413,7 +429,10 @@ function bookPosting(
       // Overwrite the inventory for the account with the result from the
       // booking method, as it could apply different changes, like averaging
       // cost of positions.
-      inventories = inventories.set(posting.account, bookResult.right[1]);
+      inventories = inventories.set(
+        posting.account,
+        mergeInventories(inventoryRest, bookResult.right[1]),
+      );
 
       return E.right([postings, inventories, balance]);
     }
@@ -448,6 +467,101 @@ function bookPosting(
     }),
   );
   return E.right(doBook(inventories, balance, ...balancePostings));
+}
+
+function validateCostSpecForAugmentation(
+  costSpec: CostSpec,
+): E.Either<Error, {}> {
+  if (costSpec.dates.length > 1 || costSpec.dateSpecs.length > 1) {
+    return E.left(new Error('Augmentation cannot specify more than one date'));
+  }
+  if (costSpec.currencies.length > 0) {
+    return E.left(new Error('Augmentation cannot specify currencies'));
+  }
+  return E.of({});
+}
+
+function filterInventoryForReduction(
+  inventory: Inventory,
+  costSpec: CostSpec,
+): [Inventory, Inventory] {
+  const currencies = new Set(costSpec.currencies);
+  const tags = new Set(costSpec.tags);
+  const timestamps = new Set(costSpec.dates.map(x => x.getTime()));
+
+  type CostPred = (cost: Cost) => boolean;
+
+  const currencyMatch: CostPred =
+    currencies.size === 0
+      ? () => true
+      : cost => cost.amounts.some(amount => currencies.has(amount.currency));
+
+  const tagsMatch: CostPred =
+    tags.size === 0 ? () => true : cost => cost.tags.some(tag => tags.has(tag));
+
+  const timestampMatch: CostPred =
+    timestamps.size === 0
+      ? () => true
+      : cost => timestamps.has(cost.date.getTime());
+
+  function dateSpecMatches(dateSpec: DateSpec, match: DateSpec) {
+    if (dateSpec.date !== match.date) {
+      return false;
+    }
+    if (match.time === null) {
+      return true;
+    }
+    if (dateSpec.time !== match.time) {
+      return false;
+    }
+    if (match.timezone === null) {
+      return true;
+    }
+    return dateSpec.timezone === match.timezone;
+  }
+
+  const dateSpecMatch: CostPred =
+    costSpec.dateSpecs.length === 0
+      ? () => true
+      : cost =>
+          costSpec.dateSpecs.some(dateSpec =>
+            dateSpecMatches(cost.dateSpec, dateSpec),
+          );
+
+  return partitionInventory(
+    inventory,
+    position =>
+      position.cost !== null &&
+      currencyMatch(position.cost) &&
+      tagsMatch(position.cost) &&
+      (timestampMatch(position.cost) || dateSpecMatch(position.cost)),
+  );
+}
+
+function partitionInventory(
+  inventory: Inventory,
+  predicate: (position: Position) => boolean,
+): [Inventory, Inventory] {
+  const ok: Position[] = [];
+  const ko: Position[] = [];
+  for (const position of inventory.getPositions()) {
+    if (predicate(position)) {
+      ok.push(position);
+    } else {
+      ko.push(position);
+    }
+  }
+  if (ok.length === 0) {
+    return [Inventory.Empty, inventory];
+  } else if (ko.length === 0) {
+    return [inventory, Inventory.Empty];
+  } else {
+    return [Inventory.Empty.addPositions(ok), Inventory.Empty.addPositions(ko)];
+  }
+}
+
+function mergeInventories(a: Inventory, b: Inventory): Inventory {
+  return a.isEmpty() ? b : b.isEmpty() ? a : a.addPositions(b.getPositions());
 }
 
 function doBook(

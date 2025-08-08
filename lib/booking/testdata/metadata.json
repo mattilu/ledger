@@ -39,24 +39,12 @@
           }
         ],
         "inventoriesAfter": {
-          "Assets:Bar": [
-            {
-              "amount": {
-                "amount": "-1",
-                "currency": "CHF"
-              },
-              "cost": null
-            }
-          ],
-          "Assets:Foo": [
-            {
-              "amount": {
-                "amount": "1",
-                "currency": "CHF"
-              },
-              "cost": null
-            }
-          ]
+          "Assets:Bar": {
+            "CHF": [{ "amount": "-1", "cost": null }]
+          },
+          "Assets:Foo": {
+            "CHF": [{ "amount": "1", "cost": null }]
+          }
         }
       }
     ]

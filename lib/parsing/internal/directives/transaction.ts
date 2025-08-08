@@ -3,6 +3,7 @@ import {
   apply,
   list_sc,
   opt_sc,
+  Parser,
   rep_sc,
   seq,
   tok,
@@ -15,15 +16,34 @@ import {
 } from '../../spec/directives/transaction.js';
 import { accountParser } from '../account.js';
 import { amountParser } from '../amount.js';
+import { currencyParser } from '../currency.js';
 import { dateParser } from '../date.js';
 import { metadataParser } from '../metadata.js';
 import { makeSourcePosition } from '../source-position.js';
 import { stringParser } from '../string.js';
 import { TokenKind } from '../tokenizer.js';
 
+const tagged = <T, Tag extends string>(
+  parser: Parser<TokenKind, T>,
+  tag: Tag,
+) => apply(parser, value => ({ tag, value }));
+
 const costSpecContentParser = apply(
-  list_sc(amountParser, tok(TokenKind.Comma)),
-  (amounts): Omit<CostSpec, 'kind'> => ({ amounts }),
+  list_sc(
+    alt_sc(
+      tagged(amountParser, 'amount'),
+      tagged(currencyParser, 'currency'),
+      tagged(dateParser, 'date'),
+      tagged(stringParser, 'tag'),
+    ),
+    tok(TokenKind.Comma),
+  ),
+  (items): Omit<CostSpec, 'kind'> => ({
+    amounts: items.filter(x => x.tag === 'amount').map(x => x.value),
+    currencies: items.filter(x => x.tag === 'currency').map(x => x.value),
+    dates: items.filter(x => x.tag === 'date').map(x => x.value),
+    tags: items.filter(x => x.tag === 'tag').map(x => x.value),
+  }),
 );
 
 const costSpecParser = apply(
@@ -43,6 +63,9 @@ const costSpecParser = apply(
     return {
       kind: token.kind === TokenKind.OpenBrace ? 'per-unit' : 'total',
       amounts: costSpec?.amounts ?? [],
+      currencies: costSpec?.currencies ?? [],
+      dates: costSpec?.dates ?? [],
+      tags: costSpec?.tags ?? [],
     };
   },
 );

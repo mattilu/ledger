@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "While processing 'transaction' directive at lib/booking/testdata/cost-augment-invalid-more-than-one-date.ledger:1: Augmentation cannot specify more than one date"
+  }
+}

@@ -20,7 +20,13 @@
                   "currency": "USD"
                 }
               ],
-              "date": "2025-06-01T00:00:00.000Z"
+              "date": "2025-06-01T00:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-06-01",
+                "time": null,
+                "timezone": null
+              },
+              "tags": []
             },
             "flag": "*"
           },
@@ -53,48 +59,30 @@
           }
         ],
         "inventoriesAfter": {
-          "Assets:Bar": [
-            {
-              "amount": {
-                "amount": "-1",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ],
-          "Assets:Foo": [
-            {
-              "amount": {
+          "Assets:Bar": {
+            "USD": [{ "amount": "-1", "cost": null }]
+          },
+          "Assets:Foo": {
+            "CHF": [
+              {
                 "amount": "1",
-                "currency": "CHF"
-              },
-              "cost": {
-                "amounts": [
-                  {
-                    "amount": "1",
-                    "currency": "USD"
-                  }
-                ],
-                "date": "2025-06-01T00:00:00.000Z"
+                "cost": {
+                  "amounts": [{ "amount": "1", "currency": "USD" }],
+                  "date": "2025-06-01T00:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-06-01",
+                    "time": null,
+                    "timezone": null
+                  },
+                  "tags": []
+                }
               }
-            }
-          ],
-          "Trading:Default": [
-            {
-              "amount": {
-                "amount": "-1",
-                "currency": "CHF"
-              },
-              "cost": null
-            },
-            {
-              "amount": {
-                "amount": "1",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ]
+            ]
+          },
+          "Trading:Default": {
+            "CHF": [{ "amount": "-1", "cost": null }],
+            "USD": [{ "amount": "1", "cost": null }]
+          }
         }
       },
       {
@@ -115,7 +103,13 @@
                   "currency": "USD"
                 }
               ],
-              "date": "2025-06-01T00:00:00.000Z"
+              "date": "2025-06-01T00:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-06-01",
+                "time": null,
+                "timezone": null
+              },
+              "tags": []
             },
             "flag": "*"
           },
@@ -148,64 +142,34 @@
           }
         ],
         "inventoriesAfter": {
-          "Assets:Bar": [
-            {
-              "amount": {
-                "amount": "-2",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ],
-          "Assets:Foo": [
-            {
-              "amount": {
+          "Assets:Bar": {
+            "USD": [{ "amount": "-2", "cost": null }]
+          },
+          "Assets:Foo": {
+            "CHF": [
+              {
                 "amount": "2",
-                "currency": "CHF"
-              },
-              "cost": {
-                "amounts": [
-                  {
-                    "amount": "1",
-                    "currency": "USD"
-                  }
-                ],
-                "date": "2025-06-01T00:00:00.000Z"
+                "cost": {
+                  "amounts": [{ "amount": "1", "currency": "USD" }],
+                  "date": "2025-06-01T00:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-06-01",
+                    "time": null,
+                    "timezone": null
+                  },
+                  "tags": []
+                }
               }
-            }
-          ],
-          "Trading:Default": [
-            {
-              "amount": {
-                "amount": "-1",
-                "currency": "CHF"
-              },
-              "cost": null
-            },
-            {
-              "amount": {
-                "amount": "1",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ],
-          "Trading:Foo": [
-            {
-              "amount": {
-                "amount": "-1",
-                "currency": "CHF"
-              },
-              "cost": null
-            },
-            {
-              "amount": {
-                "amount": "1",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ]
+            ]
+          },
+          "Trading:Default": {
+            "CHF": [{ "amount": "-1", "cost": null }],
+            "USD": [{ "amount": "1", "cost": null }]
+          },
+          "Trading:Foo": {
+            "CHF": [{ "amount": "-1", "cost": null }],
+            "USD": [{ "amount": "1", "cost": null }]
+          }
         }
       },
       {
@@ -232,7 +196,13 @@
                   "currency": "USD"
                 }
               ],
-              "date": "2025-06-01T00:00:00.000Z"
+              "date": "2025-06-01T00:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-06-01",
+                "time": null,
+                "timezone": null
+              },
+              "tags": []
             },
             "flag": "*"
           },
@@ -265,89 +235,41 @@
           }
         ],
         "inventoriesAfter": {
-          "Assets:Bar": [
-            {
-              "amount": {
-                "amount": "-2",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ],
-          "Assets:Baz": [
-            {
-              "amount": {
-                "amount": "-1",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ],
-          "Assets:Foo": [
-            {
-              "amount": {
+          "Assets:Bar": {
+            "USD": [{ "amount": "-2", "cost": null }]
+          },
+          "Assets:Baz": {
+            "USD": [{ "amount": "-1", "cost": null }]
+          },
+          "Assets:Foo": {
+            "CHF": [
+              {
                 "amount": "3",
-                "currency": "CHF"
-              },
-              "cost": {
-                "amounts": [
-                  {
-                    "amount": "1",
-                    "currency": "USD"
-                  }
-                ],
-                "date": "2025-06-01T00:00:00.000Z"
+                "cost": {
+                  "amounts": [{ "amount": "1", "currency": "USD" }],
+                  "date": "2025-06-01T00:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-06-01",
+                    "time": null,
+                    "timezone": null
+                  },
+                  "tags": []
+                }
               }
-            }
-          ],
-          "Trading:Baz": [
-            {
-              "amount": {
-                "amount": "-1",
-                "currency": "CHF"
-              },
-              "cost": null
-            },
-            {
-              "amount": {
-                "amount": "1",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ],
-          "Trading:Default": [
-            {
-              "amount": {
-                "amount": "-1",
-                "currency": "CHF"
-              },
-              "cost": null
-            },
-            {
-              "amount": {
-                "amount": "1",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ],
-          "Trading:Foo": [
-            {
-              "amount": {
-                "amount": "-1",
-                "currency": "CHF"
-              },
-              "cost": null
-            },
-            {
-              "amount": {
-                "amount": "1",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ]
+            ]
+          },
+          "Trading:Baz": {
+            "CHF": [{ "amount": "-1", "cost": null }],
+            "USD": [{ "amount": "1", "cost": null }]
+          },
+          "Trading:Default": {
+            "CHF": [{ "amount": "-1", "cost": null }],
+            "USD": [{ "amount": "1", "cost": null }]
+          },
+          "Trading:Foo": {
+            "CHF": [{ "amount": "-1", "cost": null }],
+            "USD": [{ "amount": "1", "cost": null }]
+          }
         }
       },
       {
@@ -374,7 +296,13 @@
                   "currency": "USD"
                 }
               ],
-              "date": "2025-06-01T00:00:00.000Z"
+              "date": "2025-06-01T00:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-06-01",
+                "time": null,
+                "timezone": null
+              },
+              "tags": []
             },
             "flag": "*",
             "meta": {
@@ -413,114 +341,48 @@
           }
         ],
         "inventoriesAfter": {
-          "Assets:Bar": [
-            {
-              "amount": {
-                "amount": "-2",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ],
-          "Assets:Baz": [
-            {
-              "amount": {
-                "amount": "-1",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ],
-          "Assets:Foo": [
-            {
-              "amount": {
+          "Assets:Bar": {
+            "USD": [{ "amount": "-2", "cost": null }]
+          },
+          "Assets:Baz": {
+            "USD": [{ "amount": "-1", "cost": null }]
+          },
+          "Assets:Foo": {
+            "CHF": [
+              {
                 "amount": "4",
-                "currency": "CHF"
-              },
-              "cost": {
-                "amounts": [
-                  {
-                    "amount": "1",
-                    "currency": "USD"
-                  }
-                ],
-                "date": "2025-06-01T00:00:00.000Z"
+                "cost": {
+                  "amounts": [{ "amount": "1", "currency": "USD" }],
+                  "date": "2025-06-01T00:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-06-01",
+                    "time": null,
+                    "timezone": null
+                  },
+                  "tags": []
+                }
               }
-            }
-          ],
-          "Assets:Qux": [
-            {
-              "amount": {
-                "amount": "-1",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ],
-          "Trading:Baz": [
-            {
-              "amount": {
-                "amount": "-1",
-                "currency": "CHF"
-              },
-              "cost": null
-            },
-            {
-              "amount": {
-                "amount": "1",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ],
-          "Trading:Default": [
-            {
-              "amount": {
-                "amount": "-1",
-                "currency": "CHF"
-              },
-              "cost": null
-            },
-            {
-              "amount": {
-                "amount": "1",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ],
-          "Trading:Foo": [
-            {
-              "amount": {
-                "amount": "-1",
-                "currency": "CHF"
-              },
-              "cost": null
-            },
-            {
-              "amount": {
-                "amount": "1",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ],
-          "Trading:Qux": [
-            {
-              "amount": {
-                "amount": "-1",
-                "currency": "CHF"
-              },
-              "cost": null
-            },
-            {
-              "amount": {
-                "amount": "1",
-                "currency": "USD"
-              },
-              "cost": null
-            }
-          ]
+            ]
+          },
+          "Assets:Qux": {
+            "USD": [{ "amount": "-1", "cost": null }]
+          },
+          "Trading:Baz": {
+            "CHF": [{ "amount": "-1", "cost": null }],
+            "USD": [{ "amount": "1", "cost": null }]
+          },
+          "Trading:Default": {
+            "CHF": [{ "amount": "-1", "cost": null }],
+            "USD": [{ "amount": "1", "cost": null }]
+          },
+          "Trading:Foo": {
+            "CHF": [{ "amount": "-1", "cost": null }],
+            "USD": [{ "amount": "1", "cost": null }]
+          },
+          "Trading:Qux": {
+            "CHF": [{ "amount": "-1", "cost": null }],
+            "USD": [{ "amount": "1", "cost": null }]
+          }
         }
       }
     ]

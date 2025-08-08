@@ -127,7 +127,10 @@
                   },
                   "currency": "EUR"
                 }
-              ]
+              ],
+              "currencies": [],
+              "dates": [],
+              "tags": []
             }
           },
           {
@@ -168,7 +171,10 @@
                   },
                   "currency": "EUR"
                 }
-              ]
+              ],
+              "currencies": [],
+              "dates": [],
+              "tags": []
             }
           },
           {
@@ -216,7 +222,10 @@
                   },
                   "currency": "ETH"
                 }
-              ]
+              ],
+              "currencies": [],
+              "dates": [],
+              "tags": []
             }
           },
           {
@@ -249,7 +258,10 @@
             },
             "costSpec": {
               "kind": "per-unit",
-              "amounts": []
+              "amounts": [],
+              "currencies": [],
+              "dates": [],
+              "tags": []
             }
           },
           {
@@ -295,6 +307,120 @@
           {
             "account": "Assets:Foo",
             "flag": "!",
+            "amount": null,
+            "costSpec": null
+          }
+        ]
+      },
+      {
+        "type": "transaction",
+        "description": "Posting with cost spec, with currencies",
+        "date": {
+          "date": "2025-08-01",
+          "time": null,
+          "timezone": null
+        },
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "flag": null,
+            "amount": {
+              "amount": {
+                "type": "literal",
+                "value": "10"
+              },
+              "currency": "CHF"
+            },
+            "costSpec": {
+              "kind": "per-unit",
+              "amounts": [],
+              "currencies": ["EUR", "USD"],
+              "dates": [],
+              "tags": []
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "flag": null,
+            "amount": null,
+            "costSpec": null
+          }
+        ]
+      },
+      {
+        "type": "transaction",
+        "description": "Posting with cost spec, with date",
+        "date": {
+          "date": "2025-08-02",
+          "time": null,
+          "timezone": null
+        },
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "flag": null,
+            "amount": {
+              "amount": {
+                "type": "literal",
+                "value": "-10"
+              },
+              "currency": "CHF"
+            },
+            "costSpec": {
+              "kind": "per-unit",
+              "amounts": [],
+              "currencies": [],
+              "dates": [
+                {
+                  "date": "2025-08-01",
+                  "time": null,
+                  "timezone": null
+                }
+              ],
+              "tags": []
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "flag": null,
+            "amount": null,
+            "costSpec": null
+          }
+        ]
+      },
+      {
+        "type": "transaction",
+        "description": "Posting with cost spec, with tags",
+        "date": {
+          "date": "2025-08-03",
+          "time": null,
+          "timezone": null
+        },
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "flag": null,
+            "amount": {
+              "amount": {
+                "type": "literal",
+                "value": "10"
+              },
+              "currency": "CHF"
+            },
+            "costSpec": {
+              "kind": "per-unit",
+              "amounts": [],
+              "currencies": [],
+              "dates": [],
+              "tags": ["tag-1", "tag-2"]
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "flag": null,
             "amount": null,
             "costSpec": null
           }

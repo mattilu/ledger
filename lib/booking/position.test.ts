@@ -21,10 +21,12 @@ await describe('Position', async () => {
         new Amount(ExactNumber(2), 'USD'),
         new Cost(
           [new Amount(ExactNumber(3), 'EUR')],
-          new Date('2023-05-01 00:00:00 Z'),
+          new Date('2023-05-01T00:00:00Z'),
+          { date: '2023-05-01', time: null, timezone: null },
+          ['tag'],
         ),
       ),
-      want: '2 USD { 3 EUR, 2023-05-01T00:00:00.000Z }',
+      want: '2 USD { 3 EUR, 2023-05-01T00:00:00.000Z, "tag" }',
     },
   ];
 

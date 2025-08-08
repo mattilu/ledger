@@ -3,10 +3,13 @@ import { describe, test } from 'node:test';
 
 import { either as E, function as F } from 'fp-ts';
 import { glob, readFile } from 'fs/promises';
+import { Map as ImmutableMap, Seq } from 'immutable';
 
 import { load } from '../loading/loader.js';
 import { Metadata } from '../loading/metadata.js';
 import { book } from './booking.js';
+import { Cost } from './cost.js';
+import { Inventory } from './inventory.js';
 import { BookedLedger } from './ledger.js';
 
 await describe('book', async () => {
@@ -53,7 +56,7 @@ function cleanup(ledger: BookedLedger) {
       meta: cleanupMeta(x.meta),
       postings: x.postings.map(p => ({ ...p, meta: cleanupMeta(p.meta) })),
       inventoriesBefore: undefined,
-      inventoriesAfter: x.inventoriesAfter.map(x => x.getPositions()),
+      inventoriesAfter: x.inventoriesAfter.map(makeInventoryMap),
       srcCtx: undefined,
     })),
     currencyMap: ledger.currencyMap.isEmpty()
@@ -78,4 +81,32 @@ function cleanupMeta(meta: Metadata) {
 
 function canonicalize<T>(x: T): T {
   return JSON.parse(JSON.stringify(x));
+}
+
+type Position = {
+  readonly amount: string;
+  readonly cost: Cost | null;
+};
+
+function makeInventoryMap(
+  inventory: Inventory,
+): ImmutableMap<string, Position[]> {
+  const result = new Map<string, Position[]>();
+  for (const position of inventory.getPositions()) {
+    const pos = {
+      amount: position.amount.amount.toString(10, 16),
+      cost: position.cost,
+    };
+    const value = result.get(position.amount.currency);
+    if (value === undefined) {
+      result.set(position.amount.currency, [pos]);
+    } else {
+      value.push(pos);
+    }
+  }
+  return ImmutableMap(result).map(x =>
+    Seq(x)
+      .sortBy(y => y.cost?.date.getTime())
+      .toArray(),
+  );
 }

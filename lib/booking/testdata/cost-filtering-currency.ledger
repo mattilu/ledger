@@ -1,0 +1,10 @@
+2025-08-01 * "Open"
+  Assets:Broker    10 USD { 0.8 CHF }
+  Assets:Broker    10 USD { 0.7 EUR }
+  Assets:Broker    10 USD { 150 JPY }
+  Assets:Broker
+
+2025-08-02 * "Close"
+  Assets:Broker   -10 USD { EUR }
+  Assets:Broker     8 EUR
+  Income:Trading   -1 EUR

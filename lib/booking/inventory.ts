@@ -19,12 +19,20 @@ const makeAmountRecord = Record<AmountRecordProps>({
 type CostRecordProps = {
   readonly amounts: Set<AmountRecord>;
   readonly timestamp: number;
+  readonly date: string;
+  readonly time: string | null;
+  readonly timezone: string | null;
+  readonly tags: Set<string>;
 };
 
 type CostRecord = RecordOf<CostRecordProps>;
 const makeCostRecord = Record<CostRecordProps>({
   amounts: Set(),
   timestamp: 0,
+  date: '',
+  time: null,
+  timezone: null,
+  tags: Set(),
 });
 
 // Inventory for a single currency
@@ -60,6 +68,10 @@ class CurrencyInventory {
               ),
             ),
             timestamp: position.cost.date.getTime(),
+            date: position.cost.dateSpec.date,
+            time: position.cost.dateSpec.time,
+            timezone: position.cost.dateSpec.timezone,
+            tags: Set(position.cost.tags),
           });
 
     const cur = this.positions.get(key);

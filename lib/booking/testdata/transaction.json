@@ -48,24 +48,12 @@
           }
         ],
         "inventoriesAfter": {
-          "Assets:Foo": [
-            {
-              "amount": {
-                "amount": "10",
-                "currency": "CHF"
-              },
-              "cost": null
-            }
-          ],
-          "Income:Foo": [
-            {
-              "amount": {
-                "amount": "-10",
-                "currency": "CHF"
-              },
-              "cost": null
-            }
-          ]
+          "Assets:Foo": {
+            "CHF": [{ "amount": "10", "cost": null }]
+          },
+          "Income:Foo": {
+            "CHF": [{ "amount": "-10", "cost": null }]
+          }
         }
       },
       {
@@ -93,25 +81,13 @@
           }
         ],
         "inventoriesAfter": {
-          "Assets:Bar": [
-            {
-              "amount": {
-                "amount": "10",
-                "currency": "CHF"
-              },
-              "cost": null
-            }
-          ],
-          "Assets:Foo": [],
-          "Income:Foo": [
-            {
-              "amount": {
-                "amount": "-10",
-                "currency": "CHF"
-              },
-              "cost": null
-            }
-          ]
+          "Assets:Bar": {
+            "CHF": [{ "amount": "10", "cost": null }]
+          },
+          "Assets:Foo": {},
+          "Income:Foo": {
+            "CHF": [{ "amount": "-10", "cost": null }]
+          }
         }
       },
       {
@@ -157,42 +133,18 @@
           }
         ],
         "inventoriesAfter": {
-          "Assets:Bar": [
-            {
-              "amount": {
-                "amount": "20",
-                "currency": "CHF"
-              },
-              "cost": null
-            }
-          ],
-          "Assets:Foo": [
-            {
-              "amount": {
-                "amount": "-11",
-                "currency": "CHF"
-              },
-              "cost": null
-            }
-          ],
-          "Expenses:Fee": [
-            {
-              "amount": {
-                "amount": "1",
-                "currency": "CHF"
-              },
-              "cost": null
-            }
-          ],
-          "Income:Foo": [
-            {
-              "amount": {
-                "amount": "-10",
-                "currency": "CHF"
-              },
-              "cost": null
-            }
-          ]
+          "Assets:Bar": {
+            "CHF": [{ "amount": "20", "cost": null }]
+          },
+          "Assets:Foo": {
+            "CHF": [{ "amount": "-11", "cost": null }]
+          },
+          "Expenses:Fee": {
+            "CHF": [{ "amount": "1", "cost": null }]
+          },
+          "Income:Foo": {
+            "CHF": [{ "amount": "-10", "cost": null }]
+          }
         }
       }
     ]

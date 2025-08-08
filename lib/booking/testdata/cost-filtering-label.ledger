@@ -1,0 +1,10 @@
+2025-08-01 * "Open"
+  Assets:Broker    10 USD { 0.8 CHF, "fx-1" }
+  Assets:Broker    10 USD { 0.7 CHF, "fx-2" }
+  Assets:Broker    10 USD { 0.6 CHF, "fx-3" }
+  Assets:Broker
+
+2025-08-03 * "Close"
+  Assets:Broker   -10 USD { "fx-2" }
+  Assets:Broker    10 CHF
+  Income:Trading   -3 CHF
