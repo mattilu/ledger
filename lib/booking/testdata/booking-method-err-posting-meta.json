@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "While processing 'transaction' directive at lib/booking/testdata/booking-method-err-posting-meta.ledger:5: Unknown booking method: err"
+  }
+}

@@ -19,7 +19,9 @@ import { SourceContext } from '../loading/source-context.js';
 import { DateSpec } from '../parsing/spec/date.js';
 import { Cost } from './cost.js';
 import { BookingError } from './error.js';
+import { BookingMethod } from './internal/booking-method.js';
 import { FIFO } from './internal/fifo.js';
+import { LIFO } from './internal/lifo.js';
 import { Inventory, InventoryMap } from './inventory.js';
 import { AccountMap, BookedLedger } from './ledger.js';
 import { Position } from './position.js';
@@ -349,7 +351,7 @@ function bookPosting(
       assert(posting.costSpec.amounts.length === 0);
 
       // Amount is known, but cost is not. We treat this as a reduction, and
-      // invoke the booking method (currently only FIFO is supported.)
+      // invoke the booking method.
       //
       // Example (assuming the open position from previous example):
       //
@@ -372,12 +374,22 @@ function bookPosting(
         posting.costSpec,
       );
 
-      const bookResult = FIFO.book(
-        posting.account,
-        posting.flag,
-        posting.meta,
-        posting.amount,
-        inventoryUsable,
+      const postingAmount = posting.amount;
+      const bookResult = F.pipe(
+        getBookingMethod(
+          transaction,
+          posting,
+          accountDirective?.type === 'open' ? accountDirective : null,
+        ),
+        E.flatMap(bookingMethod =>
+          bookingMethod.book(
+            posting.account,
+            posting.flag,
+            posting.meta,
+            postingAmount,
+            inventoryUsable,
+          ),
+        ),
       );
       if (E.isLeft(bookResult)) {
         return bookResult;
@@ -619,6 +631,32 @@ function getTradingAccount(
   }
 
   return 'Trading:Default';
+}
+
+function getBookingMethod(
+  transaction: TransactionDirective,
+  posting: Posting,
+  openDirective: OpenDirective | null,
+): E.Either<Error, BookingMethod> {
+  function get(): string {
+    for (const meta of [posting.meta, transaction.meta, openDirective?.meta]) {
+      const acc = meta?.get('booking-method');
+      if (acc?.type === 'string') {
+        return acc.value;
+      }
+    }
+    return transaction.optionMap.get('booking-method', 'fifo');
+  }
+
+  const methodName = get();
+  switch (methodName) {
+    case 'fifo':
+      return E.right(FIFO);
+    case 'lifo':
+      return E.right(LIFO);
+    default:
+      return E.left(new Error(`Unknown booking method: ${methodName}`));
+  }
 }
 
 function formatSourceContext(srcCtx: SourceContext) {

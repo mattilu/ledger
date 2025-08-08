@@ -1,0 +1,14 @@
+option "booking-method" "lifo"
+
+2025-08-01 * "Open"
+  Assets:Broker    10 USD {{ 9 CHF }}
+  Assets:Broker
+
+2025-08-02 * "Open"
+  Assets:Broker    10 USD {{ 8 CHF }}
+  Assets:Broker
+
+2025-08-03 * "Close"
+  Assets:Broker   -15 USD {}
+  Assets:Broker    15 CHF
+  Income:Profit  -2.5 CHF

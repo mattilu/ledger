@@ -1,0 +1,9 @@
+2025-08-01 * "Open"
+  Assets:Broker   10 USD {{ 9 CHF }}
+  Assets:Broker
+
+2025-08-02 * "Close"
+  Assets:Broker  -10 USD {}
+    booking-method: "err"
+  Assets:Broker   10 CHF
+  Income:Profit
