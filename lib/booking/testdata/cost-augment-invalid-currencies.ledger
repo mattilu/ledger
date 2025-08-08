@@ -1,0 +1,3 @@
+2025-08-01 * "Long USD (too many dates)"
+  Assets:Broker  10 USD {{ 9 CHF, CHF }}
+  Assets:Broker

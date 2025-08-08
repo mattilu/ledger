@@ -12,7 +12,12 @@ import { Position } from './position.js';
 const amount = (n: number | string, currency: string) =>
   new Amount(ExactNumber(n), currency);
 const cost = (amounts: Amount[], timestamp = 0) =>
-  new Cost(amounts, new Date(timestamp));
+  new Cost(
+    amounts,
+    new Date(timestamp),
+    { date: '', time: null, timezone: null },
+    [],
+  );
 const position = (amount: Amount, cost: Cost | null = null) =>
   new Position(amount, cost);
 

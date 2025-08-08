@@ -21,7 +21,13 @@
                   "currency": "CHF"
                 }
               ],
-              "date": "2025-04-01T00:00:00.000Z"
+              "date": "2025-04-01T00:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-04-01",
+                "time": null,
+                "timezone": null
+              },
+              "tags": []
             }
           },
           {
@@ -60,7 +66,13 @@
                 "amount": "10",
                 "cost": {
                   "amounts": [{ "amount": "0.9", "currency": "CHF" }],
-                  "date": "2025-04-01T00:00:00.000Z"
+                  "date": "2025-04-01T00:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-04-01",
+                    "time": null,
+                    "timezone": null
+                  },
+                  "tags": []
                 }
               }
             ]
@@ -90,7 +102,13 @@
                   "currency": "CHF"
                 }
               ],
-              "date": "2025-04-01T00:00:00.000Z"
+              "date": "2025-04-01T00:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-04-01",
+                "time": null,
+                "timezone": null
+              },
+              "tags": []
             }
           },
           {
@@ -138,7 +156,13 @@
                 "amount": "5",
                 "cost": {
                   "amounts": [{ "amount": "0.9", "currency": "CHF" }],
-                  "date": "2025-04-01T00:00:00.000Z"
+                  "date": "2025-04-01T00:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-04-01",
+                    "time": null,
+                    "timezone": null
+                  },
+                  "tags": []
                 }
               }
             ]

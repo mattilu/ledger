@@ -14,8 +14,13 @@ import { Formatter } from './formatting.js';
 const amount = (amount: number | string, currency: string) =>
   new Amount(ExactNumber(amount), currency);
 
-const cost = (amounts: Amount[], date: string) =>
-  new Cost(amounts, new Date(date));
+const cost = (amounts: Amount[], date: string, tags: string[] = []) =>
+  new Cost(
+    amounts,
+    new Date(date),
+    { date: '', time: null, timezone: null },
+    tags,
+  );
 
 await describe('Formatter', async () => {
   const formatter = new Formatter({
@@ -145,6 +150,11 @@ await describe('Formatter', async () => {
         name: 'multiple costs',
         cost: cost([amount(35, 'ETH'), amount(1, 'BTC')], '2025-06-01'),
         want: '{ 35 ETH, 1 BTC, 2025-06-01 }',
+      },
+      {
+        name: 'tags',
+        cost: cost([amount(1, 'CHF')], '2025-08-01', ['tag-1', 'tag-2']),
+        want: '{ 1.00 CHF, 2025-08-01, "tag-1", "tag-2" }',
       },
     ];
 

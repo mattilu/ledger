@@ -48,6 +48,7 @@ export class Formatter {
     const parts = [
       ...cost.amounts.map(amount => this.formatAmount(amount)),
       this.formatDate(cost.date),
+      ...cost.tags.map(tag => `"${tag}"`),
     ];
     return `{ ${parts.join(', ')} }`;
   }

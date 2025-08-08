@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "While processing 'transaction' directive at lib/booking/testdata/cost-augment-invalid-currencies.ledger:1: Augmentation cannot specify currencies"
+  }
+}

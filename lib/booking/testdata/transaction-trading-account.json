@@ -20,7 +20,13 @@
                   "currency": "USD"
                 }
               ],
-              "date": "2025-06-01T00:00:00.000Z"
+              "date": "2025-06-01T00:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-06-01",
+                "time": null,
+                "timezone": null
+              },
+              "tags": []
             },
             "flag": "*"
           },
@@ -62,7 +68,13 @@
                 "amount": "1",
                 "cost": {
                   "amounts": [{ "amount": "1", "currency": "USD" }],
-                  "date": "2025-06-01T00:00:00.000Z"
+                  "date": "2025-06-01T00:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-06-01",
+                    "time": null,
+                    "timezone": null
+                  },
+                  "tags": []
                 }
               }
             ]
@@ -91,7 +103,13 @@
                   "currency": "USD"
                 }
               ],
-              "date": "2025-06-01T00:00:00.000Z"
+              "date": "2025-06-01T00:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-06-01",
+                "time": null,
+                "timezone": null
+              },
+              "tags": []
             },
             "flag": "*"
           },
@@ -133,7 +151,13 @@
                 "amount": "2",
                 "cost": {
                   "amounts": [{ "amount": "1", "currency": "USD" }],
-                  "date": "2025-06-01T00:00:00.000Z"
+                  "date": "2025-06-01T00:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-06-01",
+                    "time": null,
+                    "timezone": null
+                  },
+                  "tags": []
                 }
               }
             ]
@@ -172,7 +196,13 @@
                   "currency": "USD"
                 }
               ],
-              "date": "2025-06-01T00:00:00.000Z"
+              "date": "2025-06-01T00:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-06-01",
+                "time": null,
+                "timezone": null
+              },
+              "tags": []
             },
             "flag": "*"
           },
@@ -217,7 +247,13 @@
                 "amount": "3",
                 "cost": {
                   "amounts": [{ "amount": "1", "currency": "USD" }],
-                  "date": "2025-06-01T00:00:00.000Z"
+                  "date": "2025-06-01T00:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-06-01",
+                    "time": null,
+                    "timezone": null
+                  },
+                  "tags": []
                 }
               }
             ]
@@ -260,7 +296,13 @@
                   "currency": "USD"
                 }
               ],
-              "date": "2025-06-01T00:00:00.000Z"
+              "date": "2025-06-01T00:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-06-01",
+                "time": null,
+                "timezone": null
+              },
+              "tags": []
             },
             "flag": "*",
             "meta": {
@@ -311,7 +353,13 @@
                 "amount": "4",
                 "cost": {
                   "amounts": [{ "amount": "1", "currency": "USD" }],
-                  "date": "2025-06-01T00:00:00.000Z"
+                  "date": "2025-06-01T00:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-06-01",
+                    "time": null,
+                    "timezone": null
+                  },
+                  "tags": []
                 }
               }
             ]
