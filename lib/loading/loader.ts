@@ -2,7 +2,7 @@ import { dirname, isAbsolute, join } from 'node:path';
 
 import { ExactNumberType } from 'exactnumber';
 import { either as E, function as F, readonlyArray as A } from 'fp-ts';
-import { readFile } from 'fs/promises';
+import { glob, readFile } from 'fs/promises';
 import { Map as ImmutableMap } from 'immutable';
 import { resolve } from 'path';
 
@@ -238,27 +238,35 @@ async function doLoad(
         break;
       }
       case 'load': {
-        const toLoad = makeRelativePath(filePath, directive.path);
-        const loadedFrom = ctx.loadedMap.get(toLoad);
-        if (loadedFrom !== undefined) {
-          return E.left(
-            new LoadError(
-              `Circular load dependency detected: ${toLoad} was already ` +
-                `loaded (at ${formatSourceContext(loadedFrom)})`,
+        const path = makeRelativePath(filePath, directive.path);
+        const paths = path.includes('*')
+          ? (await Array.fromAsync(glob(path))).toSorted((a, b) =>
+              a.localeCompare(b),
+            )
+          : [path];
+
+        for await (const toLoad of paths) {
+          const loadedFrom = ctx.loadedMap.get(toLoad);
+          if (loadedFrom !== undefined) {
+            return E.left(
+              new LoadError(
+                `Circular load dependency detected: ${toLoad} was already ` +
+                  `loaded (at ${formatSourceContext(loadedFrom)})`,
+                makeSourceContext(filePath, directive.srcPos),
+                ctx.stackTrace,
+              ),
+            );
+          }
+          const loadResult = await doLoad(toLoad, directives, currencyMap, {
+            ...ctx,
+            stackTrace: [
               makeSourceContext(filePath, directive.srcPos),
-              ctx.stackTrace,
-            ),
-          );
-        }
-        const loadResult = await doLoad(toLoad, directives, currencyMap, {
-          ...ctx,
-          stackTrace: [
-            makeSourceContext(filePath, directive.srcPos),
-            ...ctx.stackTrace,
-          ],
-        });
-        if (E.isLeft(loadResult)) {
-          return loadResult;
+              ...ctx.stackTrace,
+            ],
+          });
+          if (E.isLeft(loadResult)) {
+            return loadResult;
+          }
         }
         break;
       }

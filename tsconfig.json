@@ -3,7 +3,10 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "build",
-    "module": "node16"
+    "module": "node16",
+    "lib": [
+      "esnext"
+    ]
   },
   "include": [
     "**/*.ts"
