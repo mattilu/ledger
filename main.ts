@@ -1,3 +1,4 @@
+#!/usr/bin/env tsx
 import { exit } from 'node:process';
 
 import { run } from 'cmd-ts';

@@ -17,6 +17,9 @@
     "typecheck": "tsc --noEmit",
     "pre-commit": "concurrently --timings --group npm:lint npm:test npm:typecheck"
   },
+  "bin": {
+    "ledger": "main.ts"
+  },
   "author": "Luca Emanuele Mattiello <lucae.mattiello@gmail.com>",
   "license": "ISC",
   "engines": {
