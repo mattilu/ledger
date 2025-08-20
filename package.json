@@ -26,7 +26,7 @@
     "node": ">=16.0"
   },
   "devDependencies": {
-    "@types/node": "^22.7.5",
+    "@types/node": "^24.3.0",
     "concurrently": "^9.1.2",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "gts": "^6.0.2",
@@ -34,8 +34,8 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "cmd-ts": "^0.13.0",
-    "exactnumber": "^1.0.4",
+    "cmd-ts": "^0.14.1",
+    "exactnumber": "^2.0.1",
     "fp-ts": "^2.16.10",
     "immutable": "^5.1.1",
     "typescript-parsec": "^0.3.4"
