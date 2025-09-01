@@ -17,6 +17,7 @@ import { Ledger } from '../loading/ledger.js';
 import { Metadata } from '../loading/metadata.js';
 import { SourceContext } from '../loading/source-context.js';
 import { DateSpec } from '../parsing/spec/date.js';
+import { Formatter } from '../utils/formatting.js';
 import { Cost } from './cost.js';
 import { BookingError } from './error.js';
 import { BookingMethod } from './internal/booking-method.js';
@@ -75,15 +76,15 @@ export function book(
             balance.amount.currency,
           );
           if (delta.abs().gt(maxDelta)) {
-            return E.left(
-              new BookingError(
-                `Balance for ${balance.account} does not match.
-Expected: ${balance.amount}
-Actual: ${amount}
-Delta: ${delta}` + (maxDelta.isZero() ? '' : `\nMaxDelta: ${maxDelta}`),
-                directive,
-              ),
-            );
+            const formatter = new Formatter({ currencyMap });
+            let msg = `Balance for ${balance.account} does not match.
+Expected: ${formatter.formatAmount(balance.amount)}
+Actual: ${formatter.formatAmount(amount)}
+Delta: ${formatter.formatAmount(delta)}`;
+            if (!maxDelta.isZero()) {
+              msg += `\nMaxDelta: ${formatter.formatAmount(maxDelta)}`;
+            }
+            return E.left(new BookingError(msg, directive));
           }
         }
         break;
