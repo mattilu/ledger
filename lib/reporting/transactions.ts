@@ -1,6 +1,6 @@
 import { BookedLedger } from '../booking/ledger.js';
 import { BookedPosting, Transaction } from '../booking/transaction.js';
-import { lowerBound } from '../utils/bounds.js';
+import { partitionHi } from '../utils/bounds.js';
 import { FormatBalanceMode, Formatter } from '../utils/formatting.js';
 import { makeRegexp } from './internal/regexp-utils.js';
 import { Report } from './report.js';
@@ -125,11 +125,5 @@ function matches(value: string, regex: RegExp | null): boolean {
 }
 
 function takeFrom(transactions: Transaction[], dateFrom: Date) {
-  return transactions.slice(
-    lowerBound(
-      transactions,
-      dateFrom,
-      t => t.date.getTime() < dateFrom.getTime(),
-    ),
-  );
+  return partitionHi(transactions, t => t.date.getTime() < dateFrom.getTime());
 }

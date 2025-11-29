@@ -19,7 +19,7 @@ import { load } from '../lib/loading/loader.js';
 import { InventoryReport } from '../lib/reporting/inventory.js';
 import { Report } from '../lib/reporting/report.js';
 import { TransactionsReport } from '../lib/reporting/transactions.js';
-import { lowerBound } from '../lib/utils/bounds.js';
+import { partitionLo } from '../lib/utils/bounds.js';
 import { FormatBalanceMode } from '../lib/utils/formatting.js';
 import { CommandError } from './error.js';
 import { date } from './types/date.js';
@@ -134,13 +134,9 @@ async function runReport(
 const dropAfter =
   (date: Date) =>
   (ledger: Ledger): Ledger => ({
-    directives: ledger.directives.slice(
-      0,
-      lowerBound(
-        ledger.directives,
-        date,
-        t => t.date.getTime() <= date.getTime(),
-      ),
+    directives: partitionLo(
+      ledger.directives,
+      t => t.date.getTime() <= date.getTime(),
     ),
     currencyMap: ledger.currencyMap,
   });
