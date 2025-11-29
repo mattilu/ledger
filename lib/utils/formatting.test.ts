@@ -5,11 +5,16 @@ import { ExactNumber } from 'exactnumber';
 import { Map } from 'immutable';
 
 import { Cost } from '../booking/cost.js';
+import { Inventory } from '../booking/inventory.js';
 import { Position } from '../booking/position.js';
 import { Transaction } from '../booking/transaction.js';
 import { Amount } from '../core/amount.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
-import { Formatter } from './formatting.js';
+import {
+  FormatBalanceMode,
+  Formatter,
+  FormatTransactionOptions,
+} from './formatting.js';
 
 const amount = (amount: number | string, currency: string) =>
   new Amount(ExactNumber(amount), currency);
@@ -195,6 +200,7 @@ await describe('Formatter', async () => {
     const tests: Array<{
       name: string;
       transaction: Partial<Transaction>;
+      options?: FormatTransactionOptions;
       want: string;
     }> = [
       {
@@ -263,11 +269,168 @@ await describe('Formatter', async () => {
   Assets:Foo 1.00 CHF
   * Assets:Bar -1.00 CHF`,
       },
+      {
+        name: 'show balance',
+        transaction: {
+          date: new Date('2025-11-01'),
+          description: 'Test',
+          flag: '*',
+          postings: [
+            {
+              account: 'Assets:Test:Foo',
+              amount: amount(1, 'CHF'),
+              cost: null,
+              flag: '*',
+              meta: Map(),
+            },
+            {
+              account: 'Assets:Test:Bar',
+              amount: amount(2, 'CHF'),
+              cost: null,
+              flag: '*',
+              meta: Map(),
+            },
+          ],
+          inventoriesBefore: Map(),
+        },
+        options: { formatBalance: FormatBalanceMode.Full },
+        want: `\
+2025-11-01 * "Test"
+  Assets:Test:Foo 1.00 CHF
+  ; 1.00 CHF
+  Assets:Test:Bar 2.00 CHF
+  ; 2.00 CHF`,
+      },
+      {
+        name: 'show balance, full, with multiple postings on same account',
+        transaction: {
+          date: new Date('2025-11-01'),
+          description: 'Test',
+          flag: '*',
+          postings: [
+            {
+              account: 'Assets:Test',
+              amount: amount(1, 'CHF'),
+              cost: null,
+              flag: '*',
+              meta: Map(),
+            },
+            {
+              account: 'Assets:Test',
+              amount: amount(2, 'CHF'),
+              cost: null,
+              flag: '*',
+              meta: Map(),
+            },
+          ],
+          inventoriesBefore: Map(),
+        },
+        options: { formatBalance: FormatBalanceMode.Full },
+        want: `\
+2025-11-01 * "Test"
+  Assets:Test 1.00 CHF
+  ; 1.00 CHF
+  Assets:Test 2.00 CHF
+  ; 3.00 CHF`,
+      },
+      {
+        name: 'show balance, full, with amount and cost on same account',
+        transaction: {
+          date: new Date('2025-11-01'),
+          description: 'Test',
+          flag: '*',
+          postings: [
+            {
+              account: 'Assets:Test',
+              amount: amount(1, 'CHF'),
+              cost: null,
+              flag: '*',
+              meta: Map(),
+            },
+            {
+              account: 'Assets:Test',
+              amount: amount(2, 'CHF'),
+              cost: cost([amount(2, 'USD')], '2025-11-01'),
+              flag: '*',
+              meta: Map(),
+            },
+          ],
+          inventoriesBefore: Map(),
+        },
+        options: { formatBalance: FormatBalanceMode.Full },
+        want: `\
+2025-11-01 * "Test"
+  Assets:Test 1.00 CHF
+  ; 1.00 CHF
+  Assets:Test 2.00 CHF { 2 USD, 2025-11-01 }
+  ; 1.00 CHF
+  ; 2.00 CHF { 2 USD, 2025-11-01 }`,
+      },
+      {
+        name: 'show balance, aggregate, with amount and cost on same account',
+        transaction: {
+          date: new Date('2025-11-01'),
+          description: 'Test',
+          flag: '*',
+          postings: [
+            {
+              account: 'Assets:Test',
+              amount: amount(1, 'CHF'),
+              cost: null,
+              flag: '*',
+              meta: Map(),
+            },
+            {
+              account: 'Assets:Test',
+              amount: amount(2, 'CHF'),
+              cost: cost([amount(2, 'USD')], '2025-11-01'),
+              flag: '*',
+              meta: Map(),
+            },
+          ],
+          inventoriesBefore: Map(),
+        },
+        options: { formatBalance: FormatBalanceMode.Aggregate },
+        want: `\
+2025-11-01 * "Test"
+  Assets:Test 1.00 CHF
+  ; 1.00 CHF
+  Assets:Test 2.00 CHF { 2 USD, 2025-11-01 }
+  ; 3.00 CHF`,
+      },
+      {
+        name: 'show balance, with initial inventory',
+        transaction: {
+          date: new Date('2025-11-01'),
+          description: 'Test',
+          flag: '*',
+          postings: [
+            {
+              account: 'Assets:Test',
+              amount: amount(1, 'CHF'),
+              cost: null,
+              flag: '*',
+              meta: Map(),
+            },
+          ],
+          inventoriesBefore: Map([
+            ['Assets:Test', Inventory.Empty.addAmount(amount(1, 'CHF'))],
+          ]),
+        },
+        options: { formatBalance: FormatBalanceMode.Full },
+        want: `\
+2025-11-01 * "Test"
+  Assets:Test 1.00 CHF
+  ; 2.00 CHF`,
+      },
     ];
 
     for (const t of tests) {
       await it(`formats the transaction [${t.name}]`, () => {
-        const got = formatter.formatTransaction(t.transaction as Transaction);
+        const got = formatter.formatTransaction(
+          t.transaction as Transaction,
+          t.options,
+        );
         assert.equal(got, t.want);
       });
     }

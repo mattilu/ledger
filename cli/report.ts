@@ -8,6 +8,7 @@ import {
   positional,
   string,
   subcommands,
+  Type,
 } from 'cmd-ts';
 import { ArgParser, ParsingInto } from 'cmd-ts/dist/cjs/argparser.js';
 import { either as E, function as F } from 'fp-ts';
@@ -19,6 +20,7 @@ import { InventoryReport } from '../lib/reporting/inventory.js';
 import { Report } from '../lib/reporting/report.js';
 import { TransactionsReport } from '../lib/reporting/transactions.js';
 import { lowerBound } from '../lib/utils/bounds.js';
+import { FormatBalanceMode } from '../lib/utils/formatting.js';
 import { CommandError } from './error.js';
 import { date } from './types/date.js';
 
@@ -64,6 +66,25 @@ const inventory = command({
   handler: args => runReport(new InventoryReport(args), args),
 });
 
+const formatBalance: Type<string, FormatBalanceMode> = {
+  async from(value) {
+    switch (value) {
+      case 'none':
+        return FormatBalanceMode.None;
+      case 'full':
+        return FormatBalanceMode.Full;
+      case 'aggregate':
+        return FormatBalanceMode.Aggregate;
+      default:
+        throw new Error(
+          `Invalid value '${value}'. Expected one of 'none', 'full', or 'aggregate'.`,
+        );
+    }
+  },
+  description: "One of 'none', 'full', or 'aggregate'",
+  defaultValue: () => FormatBalanceMode.None,
+};
+
 const transactions = command({
   name: 'transactions',
   args: {
@@ -84,8 +105,16 @@ const transactions = command({
       long: 'all-postings',
       description: 'Whether to display all the postings',
     }),
+    formatBalance: option({
+      long: 'balance',
+      short: 'b',
+      type: formatBalance,
+      description: `Determines the formatting for the running balance after each posting. ${formatBalance.description}`,
+    }),
   },
-  handler: args => runReport(new TransactionsReport(args), args),
+  handler: args => {
+    return runReport(new TransactionsReport(args), args);
+  },
 });
 
 async function runReport(

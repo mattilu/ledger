@@ -1,7 +1,7 @@
 import { BookedLedger } from '../booking/ledger.js';
 import { BookedPosting, Transaction } from '../booking/transaction.js';
 import { lowerBound } from '../utils/bounds.js';
-import { Formatter } from '../utils/formatting.js';
+import { FormatBalanceMode, Formatter } from '../utils/formatting.js';
 import { makeRegexp } from './internal/regexp-utils.js';
 import { Report } from './report.js';
 
@@ -38,6 +38,11 @@ export interface TransactionsReportOptions {
    * false.
    */
   readonly allPostings?: boolean;
+
+  /**
+   * Determines how running balance is formatted. Defaults to `None`.
+   */
+  readonly formatBalance?: FormatBalanceMode;
 }
 
 /**
@@ -98,10 +103,13 @@ export class TransactionsReport implements Report {
           ? transaction.postings
           : postings;
         report.push(
-          formatter.formatTransaction({
-            ...transaction,
-            postings: postingsToReport,
-          }),
+          formatter.formatTransaction(
+            {
+              ...transaction,
+              postings: postingsToReport,
+            },
+            { formatBalance: this.options.formatBalance },
+          ),
         );
 
         report.push('');

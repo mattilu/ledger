@@ -1,8 +1,10 @@
+import { ExactNumber } from 'exactnumber';
 import { Map } from 'immutable';
 
 import { Cost } from '../booking/cost.js';
+import { Inventory } from '../booking/inventory.js';
 import { Position } from '../booking/position.js';
-import { Transaction } from '../booking/transaction.js';
+import { BookedPosting, Transaction } from '../booking/transaction.js';
 import { Amount } from '../core/amount.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
 
@@ -10,8 +12,23 @@ export interface FormatterOptions {
   readonly currencyMap: Map<string, CurrencyDirective>;
 }
 
+const ZERO = ExactNumber(0);
 const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 const MILLISECONDS_PER_MINUTE = 1000 * 60;
+
+export enum FormatBalanceMode {
+  /** Don't display running balances. */
+  None,
+  /** Display running balances for individual positions. */
+  Full,
+  /** Display aggregated running balances instead of individual positions. */
+  Aggregate,
+}
+
+export type FormatTransactionOptions = {
+  /** Determines how running balances are formatted. Defaults to `None`. */
+  readonly formatBalance?: FormatBalanceMode;
+};
 
 export class Formatter {
   constructor(readonly options: FormatterOptions) {}
@@ -61,19 +78,57 @@ export class Formatter {
     return parts.join(' ');
   }
 
-  formatTransaction(transaction: Transaction): string {
-    const parts = [
-      `${this.formatDate(transaction.date)} ${transaction.flag} "${transaction.description}"`,
-    ];
+  formatTransaction(
+    transaction: Transaction,
+    options?: FormatTransactionOptions,
+  ): string {
+    const parts = [this.formatTransactionHeader(transaction)];
+
+    let inventories = transaction.inventoriesBefore;
     for (const posting of transaction.postings) {
-      const flag = posting.flag !== transaction.flag ? `${posting.flag} ` : '';
-      parts.push(
-        posting.cost === null
-          ? `  ${flag}${posting.account} ${this.formatAmount(posting.amount)}`
-          : `  ${flag}${posting.account} ${this.formatAmount(posting.amount)} ${this.formatCost(posting.cost)}`,
-      );
+      parts.push(this.formatPosting(transaction, posting));
+
+      if (
+        (options?.formatBalance ?? FormatBalanceMode.None) !==
+        FormatBalanceMode.None
+      ) {
+        const newInventory = inventories
+          .get(posting.account, Inventory.Empty)
+          .addPosition(new Position(posting.amount, posting.cost));
+        inventories = inventories.set(posting.account, newInventory);
+
+        const positions = newInventory.getPositionsForCurrency(
+          posting.amount.currency,
+        );
+        if (
+          options?.formatBalance === FormatBalanceMode.Aggregate ||
+          positions.length === 0
+        ) {
+          const total = positions.reduce(
+            (acc, pos) => acc.add(pos.amount),
+            new Amount(ZERO, posting.amount.currency),
+          );
+
+          parts.push(`  ; ${this.formatAmount(total)}`);
+        } else {
+          for (const position of positions) {
+            parts.push(`  ; ${this.formatPosition(position)}`);
+          }
+        }
+      }
     }
 
     return parts.join('\n');
+  }
+
+  private formatTransactionHeader(transaction: Transaction) {
+    return `${this.formatDate(transaction.date)} ${transaction.flag} "${transaction.description}"`;
+  }
+
+  private formatPosting(transaction: Transaction, posting: BookedPosting) {
+    const flag = posting.flag !== transaction.flag ? `${posting.flag} ` : '';
+    return posting.cost === null
+      ? `  ${flag}${posting.account} ${this.formatAmount(posting.amount)}`
+      : `  ${flag}${posting.account} ${this.formatAmount(posting.amount)} ${this.formatCost(posting.cost)}`;
   }
 }

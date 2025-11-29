@@ -1,6 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
 
+import { FormatBalanceMode } from '../utils/formatting.js';
 import { collectTests } from './internal/testing.js';
 import {
   TransactionsReport,
@@ -54,6 +55,16 @@ await describe('InventoryReport', async () => {
         name: 'with all postings',
         scenario: 'transactions-all-postings',
         options: { currencies: ['VT'], allPostings: true },
+      },
+      {
+        name: 'with running balance',
+        scenario: 'transactions-balance',
+        options: { formatBalance: FormatBalanceMode.Full },
+      },
+      {
+        name: 'with running balance aggregated',
+        scenario: 'transactions-balance-aggregated',
+        options: { formatBalance: FormatBalanceMode.Aggregate },
       },
     ];
 
