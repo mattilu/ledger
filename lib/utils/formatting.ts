@@ -1,15 +1,18 @@
 import { ExactNumber } from 'exactnumber';
-import { Map } from 'immutable';
+import { identity } from 'fp-ts/lib/function.js';
+import { fst } from 'fp-ts/lib/Tuple.js';
+import { Map as ImmutableMap, Seq } from 'immutable';
 
 import { Cost } from '../booking/cost.js';
-import { Inventory } from '../booking/inventory.js';
+import { Inventory, InventoryMap } from '../booking/inventory.js';
 import { Position } from '../booking/position.js';
 import { BookedPosting, Transaction } from '../booking/transaction.js';
 import { Amount } from '../core/amount.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
+import { formatTree, makeAccountTree } from './internal/account-tree.js';
 
 export interface FormatterOptions {
-  readonly currencyMap: Map<string, CurrencyDirective>;
+  readonly currencyMap: ImmutableMap<string, CurrencyDirective>;
 }
 
 const ZERO = ExactNumber(0);
@@ -28,6 +31,30 @@ export enum FormatBalanceMode {
 export type FormatTransactionOptions = {
   /** Determines how running balances are formatted. Defaults to `None`. */
   readonly formatBalance?: FormatBalanceMode;
+};
+
+export type FormatInventoriesOptions = {
+  /**
+   * If true, show the cost of positions held at cost. Otherwise, only show the
+   * amount. Defaults to true.
+   */
+  readonly showCost?: boolean;
+
+  /** If true, format the inventories as a tree. */
+  readonly tree?: boolean;
+
+  /**
+   * If true, show totals of descendant accounts on each parent.
+   * Only effective when `tree` is true.
+   **/
+  readonly showTotals?: boolean;
+
+  /**
+   * Maximum depth of the account tree to display. For elided nodes, their total
+   * is shown in the closest non-elided ancestor, regardless of `showTotals`.
+   * Only effective when `tree` is true.
+   */
+  readonly maxDepth?: number;
 };
 
 export class Formatter {
@@ -119,6 +146,59 @@ export class Formatter {
     }
 
     return parts.join('\n');
+  }
+
+  formatInventories(
+    inventories: InventoryMap,
+    options?: FormatInventoriesOptions,
+  ) {
+    const maybeAggregatePositions =
+      (options?.showCost ?? true)
+        ? identity
+        : (inventory: Inventory) =>
+            Inventory.Empty.addAmounts(
+              inventory.getPositions().map(x => x.amount),
+            );
+
+    if (options?.tree) {
+      const showTotals = options.showTotals ?? false;
+      const maxDepth = options.maxDepth ?? Number.MAX_SAFE_INTEGER;
+
+      const root = makeAccountTree(
+        new Map(Seq(inventories.entries()).sortBy(fst)),
+        identity,
+        (nodeInventory, inventories, depth) =>
+          maybeAggregatePositions(
+            showTotals || depth >= maxDepth
+              ? inventories.reduce(
+                  (acc, inventory) =>
+                    acc.addPositions(inventory.getPositions()),
+                  nodeInventory ?? Inventory.Empty,
+                )
+              : (nodeInventory ?? Inventory.Empty),
+          ),
+        (node, depth) =>
+          depth <= maxDepth &&
+          (!node.data.isEmpty() || node.children.length > 0),
+      );
+      return formatTree(root, node =>
+        Seq(node.data.getPositions())
+          .sortBy(x => x.amount.currency)
+          .map(position => this.formatPosition(position))
+          .toArray(),
+      );
+    }
+
+    const lines: string[] = [];
+    for (const [account, inventory] of inventories.entrySeq().sortBy(fst)) {
+      const positions = Seq(
+        maybeAggregatePositions(inventory).getPositions(),
+      ).sortBy(a => Seq([a.amount.currency, a.cost?.date.getTime() ?? 0]));
+      for (const position of positions) {
+        lines.push(`${account} ${this.formatPosition(position)}`);
+      }
+    }
+    return lines.join('\n');
   }
 
   private formatTransactionHeader(transaction: Transaction) {

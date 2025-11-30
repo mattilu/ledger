@@ -1,0 +1,14 @@
+╿
+├─ Assets
+│  ├─ Bank              8750 CHF
+│  └─ Trading           2500 CHF
+│     └                 25 VT { 100 CHF, 2025-01-05 }
+├─ Equity
+│  └─ Opening-Balances  -10000 CHF
+├─ Expenses
+│  └─ Rent              1250 CHF
+├─ Income
+│  └─ Salary            -5000 CHF
+└─ Trading
+   └─ Default           2500 CHF
+      └                 -25 VT

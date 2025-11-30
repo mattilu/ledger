@@ -3,6 +3,7 @@ import {
   command,
   flag,
   multioption,
+  number,
   option,
   optional,
   positional,
@@ -62,8 +63,47 @@ type Output<Args extends Record<string, ArgParser<unknown>>> = {
 
 const inventory = command({
   name: 'inventory',
-  args: { ...commonArgs },
-  handler: args => runReport(new InventoryReport(args), args),
+  args: {
+    ...commonArgs,
+    hideCost: flag({
+      long: 'hide-cost',
+      short: 'C',
+      description: 'If true, only show the amount of positions held at cost',
+    }),
+    tree: flag({
+      long: 'tree',
+      short: 't',
+      description: 'Format the report as a tree',
+    }),
+    showTotals: flag({
+      long: 'totals',
+      short: 'T',
+      description:
+        'Show totals of descendant accounts on each parent. Only effective with `--tree`',
+    }),
+    maxDepth: option({
+      long: 'max-depth',
+      short: 'M',
+      type: optional(number),
+      description:
+        'Max depth of the account tree to display. Only effective with `--tree`',
+    }),
+  },
+  handler: args =>
+    runReport(
+      new InventoryReport({
+        accounts: args.accounts,
+        excludeAccounts: args.excludeAccounts,
+        currencies: args.currencies,
+        formatOptions: {
+          showCost: !args.hideCost,
+          tree: args.tree,
+          showTotals: args.showTotals,
+          maxDepth: args.maxDepth,
+        },
+      }),
+      args,
+    ),
 });
 
 const formatBalance: Type<string, FormatBalanceMode> = {
@@ -112,9 +152,7 @@ const transactions = command({
       description: `Determines the formatting for the running balance after each posting. ${formatBalance.description}`,
     }),
   },
-  handler: args => {
-    return runReport(new TransactionsReport(args), args);
-  },
+  handler: args => runReport(new TransactionsReport(args), args),
 });
 
 async function runReport(
