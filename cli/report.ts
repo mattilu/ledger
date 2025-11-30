@@ -62,8 +62,26 @@ type Output<Args extends Record<string, ArgParser<unknown>>> = {
 
 const inventory = command({
   name: 'inventory',
-  args: { ...commonArgs },
-  handler: args => runReport(new InventoryReport(args), args),
+  args: {
+    ...commonArgs,
+    hideCost: flag({
+      long: 'hide-cost',
+      short: 'C',
+      description: 'If true, only show the amount of positions held at cost',
+    }),
+  },
+  handler: args =>
+    runReport(
+      new InventoryReport({
+        accounts: args.accounts,
+        excludeAccounts: args.excludeAccounts,
+        currencies: args.currencies,
+        formatOptions: {
+          showCost: !args.hideCost,
+        },
+      }),
+      args,
+    ),
 });
 
 const formatBalance: Type<string, FormatBalanceMode> = {
@@ -112,9 +130,7 @@ const transactions = command({
       description: `Determines the formatting for the running balance after each posting. ${formatBalance.description}`,
     }),
   },
-  handler: args => {
-    return runReport(new TransactionsReport(args), args);
-  },
+  handler: args => runReport(new TransactionsReport(args), args),
 });
 
 async function runReport(
