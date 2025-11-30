@@ -1,0 +1,8 @@
+╿
+├─ Assets    11250 CHF
+│  └         25 VT { 100 CHF, 2025-01-05 }
+├─ Equity    -10000 CHF
+├─ Expenses  1250 CHF
+├─ Income    -5000 CHF
+└─ Trading   2500 CHF
+   └         -25 VT

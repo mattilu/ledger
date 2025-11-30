@@ -9,6 +9,7 @@ import { Position } from '../booking/position.js';
 import { BookedPosting, Transaction } from '../booking/transaction.js';
 import { Amount } from '../core/amount.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
+import { formatTree, makeAccountTree } from './internal/account-tree.js';
 
 export interface FormatterOptions {
   readonly currencyMap: ImmutableMap<string, CurrencyDirective>;
@@ -38,6 +39,22 @@ export type FormatInventoriesOptions = {
    * amount. Defaults to true.
    */
   readonly showCost?: boolean;
+
+  /** If true, format the inventories as a tree. */
+  readonly tree?: boolean;
+
+  /**
+   * If true, show totals of descendant accounts on each parent.
+   * Only effective when `tree` is true.
+   **/
+  readonly showTotals?: boolean;
+
+  /**
+   * Maximum depth of the account tree to display. For elided nodes, their total
+   * is shown in the closest non-elided ancestor, regardless of `showTotals`.
+   * Only effective when `tree` is true.
+   */
+  readonly maxDepth?: number;
 };
 
 export class Formatter {
@@ -142,6 +159,35 @@ export class Formatter {
             Inventory.Empty.addAmounts(
               inventory.getPositions().map(x => x.amount),
             );
+
+    if (options?.tree) {
+      const showTotals = options.showTotals ?? false;
+      const maxDepth = options.maxDepth ?? Number.MAX_SAFE_INTEGER;
+
+      const root = makeAccountTree(
+        new Map(Seq(inventories.entries()).sortBy(fst)),
+        identity,
+        (nodeInventory, inventories, depth) =>
+          maybeAggregatePositions(
+            showTotals || depth >= maxDepth
+              ? inventories.reduce(
+                  (acc, inventory) =>
+                    acc.addPositions(inventory.getPositions()),
+                  nodeInventory ?? Inventory.Empty,
+                )
+              : (nodeInventory ?? Inventory.Empty),
+          ),
+        (node, depth) =>
+          depth <= maxDepth &&
+          (!node.data.isEmpty() || node.children.length > 0),
+      );
+      return formatTree(root, node =>
+        Seq(node.data.getPositions())
+          .sortBy(x => x.amount.currency)
+          .map(position => this.formatPosition(position))
+          .toArray(),
+      );
+    }
 
     const lines: string[] = [];
     for (const [account, inventory] of inventories.entrySeq().sortBy(fst)) {

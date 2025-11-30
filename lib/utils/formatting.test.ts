@@ -548,6 +548,195 @@ Assets:Test:Trading 1 VT { 140.00 CHF, 2025-11-02 }`,
 Assets:Test:Trading 1 QQQ
 Assets:Test:Trading 2 VT`,
       },
+      {
+        name: 'empty as tree',
+        inventories: Map(),
+        options: { tree: true },
+        want: '╿',
+      },
+      {
+        name: 'top level account as tree',
+        inventories: inventories.topLevelAccount,
+        options: { tree: true },
+        want: `\
+╿
+└─ Assets  1.00 CHF`,
+      },
+      {
+        name: 'child account as tree',
+        inventories: inventories.childAccount,
+        options: { tree: true },
+        want: `\
+╿
+└─ Assets
+   └─ Test  1.00 CHF`,
+      },
+      {
+        name: 'deep account as tree',
+        inventories: inventories.deepAccount,
+        options: { tree: true },
+        want: `\
+╿
+└─ Assets
+   └─ Test
+      └─ Foo
+         └─ Bar
+            └─ Baz  1.00 CHF`,
+      },
+      {
+        name: 'deep account as tree, max depth',
+        inventories: inventories.deepAccount,
+        options: { tree: true, maxDepth: 2 },
+        want: `\
+╿
+└─ Assets
+   └─ Test  1.00 CHF`,
+      },
+      {
+        name: 'multiple accounts as tree',
+        inventories: inventories.multipleAccounts,
+        options: { tree: true },
+        want: `\
+╿
+├─ Assets
+│  └─ Test
+│     ├─ Bar    1 EUR
+│     ├─ Baz    1 JPY
+│     └─ Foo    1.00 CHF
+└─ Liabilities
+   └─ Test
+      └─ Qux    1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, max depth',
+        inventories: inventories.multipleAccounts,
+        options: { tree: true, maxDepth: 2 },
+        want: `\
+╿
+├─ Assets
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     └         1 JPY
+└─ Liabilities
+   └─ Test      1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, show totals',
+        inventories: inventories.multipleAccounts,
+        options: { tree: true, showTotals: true },
+        want: `\
+╿               1.00 CHF
+│               1 EUR
+│               1 JPY
+│               1 USD
+├─ Assets       1.00 CHF
+│  │            1 EUR
+│  │            1 JPY
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     │         1 JPY
+│     ├─ Bar    1 EUR
+│     ├─ Baz    1 JPY
+│     └─ Foo    1.00 CHF
+└─ Liabilities  1 USD
+   └─ Test      1 USD
+      └─ Qux    1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, max depth, show totals',
+        inventories: inventories.multipleAccounts,
+        options: { tree: true, maxDepth: 2, showTotals: true },
+        want: `\
+╿               1.00 CHF
+│               1 EUR
+│               1 JPY
+│               1 USD
+├─ Assets       1.00 CHF
+│  │            1 EUR
+│  │            1 JPY
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     └         1 JPY
+└─ Liabilities  1 USD
+   └─ Test      1 USD`,
+      },
+      {
+        name: 'multiple positions as tree',
+        inventories: inventories.multiplePositions,
+        options: { tree: true },
+        want: `\
+╿
+└─ Assets
+   └─ Test  1.00 CHF
+      │     1 EUR
+      └     1 USD`,
+      },
+      {
+        name: 'costs as tree',
+        inventories: inventories.costs,
+        options: { tree: true },
+        want: `\
+╿
+└─ Assets
+   └─ Test
+      └─ Trading  1 QQQ { 500.00 CHF, 2025-11-01 }
+         │        1 VT { 150.00 CHF, 2025-11-01 }
+         └        1 VT { 140.00 CHF, 2025-11-02 }`,
+      },
+      {
+        name: 'costs as tree, max depth',
+        inventories: inventories.costs,
+        options: { tree: true, maxDepth: 2 },
+        want: `\
+╿
+└─ Assets
+   └─ Test  1 QQQ { 500.00 CHF, 2025-11-01 }
+      │     1 VT { 150.00 CHF, 2025-11-01 }
+      └     1 VT { 140.00 CHF, 2025-11-02 }`,
+      },
+      {
+        name: 'costs as tree, show totals',
+        inventories: inventories.costs,
+        options: { tree: true, showTotals: true },
+        want: `\
+╿                 1 QQQ { 500.00 CHF, 2025-11-01 }
+│                 1 VT { 150.00 CHF, 2025-11-01 }
+│                 1 VT { 140.00 CHF, 2025-11-02 }
+└─ Assets         1 QQQ { 500.00 CHF, 2025-11-01 }
+   │              1 VT { 150.00 CHF, 2025-11-01 }
+   │              1 VT { 140.00 CHF, 2025-11-02 }
+   └─ Test        1 QQQ { 500.00 CHF, 2025-11-01 }
+      │           1 VT { 150.00 CHF, 2025-11-01 }
+      │           1 VT { 140.00 CHF, 2025-11-02 }
+      └─ Trading  1 QQQ { 500.00 CHF, 2025-11-01 }
+         │        1 VT { 150.00 CHF, 2025-11-01 }
+         └        1 VT { 140.00 CHF, 2025-11-02 }`,
+      },
+      {
+        name: 'costs hidden as tree',
+        inventories: inventories.costs,
+        options: { tree: true, showCost: false },
+        want: `\
+╿
+└─ Assets
+   └─ Test
+      └─ Trading  1 QQQ
+         └        2 VT`,
+      },
+      {
+        name: 'costs hidden as tree, show totals',
+        inventories: inventories.costs,
+        options: { tree: true, showCost: false, showTotals: true },
+        want: `\
+╿                 1 QQQ
+│                 2 VT
+└─ Assets         1 QQQ
+   │              2 VT
+   └─ Test        1 QQQ
+      │           2 VT
+      └─ Trading  1 QQQ
+         └        2 VT`,
+      },
     ];
 
     for (const t of tests) {

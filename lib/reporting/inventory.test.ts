@@ -34,6 +34,34 @@ await describe('InventoryReport', async () => {
           formatOptions: { showCost: false },
         },
       },
+      {
+        name: 'format as tree',
+        scenario: 'inventory-format-as-tree',
+        options: {
+          formatOptions: { tree: true },
+        },
+      },
+      {
+        name: 'format as tree hide cost',
+        scenario: 'inventory-format-as-tree-hide-cost',
+        options: {
+          formatOptions: { tree: true, showCost: false },
+        },
+      },
+      {
+        name: 'format as tree with totals',
+        scenario: 'inventory-format-as-tree-totals',
+        options: {
+          formatOptions: { tree: true, showTotals: true },
+        },
+      },
+      {
+        name: 'format as tree with max depth',
+        scenario: 'inventory-format-as-tree-max-depth',
+        options: {
+          formatOptions: { tree: true, maxDepth: 1 },
+        },
+      },
     ];
 
     for (const testCase of testCases) {
