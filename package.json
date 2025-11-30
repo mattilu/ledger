@@ -6,16 +6,15 @@
   "main": "main.ts",
   "scripts": {
     "main": "tsx main.ts",
-    "lint": "gts lint",
-    "clean": "gts clean",
-    "compile": "tsc",
-    "fix": "gts fix",
-    "test!": "tsx --enable-source-maps --test --test-reporter=spec",
+    "lint": "eslint .",
+    "pre-commit": "concurrently --timings --group npm:lint npm:prettier-check npm:test npm:typecheck",
+    "prettier-check": "prettier --check '**/*.ts'",
+    "prettier-format": "prettier --write '**/*.ts'",
     "test": "npm run test! -- $(find lib -name '*.test.ts')",
-    "test-watch!": "npm run test! -- --watch",
+    "test!": "tsx --enable-source-maps --test --test-reporter=spec",
     "test-watch": "npm run test-watch! -- $(find lib -name '*.test.ts')",
-    "typecheck": "tsc --noEmit",
-    "pre-commit": "concurrently --timings --group npm:lint npm:test npm:typecheck"
+    "test-watch!": "npm run test! -- --watch",
+    "typecheck": "tsc --noEmit"
   },
   "bin": {
     "ledger": "main.ts"
@@ -28,10 +27,13 @@
   "devDependencies": {
     "@types/node": "^24.3.0",
     "concurrently": "^9.1.2",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "gts": "^6.0.2",
+    "prettier": "^3.7.3",
     "tsx": "^4.19.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.48.0"
   },
   "dependencies": {
     "cmd-ts": "^0.14.1",

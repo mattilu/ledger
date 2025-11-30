@@ -484,14 +484,14 @@ function bookPosting(
 
 function validateCostSpecForAugmentation(
   costSpec: CostSpec,
-): E.Either<Error, {}> {
+): E.Either<Error, void> {
   if (costSpec.dates.length > 1 || costSpec.dateSpecs.length > 1) {
     return E.left(new Error('Augmentation cannot specify more than one date'));
   }
   if (costSpec.currencies.length > 0) {
     return E.left(new Error('Augmentation cannot specify currencies'));
   }
-  return E.of({});
+  return E.of(undefined);
 }
 
 function filterInventoryForReduction(

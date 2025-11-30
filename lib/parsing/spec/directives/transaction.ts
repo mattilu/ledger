@@ -29,8 +29,7 @@ export interface PostingSpec {
   readonly meta: MetadataSpec;
 }
 
-export interface TransactionDirectiveSpec
-  extends DirectiveCommonSpec<'transaction'> {
+export interface TransactionDirectiveSpec extends DirectiveCommonSpec<'transaction'> {
   readonly date: DateSpec;
   readonly description: string;
   readonly flag: string;
