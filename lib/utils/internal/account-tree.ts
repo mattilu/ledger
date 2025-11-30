@@ -77,8 +77,8 @@ export function makeAccountTree<T, U>(
       name: node.name,
       data: node.data,
       children: node.children
-        .filter(child => filter(child, depth + 1))
-        .map(child => doFilter(child, depth + 1)),
+        .map(child => doFilter(child, depth + 1))
+        .filter(child => filter(child, depth + 1)),
     };
   }
 

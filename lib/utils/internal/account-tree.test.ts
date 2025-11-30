@@ -8,6 +8,7 @@ await describe('makeAccountTree', async () => {
     const data = [
       { account: 'Assets:Bank:Foo', amount: 2000 },
       { account: 'Assets:Bank:Bar', amount: 1000 },
+      { account: 'Liabilities:Test:Foo', amount: 0 },
       { account: 'Expenses:Car:Fuel', amount: 100 },
       { account: 'Expenses:Groceries', amount: 200 },
       { account: 'Expenses:Rent', amount: 500 },
@@ -20,6 +21,7 @@ await describe('makeAccountTree', async () => {
       x => x.amount,
       (nodeValue, childValues) =>
         childValues.reduce((a, b) => a + b, nodeValue ?? 0),
+      x => x.children.length > 0 || x.data !== 0,
     );
 
     const want: Node<number> = {

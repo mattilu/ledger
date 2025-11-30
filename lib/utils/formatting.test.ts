@@ -446,6 +446,7 @@ await describe('Formatter', async () => {
       childAccount: Map([
         ['Assets:Test', Inventory.Empty.addAmount(amount(1, 'CHF'))],
       ]),
+      accountWithZeroValue: Map([['Assets:Test:Foo', Inventory.Empty]]),
       deepAccount: Map([
         [
           'Assets:Test:Foo:Bar:Baz',
@@ -516,6 +517,11 @@ await describe('Formatter', async () => {
         want: 'Assets:Test:Foo:Bar:Baz 1.00 CHF',
       },
       {
+        name: 'account with zero value',
+        inventories: inventories.accountWithZeroValue,
+        want: '',
+      },
+      {
         name: 'multiple accounts',
         inventories: inventories.multipleAccounts,
         want: `\
@@ -570,6 +576,12 @@ Assets:Test:Trading 2 VT`,
 ╿
 └─ Assets
    └─ Test  1.00 CHF`,
+      },
+      {
+        name: 'account with zero value as tree',
+        inventories: inventories.accountWithZeroValue,
+        options: { tree: true },
+        want: '╿',
       },
       {
         name: 'deep account as tree',
