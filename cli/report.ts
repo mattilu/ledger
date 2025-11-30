@@ -17,11 +17,15 @@ import { either as E, function as F } from 'fp-ts';
 import { book } from '../lib/booking/booking.js';
 import { Ledger } from '../lib/loading/ledger.js';
 import { load } from '../lib/loading/loader.js';
+import { CashFlowReport } from '../lib/reporting/cash-flow.js';
 import { InventoryReport } from '../lib/reporting/inventory.js';
 import { Report } from '../lib/reporting/report.js';
 import { TransactionsReport } from '../lib/reporting/transactions.js';
 import { partitionLo } from '../lib/utils/bounds.js';
-import { FormatBalanceMode } from '../lib/utils/formatting.js';
+import {
+  FormatBalanceMode,
+  FormatInventoriesOptions,
+} from '../lib/utils/formatting.js';
 import { CommandError } from './error.js';
 import { date } from './types/date.js';
 
@@ -57,37 +61,82 @@ const commonArgs = {
   }),
 };
 
-type Output<Args extends Record<string, ArgParser<unknown>>> = {
-  [key in keyof Args]: ParsingInto<Args[key]>;
+const formatInventoryArgs = {
+  hideCost: flag({
+    long: 'hide-cost',
+    short: 'C',
+    description: 'If true, only show the amount of positions held at cost',
+  }),
+  tree: flag({
+    long: 'tree',
+    short: 't',
+    description: 'Format the report as a tree',
+  }),
+  showTotals: flag({
+    long: 'totals',
+    short: 'T',
+    description:
+      'Show totals of descendant accounts on each parent. Only effective with `--tree`',
+  }),
+  maxDepth: option({
+    long: 'max-depth',
+    short: 'M',
+    type: optional(number),
+    description:
+      'Max depth of the account tree to display. Only effective with `--tree`',
+  }),
 };
+
+function makeInventoryFormatOptions(options: {
+  hideCost: boolean;
+  tree: boolean;
+  showTotals: boolean;
+  maxDepth?: number;
+}): FormatInventoriesOptions {
+  return {
+    showCost: !options.hideCost,
+    tree: options.tree,
+    showTotals: options.showTotals,
+    maxDepth: options.maxDepth,
+  };
+}
+
+const cashFlow = command({
+  name: 'cash-flow',
+  args: {
+    ...commonArgs,
+    dateFrom: option({
+      long: 'date-from',
+      short: 'd',
+      type: optional(date),
+      description: 'Only report transactions from this date onwards',
+    }),
+    showFromAccounts: flag({
+      long: 'show-from',
+      short: 'f',
+      description: 'Wheter to show the corresponding accounts of the cash flow',
+    }),
+    ...formatInventoryArgs,
+  },
+  handler: args =>
+    runReport(
+      new CashFlowReport({
+        dateFrom: args.dateFrom,
+        accounts: args.accounts,
+        excludeAccounts: args.excludeAccounts,
+        currencies: args.currencies,
+        showFromAccounts: args.showFromAccounts,
+        formatOptions: makeInventoryFormatOptions(args),
+      }),
+      args,
+    ),
+});
 
 const inventory = command({
   name: 'inventory',
   args: {
     ...commonArgs,
-    hideCost: flag({
-      long: 'hide-cost',
-      short: 'C',
-      description: 'If true, only show the amount of positions held at cost',
-    }),
-    tree: flag({
-      long: 'tree',
-      short: 't',
-      description: 'Format the report as a tree',
-    }),
-    showTotals: flag({
-      long: 'totals',
-      short: 'T',
-      description:
-        'Show totals of descendant accounts on each parent. Only effective with `--tree`',
-    }),
-    maxDepth: option({
-      long: 'max-depth',
-      short: 'M',
-      type: optional(number),
-      description:
-        'Max depth of the account tree to display. Only effective with `--tree`',
-    }),
+    ...formatInventoryArgs,
   },
   handler: args =>
     runReport(
@@ -95,12 +144,7 @@ const inventory = command({
         accounts: args.accounts,
         excludeAccounts: args.excludeAccounts,
         currencies: args.currencies,
-        formatOptions: {
-          showCost: !args.hideCost,
-          tree: args.tree,
-          showTotals: args.showTotals,
-          maxDepth: args.maxDepth,
-        },
+        formatOptions: makeInventoryFormatOptions(args),
       }),
       args,
     ),
@@ -155,6 +199,10 @@ const transactions = command({
   handler: args => runReport(new TransactionsReport(args), args),
 });
 
+type Output<Args extends Record<string, ArgParser<unknown>>> = {
+  [key in keyof Args]: ParsingInto<Args[key]>;
+};
+
 async function runReport(
   report: Report,
   { inputFile, date }: Output<typeof commonArgs>,
@@ -182,6 +230,7 @@ const dropAfter =
 export const report = subcommands({
   name: 'report',
   cmds: {
+    'cash-flow': cashFlow,
     inventory,
     transactions,
   },
