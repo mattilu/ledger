@@ -1,0 +1,23 @@
+2025-11-01 * "Opening Balance"
+  Assets:Bank:Foo:Checking      2,000 CHF
+  Assets:Bank:Foo:Savings      10,000 CHF
+  Assets:Bank:Bar               5,000 EUR
+  Assets:Bank:Baz               3,000 USD
+  Liabilities:Bank:Foo:Loan   -20,000 CHF
+  Equity:Opening-Balances
+
+2025-11-02 * "Transfer to Trading Account"
+  Assets:Bank:Foo:Checking     -1,000 CHF
+  Assets:Brokerage:Baz:Cash
+
+2025-11-03 * "Buy VT"
+  Assets:Brokerage:Baz:Stock       10 VT {{ 1000 CHF }}
+  Assets:Brokerage:Baz:Cash
+
+2025-11-04 * "Salary"
+  Assets:Bank:Foo:Checking      5,000 CHF
+  Income:Salary
+
+2025-11-05 * "Rent"
+  Expenses:Rent                 1,250 CHF
+  Assets:Bank:Foo:Checking

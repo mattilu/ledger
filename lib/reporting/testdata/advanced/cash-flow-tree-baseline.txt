@@ -1,0 +1,17 @@
+Cash flows:
+
+╿
+├─ Assets
+│  ├─ Bank
+│  │  ├─ Bar          5000 EUR
+│  │  ├─ Baz          3000 USD
+│  │  └─ Foo
+│  │     ├─ Checking  4750 CHF
+│  │     └─ Savings   10000 CHF
+│  └─ Brokerage
+│     └─ Baz
+│        └─ Stock     10 VT { 100 CHF, 2025-11-03 }
+└─ Liabilities
+   └─ Bank
+      └─ Foo
+         └─ Loan      -20000 CHF

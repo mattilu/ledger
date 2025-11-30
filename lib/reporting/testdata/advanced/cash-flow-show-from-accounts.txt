@@ -1,0 +1,8 @@
+Cash flows:
+
+Assets:Bank:Foo:Checking 3750 CHF
+
+From accounts:
+
+Expenses:Rent 1250 CHF
+Income:Salary -5000 CHF

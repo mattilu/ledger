@@ -1,0 +1,10 @@
+Cash flows:
+
+╿
+├─ Assets
+│  ├─ Bank       14750 CHF
+│  │  │          5000 EUR
+│  │  └          3000 USD
+│  └─ Brokerage  10 VT
+└─ Liabilities
+   └─ Bank       -20000 CHF
