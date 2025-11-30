@@ -3,6 +3,7 @@ import {
   command,
   flag,
   multioption,
+  number,
   option,
   optional,
   positional,
@@ -69,6 +70,24 @@ const inventory = command({
       short: 'C',
       description: 'If true, only show the amount of positions held at cost',
     }),
+    tree: flag({
+      long: 'tree',
+      short: 't',
+      description: 'Format the report as a tree',
+    }),
+    showTotals: flag({
+      long: 'totals',
+      short: 'T',
+      description:
+        'Show totals of descendant accounts on each parent. Only effective with `--tree`',
+    }),
+    maxDepth: option({
+      long: 'max-depth',
+      short: 'M',
+      type: optional(number),
+      description:
+        'Max depth of the account tree to display. Only effective with `--tree`',
+    }),
   },
   handler: args =>
     runReport(
@@ -78,6 +97,9 @@ const inventory = command({
         currencies: args.currencies,
         formatOptions: {
           showCost: !args.hideCost,
+          tree: args.tree,
+          showTotals: args.showTotals,
+          maxDepth: args.maxDepth,
         },
       }),
       args,
