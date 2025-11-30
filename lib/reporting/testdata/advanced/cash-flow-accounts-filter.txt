@@ -1,0 +1,6 @@
+Cash flows:
+
+Assets:Bank:Bar 5000 EUR
+Assets:Bank:Baz 3000 USD
+Assets:Bank:Foo:Checking 4750 CHF
+Assets:Bank:Foo:Savings 10000 CHF
