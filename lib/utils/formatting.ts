@@ -1,15 +1,17 @@
 import { ExactNumber } from 'exactnumber';
-import { Map } from 'immutable';
+import { identity } from 'fp-ts/lib/function.js';
+import { fst } from 'fp-ts/lib/Tuple.js';
+import { Map as ImmutableMap, Seq } from 'immutable';
 
 import { Cost } from '../booking/cost.js';
-import { Inventory } from '../booking/inventory.js';
+import { Inventory, InventoryMap } from '../booking/inventory.js';
 import { Position } from '../booking/position.js';
 import { BookedPosting, Transaction } from '../booking/transaction.js';
 import { Amount } from '../core/amount.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
 
 export interface FormatterOptions {
-  readonly currencyMap: Map<string, CurrencyDirective>;
+  readonly currencyMap: ImmutableMap<string, CurrencyDirective>;
 }
 
 const ZERO = ExactNumber(0);
@@ -28,6 +30,14 @@ export enum FormatBalanceMode {
 export type FormatTransactionOptions = {
   /** Determines how running balances are formatted. Defaults to `None`. */
   readonly formatBalance?: FormatBalanceMode;
+};
+
+export type FormatInventoriesOptions = {
+  /**
+   * If true, show the cost of positions held at cost. Otherwise, only show the
+   * amount. Defaults to true.
+   */
+  readonly showCost?: boolean;
 };
 
 export class Formatter {
@@ -119,6 +129,30 @@ export class Formatter {
     }
 
     return parts.join('\n');
+  }
+
+  formatInventories(
+    inventories: InventoryMap,
+    options?: FormatInventoriesOptions,
+  ) {
+    const maybeAggregatePositions =
+      (options?.showCost ?? true)
+        ? identity
+        : (inventory: Inventory) =>
+            Inventory.Empty.addAmounts(
+              inventory.getPositions().map(x => x.amount),
+            );
+
+    const lines: string[] = [];
+    for (const [account, inventory] of inventories.entrySeq().sortBy(fst)) {
+      const positions = Seq(
+        maybeAggregatePositions(inventory).getPositions(),
+      ).sortBy(a => Seq([a.amount.currency, a.cost?.date.getTime() ?? 0]));
+      for (const position of positions) {
+        lines.push(`${account} ${this.formatPosition(position)}`);
+      }
+    }
+    return lines.join('\n');
   }
 
   private formatTransactionHeader(transaction: Transaction) {

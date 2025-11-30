@@ -27,6 +27,13 @@ await describe('InventoryReport', async () => {
         scenario: 'inventory-currencies-filter',
         options: { currencies: ['CHF'] },
       },
+      {
+        name: 'hide-cost',
+        scenario: 'inventory-hide-cost',
+        options: {
+          formatOptions: { showCost: false },
+        },
+      },
     ];
 
     for (const testCase of testCases) {
