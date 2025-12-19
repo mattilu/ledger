@@ -183,7 +183,7 @@ export class Formatter {
       );
       return formatTree(root, node =>
         Seq(node.data.getPositions())
-          .sortBy(x => x.amount.currency)
+          .sortBy(x => Seq([x.amount.currency, x.cost?.date.getTime() ?? 0]))
           .map(position => this.formatPosition(position))
           .toArray(),
       );

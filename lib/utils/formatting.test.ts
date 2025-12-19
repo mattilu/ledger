@@ -474,16 +474,16 @@ await describe('Formatter', async () => {
           'Assets:Test:Trading',
           Inventory.Empty.addPositions([
             new Position(
-              amount(1, 'VT'),
-              cost([amount(150, 'CHF')], '2025-11-01'),
+              amount(1, 'QQQ'),
+              cost([amount(500, 'CHF')], '2025-11-01'),
             ),
             new Position(
               amount(1, 'VT'),
               cost([amount(140, 'CHF')], '2025-11-02'),
             ),
             new Position(
-              amount(1, 'QQQ'),
-              cost([amount(500, 'CHF')], '2025-11-01'),
+              amount(1, 'VT'),
+              cost([amount(150, 'CHF')], '2025-11-01'),
             ),
           ]),
         ],
