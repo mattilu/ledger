@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "price directive not implemented yet at lib/loading/testdata/price.ledger:1"
+  }
+}

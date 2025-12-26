@@ -14,6 +14,7 @@ export enum TokenKind {
   KEYWORD_load,
   KEYWORD_open,
   KEYWORD_option,
+  KEYWORD_price,
   KEYWORD_txn,
 
   Identifier,
@@ -55,7 +56,7 @@ const tokenizer = buildLexer([
   [true, /^load\b/g, TokenKind.KEYWORD_load],
   [true, /^open\b/g, TokenKind.KEYWORD_open],
   [true, /^option\b/g, TokenKind.KEYWORD_option],
-
+  [true, /^price\b/g, TokenKind.KEYWORD_price],
   [true, /^txn\b/g, TokenKind.KEYWORD_txn],
 
   [true, /^[a-z][a-z0-9_-]*/g, TokenKind.Identifier],
