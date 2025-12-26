@@ -317,6 +317,25 @@ async function doLoad(
         }
         result = E.of(undefined);
         break;
+      case 'price': {
+        result = F.pipe(
+          E.Do,
+          E.bind('meta', () => makeMeta(directive)),
+          E.bind('date', () => makeDate(directive)),
+          E.map(({ date, meta }) => {
+            directives.push({
+              type: 'price',
+              date: date,
+              meta: meta,
+              currency: directive.currency,
+              price: evaluateAmount(directive.price),
+              srcCtx: makeSourceContext(filePath, directive.srcPos),
+              optionMap: ctx.optionMap,
+            });
+          }),
+        );
+        break;
+      }
       case 'transaction': {
         result = F.pipe(
           E.Do,

@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "While processing 'price' directive at lib/booking/testdata/price.ledger:1: price directive not implemented yet"
+  }
+}
