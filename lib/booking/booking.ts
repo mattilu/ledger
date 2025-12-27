@@ -450,9 +450,7 @@ function bookPosting(
       return E.right([postings, inventories, balance]);
     }
 
-    return E.left(
-      new Error('Booking with cost spec inference not implemented yet'),
-    );
+    return E.left(new Error(`Amount interpolation with cost spec is invalid`));
   }
 
   if (posting.amount !== null) {

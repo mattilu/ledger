@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "While processing 'transaction' directive at lib/booking/testdata/cost-invalid-missing-amount.ledger:1: Amount interpolation with cost spec is invalid"
+  }
+}
