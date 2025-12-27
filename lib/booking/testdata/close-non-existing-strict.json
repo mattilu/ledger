@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "While processing 'close' directive at lib/booking/testdata/close-non-existing-strict.ledger:3: Account Assets:Foo has not been opened"
+  }
+}
