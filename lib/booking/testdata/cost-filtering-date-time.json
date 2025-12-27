@@ -1,0 +1,578 @@
+{
+  "_tag": "Right",
+  "right": {
+    "transactions": [
+      {
+        "date": "2025-12-01T00:00:00.000Z",
+        "description": "Open",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "100", "currency": "USD" },
+            "cost": {
+              "amounts": [{ "amount": "0.8", "currency": "CHF" }],
+              "date": "2025-11-30T22:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-12-01",
+                "time": "00:00",
+                "timezone": null
+              },
+              "tags": []
+            },
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-100", "currency": "USD" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "80", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "100", "currency": "USD" },
+            "cost": {
+              "amounts": [{ "amount": "0.81", "currency": "CHF" }],
+              "date": "2025-11-30T23:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-12-01",
+                "time": "01:00",
+                "timezone": null
+              },
+              "tags": []
+            },
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-100", "currency": "USD" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "81", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "100", "currency": "USD" },
+            "cost": {
+              "amounts": [{ "amount": "0.82", "currency": "CHF" }],
+              "date": "2025-12-01T00:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-12-01",
+                "time": "02:00",
+                "timezone": null
+              },
+              "tags": []
+            },
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-100", "currency": "USD" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "82", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "-243", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": {
+            "CHF": [{ "amount": "-243", "cost": null }],
+            "USD": [
+              {
+                "amount": "100",
+                "cost": {
+                  "amounts": [{ "amount": "0.8", "currency": "CHF" }],
+                  "date": "2025-11-30T22:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-01",
+                    "time": "00:00",
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              },
+              {
+                "amount": "100",
+                "cost": {
+                  "amounts": [{ "amount": "0.81", "currency": "CHF" }],
+                  "date": "2025-11-30T23:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-01",
+                    "time": "01:00",
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              },
+              {
+                "amount": "100",
+                "cost": {
+                  "amounts": [{ "amount": "0.82", "currency": "CHF" }],
+                  "date": "2025-12-01T00:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-01",
+                    "time": "02:00",
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              }
+            ]
+          },
+          "Trading:Default": {
+            "CHF": [{ "amount": "243", "cost": null }],
+            "USD": [{ "amount": "-300", "cost": null }]
+          }
+        }
+      },
+      {
+        "date": "2025-12-02T00:00:00.000Z",
+        "description": "Open",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "100", "currency": "USD" },
+            "cost": {
+              "amounts": [{ "amount": "0.83", "currency": "CHF" }],
+              "date": "2025-12-01T23:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-12-02",
+                "time": "01:00",
+                "timezone": null
+              },
+              "tags": []
+            },
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-100", "currency": "USD" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "83", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "100", "currency": "USD" },
+            "cost": {
+              "amounts": [{ "amount": "0.84", "currency": "CHF" }],
+              "date": "2025-12-02T00:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-12-02",
+                "time": "02:00",
+                "timezone": null
+              },
+              "tags": []
+            },
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-100", "currency": "USD" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "84", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "100", "currency": "USD" },
+            "cost": {
+              "amounts": [{ "amount": "0.85", "currency": "CHF" }],
+              "date": "2025-12-02T01:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-12-02",
+                "time": "03:00",
+                "timezone": null
+              },
+              "tags": []
+            },
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-100", "currency": "USD" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "85", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "-252", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": {
+            "CHF": [{ "amount": "-495", "cost": null }],
+            "USD": [
+              {
+                "amount": "100",
+                "cost": {
+                  "amounts": [{ "amount": "0.8", "currency": "CHF" }],
+                  "date": "2025-11-30T22:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-01",
+                    "time": "00:00",
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              },
+              {
+                "amount": "100",
+                "cost": {
+                  "amounts": [{ "amount": "0.81", "currency": "CHF" }],
+                  "date": "2025-11-30T23:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-01",
+                    "time": "01:00",
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              },
+              {
+                "amount": "100",
+                "cost": {
+                  "amounts": [{ "amount": "0.82", "currency": "CHF" }],
+                  "date": "2025-12-01T00:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-01",
+                    "time": "02:00",
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              },
+              {
+                "amount": "100",
+                "cost": {
+                  "amounts": [{ "amount": "0.83", "currency": "CHF" }],
+                  "date": "2025-12-01T23:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-02",
+                    "time": "01:00",
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              },
+              {
+                "amount": "100",
+                "cost": {
+                  "amounts": [{ "amount": "0.84", "currency": "CHF" }],
+                  "date": "2025-12-02T00:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-02",
+                    "time": "02:00",
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              },
+              {
+                "amount": "100",
+                "cost": {
+                  "amounts": [{ "amount": "0.85", "currency": "CHF" }],
+                  "date": "2025-12-02T01:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-02",
+                    "time": "03:00",
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              }
+            ]
+          },
+          "Trading:Default": {
+            "CHF": [{ "amount": "495", "cost": null }],
+            "USD": [{ "amount": "-600", "cost": null }]
+          }
+        }
+      },
+      {
+        "date": "2025-12-03T00:00:00.000Z",
+        "description": "Close - no time matches date portion",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "-100", "currency": "USD" },
+            "cost": {
+              "amounts": [{ "amount": "0.83", "currency": "CHF" }],
+              "date": "2025-12-01T23:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-12-02",
+                "time": "01:00",
+                "timezone": null
+              },
+              "tags": []
+            },
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "100", "currency": "USD" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-83", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "-100", "currency": "USD" },
+            "cost": {
+              "amounts": [{ "amount": "0.84", "currency": "CHF" }],
+              "date": "2025-12-02T00:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-12-02",
+                "time": "02:00",
+                "timezone": null
+              },
+              "tags": []
+            },
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "100", "currency": "USD" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-84", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "200", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Income:Trading",
+            "amount": { "amount": "-17", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Income:Trading",
+            "amount": { "amount": "-16", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": {
+            "CHF": [{ "amount": "-295", "cost": null }],
+            "USD": [
+              {
+                "amount": "100",
+                "cost": {
+                  "amounts": [{ "amount": "0.8", "currency": "CHF" }],
+                  "date": "2025-11-30T22:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-01",
+                    "time": "00:00",
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              },
+              {
+                "amount": "100",
+                "cost": {
+                  "amounts": [{ "amount": "0.81", "currency": "CHF" }],
+                  "date": "2025-11-30T23:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-01",
+                    "time": "01:00",
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              },
+              {
+                "amount": "100",
+                "cost": {
+                  "amounts": [{ "amount": "0.82", "currency": "CHF" }],
+                  "date": "2025-12-01T00:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-01",
+                    "time": "02:00",
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              },
+              {
+                "amount": "100",
+                "cost": {
+                  "amounts": [{ "amount": "0.85", "currency": "CHF" }],
+                  "date": "2025-12-02T01:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-02",
+                    "time": "03:00",
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              }
+            ]
+          },
+          "Income:Trading": {
+            "CHF": [{ "amount": "-33", "cost": null }]
+          },
+          "Trading:Default": {
+            "CHF": [{ "amount": "328", "cost": null }],
+            "USD": [{ "amount": "-400", "cost": null }]
+          }
+        }
+      },
+      {
+        "date": "2025-12-03T00:00:00.000Z",
+        "description": "Close - time requires exact match",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "-100", "currency": "USD" },
+            "cost": {
+              "amounts": [{ "amount": "0.81", "currency": "CHF" }],
+              "date": "2025-11-30T23:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-12-01",
+                "time": "01:00",
+                "timezone": null
+              },
+              "tags": []
+            },
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "100", "currency": "USD" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-81", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "100", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Income:Trading",
+            "amount": { "amount": "-19", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": {
+            "CHF": [{ "amount": "-195", "cost": null }],
+            "USD": [
+              {
+                "amount": "100",
+                "cost": {
+                  "amounts": [{ "amount": "0.8", "currency": "CHF" }],
+                  "date": "2025-11-30T22:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-01",
+                    "time": "00:00",
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              },
+              {
+                "amount": "100",
+                "cost": {
+                  "amounts": [{ "amount": "0.82", "currency": "CHF" }],
+                  "date": "2025-12-01T00:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-01",
+                    "time": "02:00",
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              },
+              {
+                "amount": "100",
+                "cost": {
+                  "amounts": [{ "amount": "0.85", "currency": "CHF" }],
+                  "date": "2025-12-02T01:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-02",
+                    "time": "03:00",
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              }
+            ]
+          },
+          "Income:Trading": {
+            "CHF": [{ "amount": "-52", "cost": null }]
+          },
+          "Trading:Default": {
+            "CHF": [{ "amount": "247", "cost": null }],
+            "USD": [{ "amount": "-300", "cost": null }]
+          }
+        }
+      }
+    ]
+  }
+}

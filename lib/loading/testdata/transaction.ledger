@@ -27,3 +27,11 @@
 2025-08-01 * "Posting with cost spec filtering specs"
   Assets:Foo   10 CHF { EUR, 2025-08-01, "tag-1" }
   Assets:Foo
+
+2025-12-01 * "Posting with cost spec with date and time"
+  Assets:Foo   10 CHF { 2025-12-01 01:02 }
+  Assets:Foo
+
+2025-12-01 * "Posting with cost spec with date time and timezone"
+  Assets:Foo   10 CHF { 2025-12-01 02:03 +01:00 }
+  Assets:Foo

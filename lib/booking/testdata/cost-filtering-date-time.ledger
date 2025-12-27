@@ -1,0 +1,26 @@
+option "default-timezone" "+02:00"
+
+2025-12-01 * "Open"
+  Assets:Broker    100 USD { 0.80 CHF, 2025-12-01 00:00 }  ; 11-30 22:00 Z
+  Assets:Broker    100 USD { 0.81 CHF, 2025-12-01 01:00 }  ; 11-30 23:00 Z
+  Assets:Broker    100 USD { 0.82 CHF, 2025-12-01 02:00 }  ; 12-01 00:00 Z
+  Assets:Broker
+
+2025-12-02 * "Open"
+  Assets:Broker    100 USD { 0.83 CHF, 2025-12-02 01:00 }  ; 12-01 23:00 Z
+  Assets:Broker    100 USD { 0.84 CHF, 2025-12-02 02:00 }  ; 12-02 00:00 Z
+  Assets:Broker    100 USD { 0.85 CHF, 2025-12-02 03:00 }  ; 12-02 01:00 Z
+  Assets:Broker
+
+option "default-timezone" "+01:00"
+
+2025-12-03 * "Close - no time matches date portion"
+  Assets:Broker   -200 USD { 2025-12-02 }
+  Assets:Broker    200 CHF
+  Income:Trading   -17 CHF
+  Income:Trading   -16 CHF
+
+2025-12-03 * "Close - time requires exact match"
+  Assets:Broker   -100 USD { 2025-12-01 00:00 }  ; 11-30 23:00
+  Assets:Broker    100 CHF
+  Income:Trading   -19 CHF

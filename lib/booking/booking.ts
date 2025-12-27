@@ -517,20 +517,18 @@ function filterInventoryForReduction(
       ? () => true
       : cost => timestamps.has(cost.date.getTime());
 
+  // If exact timestamps don't match, we compare the date specs. This is to
+  // allow filtering when timezones are involved, where the user might specify a
+  // date (e.g. 2025-12-31 01:00) but actually get a timestamp on the previous
+  // day UTC (e.g. 2025-12-30 23:00 Z if timzeone is +02:00).
   function dateSpecMatches(dateSpec: DateSpec, match: DateSpec) {
-    if (dateSpec.date !== match.date) {
+    if (match.time) {
+      // If time is specified, always return false: in this case we want to only
+      // match if the exact timestamp matches (handled by `timestampMatch`).
       return false;
     }
-    if (match.time === null) {
-      return true;
-    }
-    if (dateSpec.time !== match.time) {
-      return false;
-    }
-    if (match.timezone === null) {
-      return true;
-    }
-    return dateSpec.timezone === match.timezone;
+
+    return dateSpec.date === match.date;
   }
 
   const dateSpecMatch: CostPred =

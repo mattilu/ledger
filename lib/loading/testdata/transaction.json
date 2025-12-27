@@ -252,6 +252,90 @@
             "costSpec": null
           }
         ]
+      },
+      {
+        "type": "transaction",
+        "date": "2025-12-01T00:00:00.000Z",
+        "dateSpec": {
+          "date": "2025-12-01",
+          "time": null,
+          "timezone": null
+        },
+        "optionMap": {},
+        "description": "Posting with cost spec with date and time",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "flag": "*",
+            "amount": {
+              "amount": "10",
+              "currency": "CHF"
+            },
+            "costSpec": {
+              "kind": "per-unit",
+              "amounts": [],
+              "currencies": [],
+              "dateSpecs": [
+                {
+                  "date": "2025-12-01",
+                  "time": "01:02",
+                  "timezone": null
+                }
+              ],
+              "dates": ["2025-12-01T01:02:00.000Z"],
+              "tags": []
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "flag": "*",
+            "amount": null,
+            "costSpec": null
+          }
+        ]
+      },
+      {
+        "type": "transaction",
+        "date": "2025-12-01T00:00:00.000Z",
+        "dateSpec": {
+          "date": "2025-12-01",
+          "time": null,
+          "timezone": null
+        },
+        "optionMap": {},
+        "description": "Posting with cost spec with date time and timezone",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "flag": "*",
+            "amount": {
+              "amount": "10",
+              "currency": "CHF"
+            },
+            "costSpec": {
+              "kind": "per-unit",
+              "amounts": [],
+              "currencies": [],
+              "dateSpecs": [
+                {
+                  "date": "2025-12-01",
+                  "time": "02:03",
+                  "timezone": "+01:00"
+                }
+              ],
+              "dates": ["2025-12-01T01:03:00.000Z"],
+              "tags": []
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "flag": "*",
+            "amount": null,
+            "costSpec": null
+          }
+        ]
       }
     ]
   }
