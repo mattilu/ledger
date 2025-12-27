@@ -10,10 +10,9 @@
     "pre-commit": "concurrently --timings --group npm:lint npm:prettier-check npm:test npm:typecheck",
     "prettier-check": "prettier --check '**/*.ts'",
     "prettier-format": "prettier --write '**/*.ts'",
-    "test": "npm run test! -- $(find lib -name '*.test.ts')",
-    "test!": "tsx --enable-source-maps --test --test-reporter=spec",
-    "test-watch": "npm run test-watch! -- $(find lib -name '*.test.ts')",
-    "test-watch!": "npm run test! -- --watch",
+    "test": "tsx --enable-source-maps --test --test-reporter=spec",
+    "test-coverage": "npm run test -- --experimental-test-coverage",
+    "test-watch": "npm run test -- --watch",
     "typecheck": "tsc --noEmit"
   },
   "bin": {
