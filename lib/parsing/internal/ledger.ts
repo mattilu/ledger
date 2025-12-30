@@ -7,6 +7,7 @@ import { currencyDirectiveParser } from './directives/currency.js';
 import { loadDirectiveParser } from './directives/load.js';
 import { openDirectiveParser } from './directives/open.js';
 import { optionDirectiveParser } from './directives/option.js';
+import { priceDirectiveParser } from './directives/price.js';
 import { transactionDirectiveParser } from './directives/transaction.js';
 
 const directiveParser = alt_sc(
@@ -16,6 +17,7 @@ const directiveParser = alt_sc(
   loadDirectiveParser,
   openDirectiveParser,
   optionDirectiveParser,
+  priceDirectiveParser,
   transactionDirectiveParser,
 );
 

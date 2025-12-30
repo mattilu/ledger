@@ -1,0 +1,23 @@
+{
+  "_tag": "Right",
+  "right": {
+    "directives": [
+      {
+        "type": "price",
+        "date": "2025-12-01T00:00:00.000Z",
+        "optionMap": {},
+        "meta": {
+          "source": {
+            "type": "string",
+            "value": "yahoo-finance"
+          }
+        },
+        "currency": "USD",
+        "price": {
+          "amount": "0.8033",
+          "currency": "CHF"
+        }
+      }
+    ]
+  }
+}

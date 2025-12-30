@@ -385,6 +385,48 @@
           }
         }
       }
+    ],
+    "prices": [
+      {
+        "type": "price",
+        "date": "2025-06-01T00:00:00.000Z",
+        "currency": "CHF",
+        "price": { "amount": "1", "currency": "USD" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "cost-spec" }
+        },
+        "optionMap": {}
+      },
+      {
+        "type": "price",
+        "date": "2025-06-01T00:00:00.000Z",
+        "currency": "CHF",
+        "price": { "amount": "1", "currency": "USD" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "cost-spec" }
+        },
+        "optionMap": {}
+      },
+      {
+        "type": "price",
+        "date": "2025-06-01T00:00:00.000Z",
+        "currency": "CHF",
+        "price": { "amount": "1", "currency": "USD" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "cost-spec" }
+        },
+        "optionMap": {}
+      },
+      {
+        "type": "price",
+        "date": "2025-06-01T00:00:00.000Z",
+        "currency": "CHF",
+        "price": { "amount": "1", "currency": "USD" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "cost-spec" }
+        },
+        "optionMap": {}
+      }
     ]
   }
 }

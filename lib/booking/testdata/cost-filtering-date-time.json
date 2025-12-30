@@ -573,6 +573,116 @@
           }
         }
       }
+    ],
+    "prices": [
+      {
+        "type": "price",
+        "date": "2025-11-30T22:00:00.000Z",
+        "currency": "USD",
+        "price": { "amount": "0.8", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "cost-spec" }
+        },
+        "optionMap": {
+          "default-timezone": "+02:00"
+        }
+      },
+      {
+        "type": "price",
+        "date": "2025-11-30T23:00:00.000Z",
+        "currency": "USD",
+        "price": { "amount": "0.81", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "cost-spec" }
+        },
+        "optionMap": {
+          "default-timezone": "+02:00"
+        }
+      },
+      {
+        "type": "price",
+        "date": "2025-12-01T00:00:00.000Z",
+        "currency": "USD",
+        "price": { "amount": "0.82", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "cost-spec" }
+        },
+        "optionMap": {
+          "default-timezone": "+02:00"
+        }
+      },
+      {
+        "type": "price",
+        "date": "2025-12-01T23:00:00.000Z",
+        "currency": "USD",
+        "price": { "amount": "0.83", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "cost-spec" }
+        },
+        "optionMap": {
+          "default-timezone": "+02:00"
+        }
+      },
+      {
+        "type": "price",
+        "date": "2025-12-02T00:00:00.000Z",
+        "currency": "USD",
+        "price": { "amount": "0.84", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "cost-spec" }
+        },
+        "optionMap": {
+          "default-timezone": "+02:00"
+        }
+      },
+      {
+        "type": "price",
+        "date": "2025-12-02T01:00:00.000Z",
+        "currency": "USD",
+        "price": { "amount": "0.85", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "cost-spec" }
+        },
+        "optionMap": {
+          "default-timezone": "+02:00"
+        }
+      },
+      {
+        "type": "price",
+        "date": "2025-12-01T23:00:00.000Z",
+        "currency": "USD",
+        "price": { "amount": "0.83", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "cost-spec" }
+        },
+        "optionMap": {
+          "default-timezone": "+01:00"
+        }
+      },
+      {
+        "type": "price",
+        "date": "2025-12-02T00:00:00.000Z",
+        "currency": "USD",
+        "price": { "amount": "0.84", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "cost-spec" }
+        },
+        "optionMap": {
+          "default-timezone": "+01:00"
+        }
+      },
+      {
+        "type": "price",
+        "date": "2025-11-30T23:00:00.000Z",
+        "currency": "USD",
+        "price": { "amount": "0.81", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "cost-spec" }
+        },
+        "optionMap": {
+          "default-timezone": "+01:00"
+        }
+      }
     ]
   }
 }

@@ -5,6 +5,7 @@ import { CurrencyDirectiveSpec } from './directives/currency.js';
 import { LoadDirectiveSpec } from './directives/load.js';
 import { OpenDirectiveSpec } from './directives/open.js';
 import { OptionDirectiveSpec } from './directives/option.js';
+import { PriceDirectiveSpec } from './directives/price.js';
 import { TransactionDirectiveSpec } from './directives/transaction.js';
 import { MetadataSpec } from './metadata.js';
 
@@ -21,4 +22,5 @@ export type DirectiveSpec =
   | LoadDirectiveSpec
   | OpenDirectiveSpec
   | OptionDirectiveSpec
+  | PriceDirectiveSpec
   | TransactionDirectiveSpec;

@@ -159,6 +159,28 @@
             "value": "Euro"
           }
         }
+      },
+      {
+        "type": "price",
+        "date": {
+          "date": "2025-12-01",
+          "time": null,
+          "timezone": null
+        },
+        "currency": "EUR",
+        "price": {
+          "amount": {
+            "type": "literal",
+            "value": "0.9319"
+          },
+          "currency": "CHF"
+        },
+        "meta": {
+          "source": {
+            "type": "string",
+            "value": "yahoo-finance"
+          }
+        }
       }
     ]
   }

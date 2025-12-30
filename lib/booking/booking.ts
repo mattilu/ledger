@@ -8,6 +8,7 @@ import { Amount } from '../core/amount.js';
 import { Directive, DirectiveCommon } from '../loading/directive.js';
 import { CloseDirective } from '../loading/directives/close.js';
 import { OpenDirective } from '../loading/directives/open.js';
+import { PriceDirective } from '../loading/directives/price.js';
 import {
   CostSpec,
   Posting,
@@ -43,6 +44,7 @@ export function book(
   start?: BookedLedger,
 ): E.Either<BookingError, BookedLedger> {
   const transactions: Transaction[] = [];
+  const prices: PriceDirective[] = [];
   let accountMap: AccountMap = start?.accountMap ?? Map();
   const currencyMap = start?.currencyMap ?? ledger.currencyMap;
   let inventories: InventoryMap = start?.inventories ?? Map();
@@ -127,14 +129,22 @@ Delta: ${formatter.formatAmount(delta)}`;
         accountMap = accountMap.set(directive.account, directive);
         break;
       }
+      case 'price': {
+        prices.push(directive);
+        break;
+      }
       case 'transaction': {
         const got = bookTransaction(directive, inventories, accountMap);
         if (E.isLeft(got)) {
           return E.left(enrichError(got.left, directive));
         }
 
-        transactions.push(got.right);
-        inventories = got.right.inventoriesAfter;
+        const [transaction, priceDirectives] = got.right;
+
+        transactions.push(transaction);
+        inventories = transaction.inventoriesAfter;
+
+        prices.push(...priceDirectives);
         break;
       }
       default: {
@@ -151,6 +161,7 @@ Delta: ${formatter.formatAmount(delta)}`;
 
   return E.right({
     transactions,
+    prices,
     accountMap,
     currencyMap,
     inventories,
@@ -207,9 +218,10 @@ function bookTransaction(
   transaction: TransactionDirective,
   inventories: InventoryMap,
   accountMap: AccountMap,
-): E.Either<Error, Transaction> {
+): E.Either<Error, [Transaction, PriceDirective[]]> {
   const inventoriesBefore = inventories;
   const postings: BookedPosting[] = [];
+  const prices: PriceDirective[] = [];
   let balance = Inventory.Empty;
 
   for (const posting of transaction.postings) {
@@ -234,7 +246,8 @@ function bookTransaction(
     }
 
     let bookedPostings: BookedPosting[];
-    [bookedPostings, inventories, balance] = got.right;
+    let priceDirectives: PriceDirective[];
+    [bookedPostings, inventories, balance, priceDirectives] = got.right;
 
     const allowedCurrencies =
       accountCheck?.right?.type === 'open' ? accountCheck.right.currencies : [];
@@ -251,6 +264,7 @@ function bookTransaction(
     }
 
     postings.push(...bookedPostings);
+    prices.push(...priceDirectives);
   }
 
   if (!balance.isEmpty()) {
@@ -259,16 +273,19 @@ function bookTransaction(
     );
   }
 
-  return E.right({
-    date: transaction.date,
-    description: transaction.description,
-    flag: transaction.flag,
-    postings,
-    meta: transaction.meta,
-    inventoriesBefore,
-    inventoriesAfter: inventories,
-    srcCtx: transaction.srcCtx,
-  });
+  return E.right([
+    {
+      date: transaction.date,
+      description: transaction.description,
+      flag: transaction.flag,
+      postings,
+      meta: transaction.meta,
+      inventoriesBefore,
+      inventoriesAfter: inventories,
+      srcCtx: transaction.srcCtx,
+    },
+    prices,
+  ]);
 }
 
 function bookPosting(
@@ -277,7 +294,10 @@ function bookPosting(
   inventories: InventoryMap,
   balance: Inventory,
   accountDirective: OpenDirective | CloseDirective | null,
-): E.Either<Error, [BookedPosting[], InventoryMap, balance: Inventory]> {
+): E.Either<
+  Error,
+  [BookedPosting[], InventoryMap, balance: Inventory, PriceDirective[]]
+> {
   if (posting.costSpec !== null) {
     const tradingAccount = getTradingAccount(
       transaction,
@@ -309,6 +329,7 @@ function bookPosting(
         validateCostSpecForAugmentation(costSpec),
         E.map(() =>
           doBook(
+            transaction,
             inventories,
             balance,
             {
@@ -397,9 +418,12 @@ function bookPosting(
       }
 
       const postings: BookedPosting[] = [];
+      const prices: PriceDirective[] = [];
       for (const posting of bookResult.right[0]) {
         let postings1: BookedPosting[] = [];
-        [postings1, inventories, balance] = doBook(
+        let prices1: PriceDirective[] = [];
+        [postings1, inventories, balance, prices1] = doBook(
+          transaction,
           inventories,
           balance,
           // Post the reduction as we got it from the booking method, e.g.
@@ -437,6 +461,7 @@ function bookPosting(
           })),
         );
         postings.push(...postings1);
+        prices.push(...prices1);
       }
 
       // Overwrite the inventory for the account with the result from the
@@ -447,7 +472,7 @@ function bookPosting(
         mergeInventories(inventoryRest, bookResult.right[1]),
       );
 
-      return E.right([postings, inventories, balance]);
+      return E.right([postings, inventories, balance, prices]);
     }
 
     return E.left(new Error(`Amount interpolation with cost spec is invalid`));
@@ -456,7 +481,7 @@ function bookPosting(
   if (posting.amount !== null) {
     // Posting is fully specified, we can just book it.
     return E.right(
-      doBook(inventories, balance, {
+      doBook(transaction, inventories, balance, {
         account: posting.account,
         flag: posting.flag,
         amount: posting.amount,
@@ -477,7 +502,7 @@ function bookPosting(
       meta: posting.meta,
     }),
   );
-  return E.right(doBook(inventories, balance, ...balancePostings));
+  return E.right(doBook(transaction, inventories, balance, ...balancePostings));
 }
 
 function validateCostSpecForAugmentation(
@@ -574,10 +599,13 @@ function mergeInventories(a: Inventory, b: Inventory): Inventory {
 }
 
 function doBook(
+  transaction: TransactionDirective,
   inventories: InventoryMap,
   balance: Inventory,
   ...postings: BookedPosting[]
-): [BookedPosting[], InventoryMap, balance: Inventory] {
+): [BookedPosting[], InventoryMap, balance: Inventory, PriceDirective[]] {
+  const prices: PriceDirective[] = [];
+
   inventories = inventories.withMutations(inventories => {
     for (const posting of postings) {
       inventories = inventories.update(posting.account, inventory =>
@@ -586,9 +614,23 @@ function doBook(
         ),
       );
       balance = balance.addAmount(posting.amount);
+      if (posting.cost && posting.cost.amounts.length === 1) {
+        prices.push({
+          type: 'price',
+          date: posting.cost.date,
+          currency: posting.amount.currency,
+          price: posting.cost.amounts[0],
+          meta: Map([
+            ['synthetized-from', { type: 'string', value: 'cost-spec' }],
+          ]),
+          optionMap: transaction.optionMap,
+          srcCtx: transaction.srcCtx,
+        });
+      }
     }
   });
-  return [postings, inventories, balance];
+
+  return [postings, inventories, balance, prices];
 }
 
 function getTotalAmount(
