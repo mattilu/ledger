@@ -12,11 +12,17 @@ export interface CostSpec {
   readonly tags: string[];
 }
 
+export interface PriceSpec {
+  readonly kind: 'per-unit' | 'total';
+  readonly amount: Amount;
+}
+
 export interface Posting {
   readonly account: string;
   readonly flag: string;
   readonly amount: Amount | null;
   readonly costSpec: CostSpec | null;
+  readonly priceSpec: PriceSpec | null;
   readonly meta: Metadata;
 }
 
