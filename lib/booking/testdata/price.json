@@ -1,6 +1,18 @@
 {
-  "_tag": "Left",
-  "left": {
-    "error": "While processing 'price' directive at lib/booking/testdata/price.ledger:1: price directive not implemented yet"
+  "_tag": "Right",
+  "right": {
+    "transactions": [],
+    "prices": [
+      {
+        "type": "price",
+        "date": "2025-12-01T00:00:00.000Z",
+        "optionMap": {},
+        "currency": "USD",
+        "price": {
+          "amount": "0.8033",
+          "currency": "CHF"
+        }
+      }
+    ]
   }
 }

@@ -59,6 +59,14 @@ function cleanup(ledger: BookedLedger) {
       inventoriesAfter: x.inventoriesAfter.map(makeInventoryMap),
       srcCtx: undefined,
     })),
+    prices:
+      ledger.prices.length > 0
+        ? ledger.prices.map(x => ({
+            ...x,
+            meta: cleanupMeta(x.meta),
+            srcCtx: undefined,
+          }))
+        : undefined,
     currencyMap: ledger.currencyMap.isEmpty()
       ? undefined
       : ledger.currencyMap.map(c => ({

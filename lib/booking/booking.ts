@@ -8,6 +8,7 @@ import { Amount } from '../core/amount.js';
 import { Directive, DirectiveCommon } from '../loading/directive.js';
 import { CloseDirective } from '../loading/directives/close.js';
 import { OpenDirective } from '../loading/directives/open.js';
+import { PriceDirective } from '../loading/directives/price.js';
 import {
   CostSpec,
   Posting,
@@ -43,6 +44,7 @@ export function book(
   start?: BookedLedger,
 ): E.Either<BookingError, BookedLedger> {
   const transactions: Transaction[] = [];
+  const prices: PriceDirective[] = [];
   let accountMap: AccountMap = start?.accountMap ?? Map();
   const currencyMap = start?.currencyMap ?? ledger.currencyMap;
   let inventories: InventoryMap = start?.inventories ?? Map();
@@ -127,6 +129,10 @@ Delta: ${formatter.formatAmount(delta)}`;
         accountMap = accountMap.set(directive.account, directive);
         break;
       }
+      case 'price': {
+        prices.push(directive);
+        break;
+      }
       case 'transaction': {
         const got = bookTransaction(directive, inventories, accountMap);
         if (E.isLeft(got)) {
@@ -151,6 +157,7 @@ Delta: ${formatter.formatAmount(delta)}`;
 
   return E.right({
     transactions,
+    prices,
     accountMap,
     currencyMap,
     inventories,
