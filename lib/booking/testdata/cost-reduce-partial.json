@@ -176,6 +176,28 @@
           }
         }
       }
+    ],
+    "prices": [
+      {
+        "type": "price",
+        "date": "2025-04-01T00:00:00.000Z",
+        "currency": "USD",
+        "price": { "amount": "0.9", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "cost-spec" }
+        },
+        "optionMap": {}
+      },
+      {
+        "type": "price",
+        "date": "2025-04-01T00:00:00.000Z",
+        "currency": "USD",
+        "price": { "amount": "0.9", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "cost-spec" }
+        },
+        "optionMap": {}
+      }
     ]
   }
 }
