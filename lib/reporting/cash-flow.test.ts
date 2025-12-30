@@ -31,6 +31,13 @@ await describe('CashFlowReport', async () => {
         },
       },
       {
+        name: 'currencies filter',
+        scenario: 'cash-flow-currencies-filter',
+        options: {
+          currencies: ['CHF'],
+        },
+      },
+      {
         name: 'from-date filter',
         scenario: 'cash-flow-from-date',
         options: {

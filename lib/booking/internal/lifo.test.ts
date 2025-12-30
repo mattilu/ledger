@@ -184,17 +184,17 @@ await describe('LIFO', async () => {
 
     await it('ignores positions that would not be reduced', () => {
       const inventory0 = inventory([
-        position(amount(-1, USD), cost('1.1', CHF, '2025-04-01')),
-        position(amount(1, USD), cost('1.2', CHF, '2025-04-02')),
+        position(amount(1, USD), cost('1.2', CHF, '2025-04-01')),
+        position(amount(-1, USD), cost('1.1', CHF, '2025-04-02')),
       ]);
       const got = book(amount(-1, USD), inventory0);
 
       const wantPostings = [
-        posting(TestAccount, amount(-1, USD), cost('1.2', CHF, '2025-04-02')),
+        posting(TestAccount, amount(-1, USD), cost('1.2', CHF, '2025-04-01')),
       ];
 
       const wantInventory = inventory([
-        position(amount(-1, USD), cost('1.1', CHF, '2025-04-01')),
+        position(amount(-1, USD), cost('1.1', CHF, '2025-04-02')),
       ]);
 
       assert.deepEqual(got, E.right([wantPostings, wantInventory]));

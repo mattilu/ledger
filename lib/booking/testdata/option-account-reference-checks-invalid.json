@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "While processing 'close' directive at lib/booking/testdata/option-account-reference-checks-invalid.ledger:3: Invalid account-reference-checks mode: invalid, expected one of none, lenient, strict"
+  }
+}

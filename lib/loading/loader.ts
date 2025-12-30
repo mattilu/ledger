@@ -87,33 +87,40 @@ async function doLoad(
   currencyMap: Map<string, CurrencyDirective>,
   ctx: LoadContext,
 ): Promise<E.Either<LoadError, unknown>> {
-  const contents = await read(filePath);
-  if (E.isLeft(contents)) {
-    return E.left(
-      new LoadError(
-        contents.left.message,
-        ctx.stackTrace.length > 0
-          ? ctx.stackTrace[0]
-          : { filePath, row: 0, col: 0 },
-        ctx.stackTrace,
-        { cause: contents.left },
-      ),
-    );
-  }
-  const result = parse(contents.right);
-
-  if (E.isLeft(result)) {
-    return E.left(
-      new LoadError(
-        result.left.message,
-        makeSourceContext(filePath, result.left.srcPos),
-        ctx.stackTrace,
-        { cause: result.left },
-      ),
-    );
-  }
-
   ctx.loadedMap.set(filePath, ctx.stackTrace);
+
+  const parsed = F.pipe(
+    await read(filePath),
+    E.mapLeft(
+      err =>
+        new LoadError(
+          err.message,
+          ctx.stackTrace.length > 0
+            ? ctx.stackTrace[0]
+            : { filePath, row: 0, col: 0 },
+          ctx.stackTrace,
+          { cause: err },
+        ),
+    ),
+    E.chain(contents =>
+      F.pipe(
+        contents,
+        parse,
+        E.mapLeft(
+          err =>
+            new LoadError(
+              err.message,
+              makeSourceContext(filePath, err.srcPos),
+              ctx.stackTrace,
+              { cause: err },
+            ),
+        ),
+      ),
+    ),
+  );
+  if (E.isLeft(parsed)) {
+    return parsed;
+  }
 
   const makeDate = (directive: {
     readonly date: DateSpec;
@@ -164,77 +171,83 @@ async function doLoad(
     return E.right(ImmutableMap(entries));
   };
 
-  for (const directive of result.right.directives) {
-    const meta = makeMeta(directive);
-    if (E.isLeft(meta)) {
-      return meta;
-    }
-
+  for (const directive of parsed.right.directives) {
+    let result: E.Either<LoadError, unknown>;
     switch (directive.type) {
       case 'balance': {
-        const date = makeDate(directive);
-        if (E.isLeft(date)) {
-          return date;
-        }
-        directives.push({
-          type: 'balance',
-          date: date.right,
-          meta: meta.right,
-          balances: directive.balances.map(balance => ({
-            account: balance.account,
-            amount: evaluateAmount(balance.amount),
-            approx:
-              balance.approx === null
-                ? null
-                : evaluateExpression(balance.approx),
-          })),
-          srcCtx: makeSourceContext(filePath, directive.srcPos),
-          optionMap: ctx.optionMap,
-        });
+        result = F.pipe(
+          E.Do,
+          E.bind('meta', () => makeMeta(directive)),
+          E.bind('date', () => makeDate(directive)),
+          E.map(({ date, meta }) => {
+            directives.push({
+              type: 'balance',
+              date: date,
+              meta: meta,
+              balances: directive.balances.map(balance => ({
+                account: balance.account,
+                amount: evaluateAmount(balance.amount),
+                approx:
+                  balance.approx === null
+                    ? null
+                    : evaluateExpression(balance.approx),
+              })),
+              srcCtx: makeSourceContext(filePath, directive.srcPos),
+              optionMap: ctx.optionMap,
+            });
+          }),
+        );
         break;
       }
       case 'close': {
-        const date = makeDate(directive);
-        if (E.isLeft(date)) {
-          return date;
-        }
-        directives.push({
-          type: 'close',
-          date: date.right,
-          meta: meta.right,
-          account: directive.account,
-          srcCtx: makeSourceContext(filePath, directive.srcPos),
-          optionMap: ctx.optionMap,
-        });
+        result = F.pipe(
+          E.Do,
+          E.bind('meta', () => makeMeta(directive)),
+          E.bind('date', () => makeDate(directive)),
+          E.map(({ date, meta }) => {
+            directives.push({
+              type: 'close',
+              date: date,
+              meta: meta,
+              account: directive.account,
+              srcCtx: makeSourceContext(filePath, directive.srcPos),
+              optionMap: ctx.optionMap,
+            });
+          }),
+        );
         break;
       }
       case 'commodity':
       case 'currency': {
-        const currencyValue = currencyMap.get(directive.currency);
-        if (currencyValue !== undefined) {
-          return E.left(
-            new LoadError(
-              `Currency ${directive.currency} already defined ` +
-                `(at ${formatSourceContext([currencyValue.srcCtx])})`,
-              makeSourceContext(filePath, directive.srcPos),
-              ctx.stackTrace,
+        result = F.pipe(
+          E.Do,
+          E.chainFirst(() =>
+            F.pipe(currencyMap.get(directive.currency), currencyValue =>
+              currencyValue !== undefined
+                ? E.left(
+                    new LoadError(
+                      `Currency ${directive.currency} already defined ` +
+                        `(at ${formatSourceContext([currencyValue.srcCtx])})`,
+                      makeSourceContext(filePath, directive.srcPos),
+                      ctx.stackTrace,
+                    ),
+                  )
+                : E.right(undefined),
             ),
-          );
-        }
-
-        const date = makeDate(directive);
-        if (E.isLeft(date)) {
-          return date;
-        }
-
-        currencyMap.set(directive.currency, {
-          type: 'currency',
-          date: date.right,
-          currency: directive.currency,
-          meta: meta.right,
-          srcCtx: makeSourceContext(filePath, directive.srcPos),
-          optionMap: ctx.optionMap,
-        });
+          ),
+          E.bind('meta', () => makeMeta(directive)),
+          E.bind('date', () => makeDate(directive)),
+          E.map(({ date, meta }) => {
+            currencyMap.set(directive.currency, {
+              type: 'currency',
+              date: date,
+              currency: directive.currency,
+              meta: meta,
+              srcCtx: makeSourceContext(filePath, directive.srcPos),
+              optionMap: ctx.optionMap,
+            });
+          }),
+        );
         break;
       }
       case 'load': {
@@ -245,7 +258,7 @@ async function doLoad(
             )
           : [path];
 
-        for await (const toLoad of paths) {
+        for (const toLoad of paths) {
           const loadedFrom = ctx.loadedMap.get(toLoad);
           if (loadedFrom !== undefined) {
             return E.left(
@@ -257,33 +270,38 @@ async function doLoad(
               ),
             );
           }
-          const loadResult = await doLoad(toLoad, directives, currencyMap, {
+          result = await doLoad(toLoad, directives, currencyMap, {
             ...ctx,
             stackTrace: [
               makeSourceContext(filePath, directive.srcPos),
               ...ctx.stackTrace,
             ],
           });
-          if (E.isLeft(loadResult)) {
-            return loadResult;
+          if (E.isLeft(result)) {
+            return result;
           }
         }
+
+        result = E.of(undefined);
         break;
       }
       case 'open': {
-        const date = makeDate(directive);
-        if (E.isLeft(date)) {
-          return date;
-        }
-        directives.push({
-          type: 'open',
-          date: date.right,
-          meta: meta.right,
-          account: directive.account,
-          currencies: directive.currencies,
-          srcCtx: makeSourceContext(filePath, directive.srcPos),
-          optionMap: ctx.optionMap,
-        });
+        result = F.pipe(
+          E.Do,
+          E.bind('meta', () => makeMeta(directive)),
+          E.bind('date', () => makeDate(directive)),
+          E.map(({ date, meta }) => {
+            directives.push({
+              type: 'open',
+              date: date,
+              meta: meta,
+              account: directive.account,
+              currencies: directive.currencies,
+              srcCtx: makeSourceContext(filePath, directive.srcPos),
+              optionMap: ctx.optionMap,
+            });
+          }),
+        );
         break;
       }
       case 'option':
@@ -297,54 +315,56 @@ async function doLoad(
         if (directive.optionName === 'default-timezone') {
           ctx = { ...ctx, defaultTimezone: directive.optionValue };
         }
+        result = E.of(undefined);
         break;
       case 'transaction': {
-        const date = makeDate(directive);
-        if (E.isLeft(date)) {
-          return date;
-        }
-        const postings: E.Either<LoadError, readonly Posting[]> = F.pipe(
-          directive.postings,
-          A.traverse(E.Applicative)(posting =>
+        result = F.pipe(
+          E.Do,
+          E.bind('meta', () => makeMeta(directive)),
+          E.bind('date', () => makeDate(directive)),
+          E.bind('postings', () =>
             F.pipe(
-              makeMeta({ meta: posting.meta, srcPos: directive.srcPos }),
-              E.bindTo('meta'),
-              E.bind('costSpec', () =>
-                posting.costSpec
-                  ? evaluateCostSpec(posting.costSpec, date =>
-                      makeDate({ date, srcPos: directive.srcPos }),
-                    )
-                  : E.right(null),
-              ),
-              E.map(
-                ({ meta, costSpec }): Posting => ({
-                  account: posting.account,
-                  flag: posting.flag ?? directive.flag,
-                  amount: posting.amount
-                    ? evaluateAmount(posting.amount)
-                    : null,
-                  costSpec,
-                  meta,
-                }),
+              directive.postings,
+              A.traverse(E.Applicative)(posting =>
+                F.pipe(
+                  makeMeta({ meta: posting.meta, srcPos: directive.srcPos }),
+                  E.bindTo('meta'),
+                  E.bind('costSpec', () =>
+                    posting.costSpec
+                      ? evaluateCostSpec(posting.costSpec, date =>
+                          makeDate({ date, srcPos: directive.srcPos }),
+                        )
+                      : E.right(null),
+                  ),
+                  E.map(
+                    ({ meta, costSpec }): Posting => ({
+                      account: posting.account,
+                      flag: posting.flag ?? directive.flag,
+                      amount: posting.amount
+                        ? evaluateAmount(posting.amount)
+                        : null,
+                      costSpec,
+                      meta,
+                    }),
+                  ),
+                ),
               ),
             ),
           ),
+          E.map(({ date, meta, postings }) => {
+            directives.push({
+              type: 'transaction',
+              date: date,
+              dateSpec: directive.date,
+              meta: meta,
+              description: directive.description,
+              flag: directive.flag,
+              postings: postings,
+              srcCtx: makeSourceContext(filePath, directive.srcPos),
+              optionMap: ctx.optionMap,
+            });
+          }),
         );
-        if (E.isLeft(postings)) {
-          return postings;
-        }
-
-        directives.push({
-          type: 'transaction',
-          date: date.right,
-          dateSpec: directive.date,
-          meta: meta.right,
-          description: directive.description,
-          flag: directive.flag,
-          postings: postings.right,
-          srcCtx: makeSourceContext(filePath, directive.srcPos),
-          optionMap: ctx.optionMap,
-        });
         break;
       }
       default: {
@@ -357,6 +377,10 @@ async function doLoad(
           ),
         );
       }
+    }
+
+    if (E.isLeft(result)) {
+      return result;
     }
   }
 

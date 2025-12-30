@@ -1,0 +1,9 @@
+2025-12-01 * "Open Position"
+  Assets:Crypto   1 ETH-BTC-LP {{ 1 BTC, 34 ETH }}
+  Assets:Crypto
+
+2025-12-01 * "Close Position"
+  Assets:Crypto  -1 ETH-BTC-LP {}
+  Assets:Crypto   1 BTC
+  Assets:Crypto  35 ETH
+  Income:Profit
