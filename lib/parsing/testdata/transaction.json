@@ -27,7 +27,8 @@
             "account": "Assets:Foo",
             "flag": null,
             "amount": null,
-            "costSpec": null
+            "costSpec": null,
+            "priceSpec": null
           }
         ]
       },
@@ -51,7 +52,8 @@
               },
               "currency": "CHF"
             },
-            "costSpec": null
+            "costSpec": null,
+            "priceSpec": null
           },
           {
             "account": "Income:Foo",
@@ -63,7 +65,8 @@
               },
               "currency": "CHF"
             },
-            "costSpec": null
+            "costSpec": null,
+            "priceSpec": null
           }
         ]
       },
@@ -87,13 +90,15 @@
               },
               "currency": "CHF"
             },
-            "costSpec": null
+            "costSpec": null,
+            "priceSpec": null
           },
           {
             "account": "Assets:Bar",
             "flag": null,
             "amount": null,
-            "costSpec": null
+            "costSpec": null,
+            "priceSpec": null
           }
         ]
       },
@@ -131,13 +136,15 @@
               "currencies": [],
               "dates": [],
               "tags": []
-            }
+            },
+            "priceSpec": null
           },
           {
             "account": "Assets:Foo",
             "flag": null,
             "amount": null,
-            "costSpec": null
+            "costSpec": null,
+            "priceSpec": null
           }
         ]
       },
@@ -175,13 +182,15 @@
               "currencies": [],
               "dates": [],
               "tags": []
-            }
+            },
+            "priceSpec": null
           },
           {
             "account": "Assets:Foo",
             "flag": null,
             "amount": null,
-            "costSpec": null
+            "costSpec": null,
+            "priceSpec": null
           }
         ]
       },
@@ -226,13 +235,15 @@
               "currencies": [],
               "dates": [],
               "tags": []
-            }
+            },
+            "priceSpec": null
           },
           {
             "account": "Assets:Foo",
             "flag": null,
             "amount": null,
-            "costSpec": null
+            "costSpec": null,
+            "priceSpec": null
           }
         ]
       },
@@ -262,13 +273,15 @@
               "currencies": [],
               "dates": [],
               "tags": []
-            }
+            },
+            "priceSpec": null
           },
           {
             "account": "Assets:Foo",
             "flag": null,
             "amount": null,
-            "costSpec": null
+            "costSpec": null,
+            "priceSpec": null
           }
         ]
       },
@@ -308,7 +321,8 @@
             "account": "Assets:Foo",
             "flag": "!",
             "amount": null,
-            "costSpec": null
+            "costSpec": null,
+            "priceSpec": null
           }
         ]
       },
@@ -338,13 +352,15 @@
               "currencies": ["EUR", "USD"],
               "dates": [],
               "tags": []
-            }
+            },
+            "priceSpec": null
           },
           {
             "account": "Assets:Foo",
             "flag": null,
             "amount": null,
-            "costSpec": null
+            "costSpec": null,
+            "priceSpec": null
           }
         ]
       },
@@ -380,13 +396,15 @@
                 }
               ],
               "tags": []
-            }
+            },
+            "priceSpec": null
           },
           {
             "account": "Assets:Foo",
             "flag": null,
             "amount": null,
-            "costSpec": null
+            "costSpec": null,
+            "priceSpec": null
           }
         ]
       },
@@ -422,13 +440,15 @@
                 }
               ],
               "tags": []
-            }
+            },
+            "priceSpec": null
           },
           {
             "account": "Assets:Foo",
             "flag": null,
             "amount": null,
-            "costSpec": null
+            "costSpec": null,
+            "priceSpec": null
           }
         ]
       },
@@ -464,13 +484,15 @@
                 }
               ],
               "tags": []
-            }
+            },
+            "priceSpec": null
           },
           {
             "account": "Assets:Foo",
             "flag": null,
             "amount": null,
-            "costSpec": null
+            "costSpec": null,
+            "priceSpec": null
           }
         ]
       },
@@ -500,13 +522,152 @@
               "currencies": [],
               "dates": [],
               "tags": ["tag-1", "tag-2"]
+            },
+            "priceSpec": null
+          },
+          {
+            "account": "Assets:Foo",
+            "flag": null,
+            "amount": null,
+            "costSpec": null,
+            "priceSpec": null
+          }
+        ]
+      },
+      {
+        "type": "transaction",
+        "description": "Posting with price spec, per unit",
+        "date": {
+          "date": "2025-12-01",
+          "time": null,
+          "timezone": null
+        },
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "flag": null,
+            "amount": {
+              "amount": {
+                "type": "literal",
+                "value": "10"
+              },
+              "currency": "CHF"
+            },
+            "costSpec": null,
+            "priceSpec": {
+              "amount": {
+                "amount": {
+                  "type": "literal",
+                  "value": "1"
+                },
+                "currency": "USD"
+              },
+              "kind": "per-unit"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "amount": null,
+            "costSpec": null,
+            "flag": null,
+            "priceSpec": null
+          }
+        ]
+      },
+      {
+        "type": "transaction",
+        "description": "Posting with price spec, total",
+        "date": {
+          "date": "2025-12-01",
+          "time": null,
+          "timezone": null
+        },
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "flag": null,
+            "amount": {
+              "amount": {
+                "type": "literal",
+                "value": "10"
+              },
+              "currency": "CHF"
+            },
+            "costSpec": null,
+            "priceSpec": {
+              "amount": {
+                "amount": {
+                  "type": "literal",
+                  "value": "10"
+                },
+                "currency": "USD"
+              },
+              "kind": "total"
             }
           },
           {
             "account": "Assets:Foo",
             "flag": null,
             "amount": null,
-            "costSpec": null
+            "costSpec": null,
+            "priceSpec": null
+          }
+        ]
+      },
+      {
+        "type": "transaction",
+        "description": "Posting with cost spec and price spec",
+        "date": {
+          "date": "2025-12-01",
+          "time": null,
+          "timezone": null
+        },
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Foo",
+            "flag": null,
+            "amount": {
+              "amount": {
+                "type": "literal",
+                "value": "10"
+              },
+              "currency": "CHF"
+            },
+            "costSpec": {
+              "amounts": [
+                {
+                  "amount": {
+                    "type": "literal",
+                    "value": "10"
+                  },
+                  "currency": "EUR"
+                }
+              ],
+              "currencies": [],
+              "dates": [],
+              "kind": "total",
+              "tags": []
+            },
+            "priceSpec": {
+              "amount": {
+                "amount": {
+                  "type": "literal",
+                  "value": "10"
+                },
+                "currency": "USD"
+              },
+              "kind": "total"
+            }
+          },
+          {
+            "account": "Assets:Foo",
+            "flag": null,
+            "amount": null,
+            "costSpec": null,
+            "priceSpec": null
           }
         ]
       }
