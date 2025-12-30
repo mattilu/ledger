@@ -1,0 +1,161 @@
+{
+  "_tag": "Right",
+  "right": {
+    "transactions": [
+      {
+        "date": "2025-12-01T00:00:00.000Z",
+        "description": "Open Position",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Crypto",
+            "amount": { "amount": "1", "currency": "ETH-BTC-LP" },
+            "cost": {
+              "amounts": [
+                { "amount": "1", "currency": "BTC" },
+                { "amount": "34", "currency": "ETH" }
+              ],
+              "date": "2025-12-01T00:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-12-01",
+                "time": null,
+                "timezone": null
+              },
+              "tags": []
+            },
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-1", "currency": "ETH-BTC-LP" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "1", "currency": "BTC" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "34", "currency": "ETH" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Crypto",
+            "amount": { "amount": "-1", "currency": "BTC" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Crypto",
+            "amount": { "amount": "-34", "currency": "ETH" },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Crypto": {
+            "ETH-BTC-LP": [
+              {
+                "amount": "1",
+                "cost": {
+                  "amounts": [
+                    { "amount": "1", "currency": "BTC" },
+                    { "amount": "34", "currency": "ETH" }
+                  ],
+                  "date": "2025-12-01T00:00:00.000Z",
+                  "dateSpec": {
+                    "date": "2025-12-01",
+                    "time": null,
+                    "timezone": null
+                  },
+                  "tags": []
+                }
+              }
+            ],
+            "BTC": [{ "amount": "-1", "cost": null }],
+            "ETH": [{ "amount": "-34", "cost": null }]
+          },
+          "Trading:Default": {
+            "ETH-BTC-LP": [{ "amount": "-1", "cost": null }],
+            "BTC": [{ "amount": "1", "cost": null }],
+            "ETH": [{ "amount": "34", "cost": null }]
+          }
+        }
+      },
+      {
+        "date": "2025-12-01T00:00:00.000Z",
+        "description": "Close Position",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Crypto",
+            "amount": { "amount": "-1", "currency": "ETH-BTC-LP" },
+            "cost": {
+              "amounts": [
+                { "amount": "1", "currency": "BTC" },
+                { "amount": "34", "currency": "ETH" }
+              ],
+              "date": "2025-12-01T00:00:00.000Z",
+              "dateSpec": {
+                "date": "2025-12-01",
+                "time": null,
+                "timezone": null
+              },
+              "tags": []
+            },
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "1", "currency": "ETH-BTC-LP" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-1", "currency": "BTC" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-34", "currency": "ETH" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Crypto",
+            "amount": { "amount": "1", "currency": "BTC" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Crypto",
+            "amount": { "amount": "35", "currency": "ETH" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Income:Profit",
+            "amount": { "amount": "-1", "currency": "ETH" },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Crypto": {
+            "ETH": [{ "amount": "1", "cost": null }]
+          },
+          "Income:Profit": {
+            "ETH": [{ "amount": "-1", "cost": null }]
+          },
+          "Trading:Default": {}
+        }
+      }
+    ]
+  }
+}
