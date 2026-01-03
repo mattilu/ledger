@@ -63,6 +63,27 @@ export function makeHeap<T>(
 }
 
 /**
+ * Replaces `items[last]` with `value`, and restores the heap property on the
+ * `[first, last]` range.
+ *
+ * @param items Input heap to push to.
+ * @param value Value to push into the heap.
+ * @param cmp Comparator function.
+ * @param first First index of the range to heapify, inclusive.
+ * @param last Last index of the range to heapify, inclusive.
+ */
+export function pushHeap<T>(
+  items: T[],
+  value: T,
+  cmp: Comparator<T>,
+  first = 0,
+  last = items.length,
+) {
+  items.splice(last, 1, value);
+  siftUp(items, cmp, first, last);
+}
+
+/**
  * Swaps the `first` and `last-1` values of the heap, and restores the heap
  * property on the `[first, last-1)` subrange.
  *
@@ -70,7 +91,7 @@ export function makeHeap<T>(
  * actually pop from it if needed, or keep track of the size.
  *
  * @param items Input heap to pop from.
- * @param cmp Comparator function
+ * @param cmp Comparator function.
  * @returns The previous max value on the heap.
  */
 export function popHeap<T>(
@@ -83,6 +104,23 @@ export function popHeap<T>(
   if (size > 1) {
     [items[first], items[last - 1]] = [items[last - 1], items[first]];
     siftDown(items, cmp, first, size - 1, 0);
+  }
+}
+
+function siftUp<T>(
+  items: T[],
+  cmp: Comparator<T>,
+  first: number,
+  start: number,
+) {
+  let parent = (start - first - 1) >>> 1;
+  let parentAbs = parent + first;
+
+  while (start > first && cmp(items[parentAbs], items[start])) {
+    [items[start], items[parentAbs]] = [items[parentAbs], items[start]];
+    start = parentAbs;
+    parent = (parent - 1) >>> 1;
+    parentAbs = parent + first;
   }
 }
 
