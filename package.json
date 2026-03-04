@@ -39,7 +39,7 @@
     "cmd-ts": "^0.14.1",
     "exactnumber": "^2.0.1",
     "fp-ts": "^2.16.10",
-    "immutable": "^5.1.1",
+    "immutable": "^5.1.5",
     "typescript-parsec": "^0.3.4"
   }
 }
