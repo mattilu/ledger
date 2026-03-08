@@ -106,18 +106,7 @@ export class PriceDatabase {
                 quote: key.base,
               }),
               (currentPrices = List()) =>
-                currentPrices
-                  .push(
-                    ...prices
-                      .filter(x => !x.price.isZero())
-                      .map(x => ({
-                        date: x.date,
-                        baseCurrency: key.quote,
-                        quoteCurrency: key.base,
-                        price: x.price.inv().normalize(),
-                      })),
-                  )
-                  .sortBy(x => x.date.getTime()),
+                currentPrices.push(...prices).sortBy(x => x.date.getTime()),
             );
           });
       }),
@@ -191,11 +180,14 @@ export class PriceDatabase {
     const entries = filterEntries(this.priceMap.get(currencyPair), options);
 
     if (entries.exact) {
-      return O.some({
-        price: entries.exact.price,
-        date: entries.exact.date,
-        path: [entries],
-      });
+      return F.pipe(
+        evalPrice(currencyPair, entries.exact),
+        O.map(price => ({
+          price,
+          date: entries.exact!.date,
+          path: [entries],
+        })),
+      );
     }
 
     if (!entries.before && !entries.after) {
@@ -215,32 +207,45 @@ export class PriceDatabase {
           : entries.after;
 
       if (options.interpolate) {
-        const dy = entries.after.price.sub(entries.before.price);
         const dx = ExactNumber(
           Math.round(
             entries.after.date.getTime() - entries.before.date.getTime(),
           ),
         );
+        // Should never happen, as we would have an exact entry instead
+        assert(!dx.isZero());
+
         const dx1 = ExactNumber(
           Math.round(options.date.getTime() - entries.before.date.getTime()),
         );
-        const price = entries.before.price.add(dy.div(dx).mul(dx1));
 
-        return O.some({
-          date: options.date,
-          price: price.normalize(),
-          path: [entries],
-        });
+        return F.pipe(
+          O.Do,
+          O.bind('priceBefore', () => evalPrice(currencyPair, entries.before!)),
+          O.bind('priceAfter', () => evalPrice(currencyPair, entries.after!)),
+          O.let('dy', ({ priceAfter, priceBefore }) =>
+            priceAfter.sub(priceBefore),
+          ),
+          O.map(({ priceBefore, dy }) => priceBefore.add(dy.div(dx).mul(dx1))),
+          O.map(price => ({
+            date: options.date!,
+            price: price.normalize(),
+            path: [entries],
+          })),
+        );
       }
     } else {
       entry = (entries.before ?? entries.after)!;
     }
 
-    return O.some({
-      date: entry.date,
-      price: entry.price,
-      path: [entries],
-    });
+    return F.pipe(
+      evalPrice(currencyPair, entry),
+      O.map(price => ({
+        date: entry.date,
+        price,
+        path: [entries],
+      })),
+    );
   }
 
   private getPricesGraphSearch(
@@ -252,6 +257,32 @@ export class PriceDatabase {
     return {
       prices: Map(),
     };
+  }
+}
+
+function evalPrice(
+  currencyPair: CurrencyPairProps,
+  entry: PriceEntry,
+): O.Option<ExactNumberType> {
+  if (
+    currencyPair.base === entry.baseCurrency &&
+    currencyPair.quote === entry.quoteCurrency
+  ) {
+    return O.of(entry.price);
+  } else if (
+    currencyPair.base === entry.quoteCurrency &&
+    currencyPair.quote === entry.baseCurrency
+  ) {
+    if (!entry.price.isZero()) {
+      return O.of(entry.price.inv().normalize());
+    } else {
+      return O.none;
+    }
+  } else {
+    assert(
+      false,
+      `unexpected evaluation with mismatched currencies for ${currencyPair}`,
+    );
   }
 }
 

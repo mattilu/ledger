@@ -73,11 +73,11 @@ await describe('PriceDatabase', () => {
       ]);
 
       assert.deepEqual(db.getPriceEntries('CHF', 'USD'), [
-        entry('2025-12-01', 'CHF', amount('1 / 0.8033', 'USD')),
+        entry('2025-12-01', 'USD', amount('0.8033', 'CHF')),
       ]);
     });
 
-    it('adds direct price but not inverted price if price is 0', () => {
+    it('inserts direct and inverse entries for zero prices', () => {
       const db = PriceDatabase.Empty.addPrices([
         entry('2025-12-01', 'FOO', amount(0, 'CHF')),
       ]);
@@ -85,8 +85,9 @@ await describe('PriceDatabase', () => {
       assert.deepEqual(db.getPriceEntries('FOO', 'CHF'), [
         entry('2025-12-01', 'FOO', amount(0, 'CHF')),
       ]);
-
-      assert.deepEqual(db.getPriceEntries('CHF', 'FOO'), []);
+      assert.deepEqual(db.getPriceEntries('CHF', 'FOO'), [
+        entry('2025-12-01', 'FOO', amount(0, 'CHF')),
+      ]);
     });
   });
 
@@ -102,6 +103,8 @@ await describe('PriceDatabase', () => {
     entry('2025-12-02', 'B', amount('102', 'C')),
     entry('2025-12-07', 'B', amount('104', 'C')),
     entry('2025-12-08', 'B', amount('105', 'C')),
+    //
+    entry('2026-03-01', 'FOO', amount('0', 'USD')),
   ]);
 
   const priceTests: Array<{
@@ -259,10 +262,30 @@ await describe('PriceDatabase', () => {
         date: new Date('2025-12-01'),
         path: [
           {
-            exact: entry('2025-12-01', 'B', amount('1/10', 'A')),
+            exact: entry('2025-12-01', 'A', amount('10', 'B')),
           },
         ],
       }),
+    },
+    {
+      name: 'finds a zero price',
+      currencyPair: currencyPair('FOO', 'USD'),
+      options: {},
+      want: O.some({
+        price: N('0'),
+        date: new Date('2026-03-01'),
+        path: [
+          {
+            exact: entry('2026-03-01', 'FOO', amount(0, 'USD')),
+          },
+        ],
+      }),
+    },
+    {
+      name: 'does not find the inverse of a zero price',
+      currencyPair: currencyPair('USD', 'FOO'),
+      options: {},
+      want: O.none,
     },
     {
       name: 'price not found for the direct currency pair',
