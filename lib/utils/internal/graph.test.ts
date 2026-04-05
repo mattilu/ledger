@@ -1,7 +1,14 @@
 import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { Graph, Path } from './graph.js';
+import {
+  BottleneckPathAlgebra,
+  Graph,
+  Path,
+  PathAlgebra,
+  ReliabilityPathAlgebra,
+  ShortestPathAlgebra,
+} from './graph.js';
 
 const newGraph = <N = number, E = number>(data?: {
   nodes?: readonly N[];
@@ -12,6 +19,18 @@ const newGraph = <N = number, E = number>(data?: {
   data?.edges?.forEach(([from, to, edge]) => graph.setEdge(from, to, edge));
   return graph;
 };
+
+const newUndirectedGraph = <N = number, E = number>(data?: {
+  nodes?: readonly N[];
+  edges?: readonly [N, N, E][];
+}) =>
+  newGraph({
+    nodes: data?.nodes,
+    edges: data?.edges?.flatMap(([a, b, e]) => [
+      [a, b, e],
+      [b, a, e],
+    ]),
+  });
 
 describe('Graph', () => {
   describe('#addNode', () => {
@@ -290,7 +309,7 @@ describe('Graph', () => {
     });
   });
 
-  describe('#shortestPaths', () => {
+  describe('#optimalPaths', () => {
     const graphs = {
       empty: newGraph(),
       noEdges: newGraph({ nodes: [1, 2, 3] }),
@@ -323,8 +342,9 @@ describe('Graph', () => {
       graph: Graph<number, number>;
       source: number;
       targets: number[];
-      want: Path<number, number>[];
+      want: Path<number, number, number>[];
       weightFunc?: (edge: number, from: number, to: number) => number;
+      algebra?: PathAlgebra<number>;
     }> = [
       {
         name: 'empty targets',
@@ -468,14 +488,83 @@ describe('Graph', () => {
           },
         ],
       },
+      {
+        name: 'bottleneck',
+        graph: newUndirectedGraph({
+          edges: [
+            [1, 2, 5],
+            [1, 3, 10],
+            [1, 4, 30],
+            [2, 3, 8],
+            [2, 5, 25],
+            [3, 4, 20],
+            [3, 6, 35],
+            [4, 6, 12],
+            [5, 6, 40],
+            [5, 7, 50],
+            [6, 7, 22],
+          ],
+        }),
+        source: 1,
+        targets: [2],
+        weightFunc: e => e,
+        algebra: BottleneckPathAlgebra,
+        want: [
+          {
+            source: 1,
+            target: 2,
+            totalWeight: 20,
+            path: [
+              { from: 1, to: 4, edge: 30, weight: 30 },
+              { from: 4, to: 3, edge: 20, weight: 20 },
+              { from: 3, to: 6, edge: 35, weight: 35 },
+              { from: 6, to: 5, edge: 40, weight: 40 },
+              { from: 5, to: 2, edge: 25, weight: 25 },
+            ],
+          },
+        ],
+      },
+      {
+        name: 'reliability',
+        graph: newUndirectedGraph({
+          edges: [
+            // Direct path: 0.8
+            [1, 2, 0.8],
+            // 2-hop path: 0.81
+            [1, 3, 0.9],
+            [3, 2, 0.9],
+            // 3-hop path: ~0.857
+            [1, 4, 0.95],
+            [4, 5, 0.95],
+            [5, 2, 0.95],
+          ],
+        }),
+        source: 1,
+        targets: [2],
+        weightFunc: e => e,
+        algebra: ReliabilityPathAlgebra,
+        want: [
+          {
+            source: 1,
+            target: 2,
+            totalWeight: 0.95 * 0.95 * 0.95,
+            path: [
+              { from: 1, to: 4, edge: 0.95, weight: 0.95 },
+              { from: 4, to: 5, edge: 0.95, weight: 0.95 },
+              { from: 5, to: 2, edge: 0.95, weight: 0.95 },
+            ],
+          },
+        ],
+      },
     ];
 
     for (const t of tests) {
       it(t.name, () => {
-        const got = t.graph.shortestPaths(
+        const got = t.graph.optimalPaths(
           t.source,
           t.targets,
           t.weightFunc ?? (() => 1),
+          t.algebra ?? ShortestPathAlgebra,
         );
 
         assert.deepEqual(got, t.want);

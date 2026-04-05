@@ -13,7 +13,7 @@ type EdgeEntry<Node, Edge, NodeKey = Node> = {
 /**
  * The result of a graph search for a (source, target) node pair.
  */
-export type Path<Node, Edge> = {
+export type Path<Node, Edge, W> = {
   /** Source node of the path. */
   readonly source: Node;
 
@@ -21,7 +21,7 @@ export type Path<Node, Edge> = {
   readonly target: Node;
 
   /** Total weight the path. Null if there is no path. */
-  readonly totalWeight: number | null;
+  readonly totalWeight: W | null;
 
   /**
    * Full path from source to target node.
@@ -32,8 +32,72 @@ export type Path<Node, Edge> = {
     readonly from: Node;
     readonly to: Node;
     readonly edge: Edge;
-    readonly weight: number;
+    readonly weight: W;
   }> | null;
+};
+
+export interface PathAlgebra<W> {
+  /** The identity element `e` of the monoid. */
+  readonly e: W;
+
+  /** The associative binary operation ⊗
+   *
+   * Must satisfy the following properties:
+   *
+   * - Associativity: `(a ⊗ b) ⊗ c` = `a ⊗ (b ⊗ c)`.
+   * - Identity element: `a ⊗ e` = `e ⊗ a` = `a`.
+   */
+  combine(a: W, b: W): W;
+
+  /** The ordering function.
+   *
+   * Must define a strict total ordering, i.e. it must satisfy the following
+   * properties:
+   *
+   * - Irreflexivity: `betterThan(a, a)` must always be `false`;
+   * - Asymmetry: if `betterThan(a, b)` is `true`, then `betterThan(b, a)` must
+   *   be `false`;
+   * - Transitivity: if `betterThan(a, b)` and `betterThan(b, c)` are `true`,
+   *   then `betterThan(a, c)` must also be `true`.
+   * - Comparability: if `a` and `b` are not equivalent, then either
+   *  `betterThan(a, b)` or `betterThan(b, a)` must be `true`.
+   *
+   * Additionally, it must satisfy the Isotonicity properties:
+   *
+   *  - Right isotonicity: if `betterThan(a, b)` is `true` then
+   *   `betterThan(a ⊗ c, b ⊗ c)` must also be `true`.
+   *  - Left isotonicity: if `betterThan(a, b)` is `true` then
+   *   `betterThan(c ⊗ a, c ⊗ b)` must also be `true`.
+   */
+  betterThan(a: W, b: W): boolean;
+}
+
+/**
+ * A PathAlgebra to compute the shortest path.
+ */
+export const ShortestPathAlgebra: PathAlgebra<number> = {
+  e: 0,
+  combine: (a, b) => a + b,
+  betterThan: (a, b) => a < b,
+};
+
+/**
+ * A PathAlgebra to compute the the widest bottleneck path.
+ */
+export const BottleneckPathAlgebra: PathAlgebra<number> = {
+  e: Infinity,
+  combine: (a, b) => Math.min(a, b),
+  betterThan: (a, b) => a > b,
+};
+
+/**
+ * A PathAlgebra to compute the most reliable path. Edge weights are expected to
+ * be probabilities.
+ */
+export const ReliabilityPathAlgebra: PathAlgebra<number> = {
+  e: 1,
+  combine: (a, b) => a * b,
+  betterThan: (a, b) => a > b,
 };
 
 /**
@@ -190,20 +254,29 @@ export class Graph<Node, Edge, NodeKey = Node> {
   }
 
   /**
-   * Finds the shortest path from the source node to each of the target nodes,
-   * according to the given weight function.
+   * Finds the optimal path from the source node to each target node using a
+   * generalized Dijkstra's algorithm over a Weight Monoid.
    *
-   * @param source source node to find the shortest paths from.
-   * @param targets target nodes to find the shortest paths to.
-   * @param weightFunc function to compute the weight of an edge. It must not
-   *   return negative numbers.
-   * @returns An array containing a `Path` for each (source, target) pair.
+   * @param source the starting node for the search.
+   * @param targets array of nodes to find optimal paths to.
+   * @param weightFunc function that returns the weight (W) of an edge.
+   * @param algebra an object defining the algebraic structure of the weights.
+   *
+   * In addition to the `PathAlgebra` requirements, the following properties
+   * must also be satisfied:
+   *
+   * - Monotonicity: `betterThan(a ⊗ b, a)` must always be false (no path can
+   *   be better than its prefix).
+   *
+   * @returns An array containing a `Path` for each (source, target) pair, with
+   * indices corresponding to the input `targets`.
    */
-  shortestPaths(
+  optimalPaths<W>(
     source: Node,
     targets: Node[],
-    weightFunc: (edge: Edge, fromNode: Node, toNode: Node) => number,
-  ): Path<Node, Edge>[] {
+    weightFunc: (edge: Edge, fromNode: Node, toNode: Node) => W,
+    algebra: PathAlgebra<W>,
+  ): Path<Node, Edge, W>[] {
     if (targets.length === 0) {
       return [];
     }
@@ -211,17 +284,18 @@ export class Graph<Node, Edge, NodeKey = Node> {
     type Entry = {
       readonly nodeEntry: NodeEntry<Node, Edge, NodeKey>;
       readonly nodeKey: NodeKey;
-      readonly totalWeight: number;
+      readonly totalWeight: W;
       readonly parent: {
         readonly entry: Entry;
         readonly edgeEntry: EdgeEntry<Node, Edge, NodeKey>;
-        readonly edgeWeight: number;
+        readonly edgeWeight: W;
       } | null;
     };
 
-    // Note: our heap implementation is for a max-heap, so we use > as cmp to
-    // obtain a min-heap for the priority queue.
-    const cmp = (a: Entry, b: Entry) => a.totalWeight > b.totalWeight;
+    // Note: our heap implementation is for a max-heap, so we negate betterThan
+    // to keep the better value at the top of the heap.
+    const cmp = (a: Entry, b: Entry) =>
+      !algebra.betterThan(a.totalWeight, b.totalWeight);
     const queue: Entry[] = [];
 
     const visited = new Set<NodeKey>();
@@ -234,7 +308,7 @@ export class Graph<Node, Edge, NodeKey = Node> {
       queue.push({
         nodeKey: sourceNodeKey,
         nodeEntry: sourceNodeEntry,
-        totalWeight: 0,
+        totalWeight: algebra.e,
         parent: null,
       });
       explored.set(sourceNodeKey, queue[0]);
@@ -261,12 +335,12 @@ export class Graph<Node, Edge, NodeKey = Node> {
           nodeEntry.node,
           edgeEntry.toNodeEntry.node,
         );
-        const newWeight = totalWeight + weight;
+        const newWeight = algebra.combine(totalWeight, weight);
 
         const exploredEntry = explored.get(adjacentNodeKey);
         if (
           exploredEntry === undefined ||
-          newWeight < exploredEntry.totalWeight
+          algebra.betterThan(newWeight, exploredEntry.totalWeight)
         ) {
           const adjacentEntry: Entry = {
             nodeKey: adjacentNodeKey,
@@ -280,7 +354,7 @@ export class Graph<Node, Edge, NodeKey = Node> {
       }
     }
 
-    const getPath = (target: Node): Path<Node, Edge> => {
+    const getPath = (target: Node): Path<Node, Edge, W> => {
       const targetEntry = explored.get(this.nodeKey(target));
       if (targetEntry === undefined) {
         return { source, target: target, totalWeight: null, path: null };
