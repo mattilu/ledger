@@ -13,7 +13,10 @@
     "esModuleInterop": true,
     "isolatedModules": false,
     "sourceMap": true,
-    "pretty": true
+    "pretty": true,
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "**/*.ts"
