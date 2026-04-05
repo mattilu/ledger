@@ -296,13 +296,61 @@ await describe('PriceDatabase', () => {
       want: O.none,
     },
     {
-      name: 'indirect algorithm not implemeted yet',
-      currencyPair: currencyPair('A', 'B'),
+      name: 'finds the latest price for an indirect currency pair',
+      currencyPair: currencyPair('A', 'C'),
+      options: {
+        indirect: true,
+      },
+      want: O.some({
+        date: new Date('2025-12-08'),
+        price: N(1260),
+        path: [
+          { exact: entry('2025-12-08', 'A', amount(12, 'B')) },
+          { exact: entry('2025-12-08', 'B', amount(105, 'C')) },
+        ],
+      }),
+    },
+    {
+      name: 'finds the price for an indirect currency pair at exact date',
+      currencyPair: currencyPair('A', 'C'),
       options: {
         date: new Date('2025-12-01'),
         indirect: true,
       },
+      want: O.some({
+        date: new Date('2025-12-01'),
+        price: N(1000),
+        path: [
+          { exact: entry('2025-12-01', 'A', amount(10, 'B')) },
+          { exact: entry('2025-12-01', 'B', amount(100, 'C')) },
+        ],
+      }),
+    },
+    {
+      name: 'does not find the price for an indirect currency pair at exact date',
+      currencyPair: currencyPair('A', 'C'),
+      options: {
+        date: new Date('2025-12-03'),
+        indirect: true,
+      },
       want: O.none,
+    },
+    {
+      name: 'finds the price for an indirect currency pair within date range',
+      currencyPair: currencyPair('A', 'C'),
+      options: {
+        date: new Date('2025-12-03'),
+        timeWindowSeconds: 60 * 60 * 24 * 2, // 2d
+        indirect: true,
+      },
+      want: O.some({
+        date: new Date('2025-12-03'),
+        price: N(1020),
+        path: [
+          { exact: entry('2025-12-03', 'A', amount(10, 'B')) },
+          { exact: entry('2025-12-02', 'B', amount(102, 'C')) },
+        ],
+      }),
     },
   ];
 
