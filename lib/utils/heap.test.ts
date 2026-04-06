@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { describe, test } from 'node:test';
 
-import { isHeap, makeHeap, popHeap } from './heap.js';
+import { isHeap, makeHeap, popHeap, pushHeap } from './heap.js';
 
 function makeArray(length: number) {
   const items: number[] = [];
@@ -73,6 +73,84 @@ await describe('makeHeap', async () => {
         const items1 = items.slice();
         makeHeap(items1, lt);
         assert.deepEqual(items1, items);
+      });
+    }
+  });
+});
+
+await describe('pushHeap', async () => {
+  const tests: Array<{
+    name: string;
+    items: number[];
+    value: number;
+    want: number[];
+  }> = [
+    { name: 'empty', items: [], value: 1, want: [1] },
+    { name: 'add-lower', items: [2], value: 1, want: [2, 1] },
+    { name: 'add-higher', items: [1], value: 2, want: [2, 1] },
+    {
+      name: 'add-arbitrary',
+      items: [10, 9, 7, 5, 2],
+      value: 8,
+      want: [10, 9, 8, 5, 2, 7],
+    },
+    {
+      name: 'repeated-elements',
+      items: [10, 10, 10],
+      value: 10,
+      want: [10, 10, 10, 10],
+    },
+  ];
+
+  for (const t of tests) {
+    await test(t.name, () => {
+      const items = t.items.slice();
+      assert(isHeap(items, lt), 'invalid test setup, input is not a heap');
+
+      pushHeap(items, t.value, lt);
+
+      assert.deepEqual(items, t.want);
+      assert(isHeap(items, lt));
+    });
+  }
+
+  const randomArrays = [
+    makeArray(5),
+    makeArray(8),
+    makeArray(10),
+    makeArray(13),
+    makeArray(16),
+    makeArray(31),
+    makeArray(32),
+    makeArray(33),
+    makeArray(40),
+    makeArray(100),
+  ];
+
+  await describe('invariants', async () => {
+    for (const arr of randomArrays) {
+      await test(`inserts the element in the heap`, () => {
+        const [n] = makeArray(1);
+        const items = arr.slice();
+        makeHeap(items, lt);
+
+        const countBefore = items.filter(x => x === n).length;
+        pushHeap(items, n, lt);
+        const countAfter = items.filter(x => x === n).length;
+
+        assert.equal(countAfter, countBefore + 1);
+      });
+    }
+
+    for (const arr of randomArrays) {
+      await test(`isHeap returns true on the enlarged array [${arr.length}]`, () => {
+        const [n] = makeArray(1);
+        const items = arr.slice();
+        makeHeap(items, lt);
+
+        pushHeap(items, n, lt);
+
+        assert(isHeap(items, lt));
       });
     }
   });

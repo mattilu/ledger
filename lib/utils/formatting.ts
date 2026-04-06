@@ -33,6 +33,42 @@ export type FormatTransactionOptions = {
   readonly formatBalance?: FormatBalanceMode;
 };
 
+type FormatAccountsOptionsPlain = {
+  /** If true, format the accounts as a tree. */
+  readonly tree?: false;
+};
+
+type FormatAccountsOptionsTree<T> = {
+  /** If true, format the accounts as a tree. */
+  readonly tree: true;
+
+  /**
+   * Function to reduce multiple nodes' data into a single entry.
+   * The input array contains the current node's data, if present, and the
+   * aggregated children's data if either of the following is true:
+   *  - `aggregate` is set to true;
+   *  - the node's depth is greater than or equal to `maxDepth`.
+   */
+  readonly reduce: (values: T[]) => T;
+
+  /** Function to filter nodes for inclusion. */
+  readonly filter?: (value: T) => boolean;
+
+  /** If true, always include children's data in the reduction. */
+  readonly aggregate?: boolean;
+
+  /**
+   * Maximum depth of the account tree to display. For elided nodes, their
+   * aggregate is shown in the closest non-elided ancestor, regardless of the
+   * `aggregate` option.
+   */
+  readonly maxDepth?: number;
+};
+
+export type FormatAccountsOptions<T> =
+  | FormatAccountsOptionsPlain
+  | FormatAccountsOptionsTree<T>;
+
 export type FormatInventoriesOptions = {
   /**
    * If true, show the cost of positions held at cost. Otherwise, only show the
@@ -148,11 +184,49 @@ export class Formatter {
     return parts.join('\n');
   }
 
+  formatAccounts<T>(
+    accountMap: ImmutableMap<string, T>,
+    format: (value: T) => string[],
+    options?: FormatAccountsOptions<T>,
+  ) {
+    if (options?.tree) {
+      const maxDepth = options.maxDepth ?? Number.MAX_SAFE_INTEGER;
+
+      const root = makeAccountTree(
+        new Map(Seq(accountMap.entries()).sortBy(fst)),
+        identity,
+        (nodeValue, childValues, depth) => {
+          const toReduce = [];
+          if (nodeValue !== undefined) {
+            toReduce.push(nodeValue);
+          }
+          if (options.aggregate || depth >= maxDepth) {
+            toReduce.push(...childValues);
+          }
+          return options.reduce(toReduce);
+        },
+        (node, depth) =>
+          depth <= maxDepth &&
+          ((options.filter?.(node.data) ?? true) || node.children.length > 0),
+      );
+
+      return formatTree(root, node => format(node.data));
+    }
+
+    const lines: string[] = [];
+    for (const [account, inventory] of accountMap.entrySeq().sortBy(fst)) {
+      for (const line of format(inventory)) {
+        lines.push(`${account} ${line}`);
+      }
+    }
+    return lines.join('\n');
+  }
+
   formatInventories(
     inventories: InventoryMap,
     options?: FormatInventoriesOptions,
   ) {
-    const maybeAggregatePositions =
+    const maybeAggregate =
       (options?.showCost ?? true)
         ? identity
         : (inventory: Inventory) =>
@@ -160,45 +234,25 @@ export class Formatter {
               inventory.getPositions().map(x => x.amount),
             );
 
-    if (options?.tree) {
-      const showTotals = options.showTotals ?? false;
-      const maxDepth = options.maxDepth ?? Number.MAX_SAFE_INTEGER;
-
-      const root = makeAccountTree(
-        new Map(Seq(inventories.entries()).sortBy(fst)),
-        identity,
-        (nodeInventory, inventories, depth) =>
-          maybeAggregatePositions(
-            showTotals || depth >= maxDepth
-              ? inventories.reduce(
-                  (acc, inventory) =>
-                    acc.addPositions(inventory.getPositions()),
-                  nodeInventory ?? Inventory.Empty,
-                )
-              : (nodeInventory ?? Inventory.Empty),
-          ),
-        (node, depth) =>
-          depth <= maxDepth &&
-          (!node.data.isEmpty() || node.children.length > 0),
-      );
-      return formatTree(root, node =>
-        Seq(node.data.getPositions())
+    return this.formatAccounts(
+      inventories,
+      inventory =>
+        Seq(maybeAggregate(inventory).getPositions())
           .sortBy(x => Seq([x.amount.currency, x.cost?.date.getTime() ?? 0]))
           .map(position => this.formatPosition(position))
           .toArray(),
-      );
-    }
-
-    const lines: string[] = [];
-    for (const [account, inventory] of inventories.entrySeq().sortBy(fst)) {
-      const positions = Seq(
-        maybeAggregatePositions(inventory).getPositions(),
-      ).sortBy(a => Seq([a.amount.currency, a.cost?.date.getTime() ?? 0]));
-      for (const position of positions) {
-        lines.push(`${account} ${this.formatPosition(position)}`);
-      }
-    }
-    return lines.join('\n');
+      {
+        tree: options?.tree,
+        aggregate: options?.showTotals,
+        maxDepth: options?.maxDepth,
+        reduce: inventories =>
+          inventories.reduce(
+            (acc, inventory) => acc.addPositions(inventory.getPositions()),
+            Inventory.Empty,
+          ),
+        filter: inventory => !inventory.isEmpty(),
+      },
+    );
   }
 
   private formatTransactionHeader(transaction: Transaction) {

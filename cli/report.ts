@@ -21,6 +21,7 @@ import { CashFlowReport } from '../lib/reporting/cash-flow.js';
 import { InventoryReport } from '../lib/reporting/inventory.js';
 import { Report } from '../lib/reporting/report.js';
 import { TransactionsReport } from '../lib/reporting/transactions.js';
+import { UnrealizedPnlReport } from '../lib/reporting/unrealized-pnl.js';
 import { partitionLo } from '../lib/utils/bounds.js';
 import {
   FormatBalanceMode,
@@ -199,6 +200,32 @@ const transactions = command({
   handler: args => runReport(new TransactionsReport(args), args),
 });
 
+const unrealizedPnl = command({
+  name: 'unrealized-pnl',
+  args: {
+    ...commonArgs,
+    ...formatInventoryArgs,
+    aggregate: flag({
+      long: 'aggregate',
+      description: 'Whether to display aggregate PnL instead of per-position',
+      short: 'G',
+    }),
+  },
+  handler: args =>
+    runReport(
+      new UnrealizedPnlReport({
+        accounts: args.accounts,
+        excludeAccounts: args.excludeAccounts,
+        currencies: args.currencies,
+        formatOptions: {
+          ...makeInventoryFormatOptions(args),
+          aggregate: args.aggregate,
+        },
+      }),
+      args,
+    ),
+});
+
 type Output<Args extends Record<string, ArgParser<unknown>>> = {
   [key in keyof Args]: ParsingInto<Args[key]>;
 };
@@ -233,5 +260,6 @@ export const report = subcommands({
     'cash-flow': cashFlow,
     inventory,
     transactions,
+    'unrealized-pnl': unrealizedPnl,
   },
 });

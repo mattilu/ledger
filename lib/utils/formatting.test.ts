@@ -11,6 +11,7 @@ import { Transaction } from '../booking/transaction.js';
 import { Amount } from '../core/amount.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
 import {
+  FormatAccountsOptions,
   FormatBalanceMode,
   FormatInventoriesOptions,
   Formatter,
@@ -430,6 +431,298 @@ await describe('Formatter', async () => {
       await it(`formats the transaction [${t.name}]`, () => {
         const got = formatter.formatTransaction(
           t.transaction as Transaction,
+          t.options,
+        );
+        assert.equal(got, t.want);
+      });
+    }
+  });
+
+  await describe('#formatAccounts', async () => {
+    const accountMaps = (<K extends string>(
+      r: Record<K, Map<string, number[]>>,
+    ) => r)({
+      empty: Map(),
+      topLevelAccount: Map([['Assets', [1]]]),
+      childAccount: Map([['Assets:Test', [1]]]),
+      emptyAccount: Map([['Assets:Test:Foo', []]]),
+      deepAccount: Map([['Assets:Test:Foo:Bar:Baz', [1]]]),
+      multipleAccounts: Map([
+        ['Assets:Test:Foo', [1]],
+        ['Assets:Test:Bar', [2]],
+        ['Assets:Test:Baz', [3]],
+        ['Liabilities:Test:Qux', [4]],
+      ]),
+      multipleEntries: Map([['Assets:Test', [1, 2, 3]]]),
+    });
+
+    const formatTreeOptions = (options?: {
+      aggregate?: boolean;
+      maxDepth?: number;
+    }): FormatAccountsOptions<number[]> & { tree: true } => ({
+      tree: true,
+      aggregate: options?.aggregate,
+      maxDepth: options?.maxDepth,
+      reduce: values => values.flat(),
+      filter: values => values.length > 0,
+    });
+
+    const formatEach = (values: number[]) => values.map(x => x.toString());
+    const formatAsSum = (values: number[]) => {
+      const value = values.reduce((a, b) => a + b, 0);
+      return value === 0 ? [] : [value.toString()];
+    };
+
+    const tests: Array<{
+      name: string;
+      accountMap: Map<string, number[]>;
+      format?: (xs: number[]) => string[];
+      options?: FormatAccountsOptions<number[]>;
+      want: string;
+    }> = [
+      {
+        name: 'empty',
+        accountMap: accountMaps.empty,
+        want: '',
+      },
+      {
+        name: 'top level account',
+        accountMap: accountMaps.topLevelAccount,
+        want: 'Assets 1',
+      },
+      {
+        name: 'child account',
+        accountMap: accountMaps.childAccount,
+        want: 'Assets:Test 1',
+      },
+      {
+        name: 'deep account',
+        accountMap: accountMaps.deepAccount,
+        want: 'Assets:Test:Foo:Bar:Baz 1',
+      },
+      {
+        name: 'empty account',
+        accountMap: accountMaps.emptyAccount,
+        want: '',
+      },
+      {
+        name: 'multiple accounts',
+        accountMap: accountMaps.multipleAccounts,
+        want: `\
+Assets:Test:Bar 2
+Assets:Test:Baz 3
+Assets:Test:Foo 1
+Liabilities:Test:Qux 4`,
+      },
+      {
+        name: 'multiple entries, format each',
+        accountMap: accountMaps.multipleEntries,
+        format: formatEach,
+        want: `\
+Assets:Test 1
+Assets:Test 2
+Assets:Test 3`,
+      },
+      {
+        name: 'multiple entries, format as sum',
+        accountMap: accountMaps.multipleEntries,
+        format: formatAsSum,
+        want: `\
+Assets:Test 6`,
+      },
+      {
+        name: 'empty as tree',
+        accountMap: accountMaps.empty,
+        options: formatTreeOptions(),
+        want: '╿',
+      },
+      {
+        name: 'top level account as tree',
+        accountMap: accountMaps.topLevelAccount,
+        options: formatTreeOptions(),
+        want: `\
+╿
+└─ Assets  1`,
+      },
+      {
+        name: 'child account as tree',
+        accountMap: accountMaps.childAccount,
+        options: formatTreeOptions(),
+        want: `\
+╿
+└─ Assets
+   └─ Test  1`,
+      },
+      {
+        name: 'empty account as tree',
+        accountMap: accountMaps.emptyAccount,
+        options: formatTreeOptions(),
+        want: '╿',
+      },
+      {
+        name: 'deep account as tree',
+        accountMap: accountMaps.deepAccount,
+        options: formatTreeOptions(),
+        want: `\
+╿
+└─ Assets
+   └─ Test
+      └─ Foo
+         └─ Bar
+            └─ Baz  1`,
+      },
+      {
+        name: 'deep account as tree, max depth',
+        accountMap: accountMaps.deepAccount,
+        options: {
+          ...formatTreeOptions(),
+          maxDepth: 2,
+        },
+        want: `\
+╿
+└─ Assets
+   └─ Test  1`,
+      },
+      {
+        name: 'multiple accounts as tree',
+        accountMap: accountMaps.multipleAccounts,
+        options: formatTreeOptions(),
+        want: `\
+╿
+├─ Assets
+│  └─ Test
+│     ├─ Bar    2
+│     ├─ Baz    3
+│     └─ Foo    1
+└─ Liabilities
+   └─ Test
+      └─ Qux    4`,
+      },
+      {
+        name: 'multiple accounts as tree, max depth, format each',
+        accountMap: accountMaps.multipleAccounts,
+        format: formatEach,
+        options: formatTreeOptions({ maxDepth: 2 }),
+        want: `\
+╿
+├─ Assets
+│  └─ Test      2
+│     │         3
+│     └         1
+└─ Liabilities
+   └─ Test      4`,
+      },
+      {
+        name: 'multiple accounts as tree, max depth, format as sum',
+        accountMap: accountMaps.multipleAccounts,
+        format: formatAsSum,
+        options: formatTreeOptions({ maxDepth: 2 }),
+        want: `\
+╿
+├─ Assets
+│  └─ Test      6
+└─ Liabilities
+   └─ Test      4`,
+      },
+      {
+        name: 'multiple accounts as tree, aggregate, format each',
+        accountMap: accountMaps.multipleAccounts,
+        format: formatEach,
+        options: formatTreeOptions({ aggregate: true }),
+        want: `\
+╿               2
+│               3
+│               1
+│               4
+├─ Assets       2
+│  │            3
+│  │            1
+│  └─ Test      2
+│     │         3
+│     │         1
+│     ├─ Bar    2
+│     ├─ Baz    3
+│     └─ Foo    1
+└─ Liabilities  4
+   └─ Test      4
+      └─ Qux    4`,
+      },
+      {
+        name: 'multiple accounts as tree, aggregate, format as sum',
+        accountMap: accountMaps.multipleAccounts,
+        format: formatAsSum,
+        options: formatTreeOptions({ aggregate: true }),
+        want: `\
+╿               10
+├─ Assets       6
+│  └─ Test      6
+│     ├─ Bar    2
+│     ├─ Baz    3
+│     └─ Foo    1
+└─ Liabilities  4
+   └─ Test      4
+      └─ Qux    4`,
+      },
+      {
+        name: 'multiple accounts as tree, max depth, aggregate, format each',
+        accountMap: accountMaps.multipleAccounts,
+        format: formatEach,
+        options: formatTreeOptions({ aggregate: true, maxDepth: 2 }),
+        want: `\
+╿               2
+│               3
+│               1
+│               4
+├─ Assets       2
+│  │            3
+│  │            1
+│  └─ Test      2
+│     │         3
+│     └         1
+└─ Liabilities  4
+   └─ Test      4`,
+      },
+      {
+        name: 'multiple accounts as tree, max depth, aggregate, format as sum',
+        accountMap: accountMaps.multipleAccounts,
+        format: formatAsSum,
+        options: formatTreeOptions({ aggregate: true, maxDepth: 2 }),
+        want: `\
+╿               10
+├─ Assets       6
+│  └─ Test      6
+└─ Liabilities  4
+   └─ Test      4`,
+      },
+      {
+        name: 'multiple entries as tree, format each',
+        accountMap: accountMaps.multipleEntries,
+        format: formatEach,
+        options: formatTreeOptions(),
+        want: `\
+╿
+└─ Assets
+   └─ Test  1
+      │     2
+      └     3`,
+      },
+      {
+        name: 'multiple entries as tree, format as sum',
+        accountMap: accountMaps.multipleEntries,
+        format: formatAsSum,
+        options: formatTreeOptions(),
+        want: `\
+╿
+└─ Assets
+   └─ Test  6`,
+      },
+    ];
+
+    for (const t of tests) {
+      await it(`formats the accounts [${t.name}]`, () => {
+        const got = formatter.formatAccounts(
+          t.accountMap,
+          t.format ?? formatAsSum,
           t.options,
         );
         assert.equal(got, t.want);
