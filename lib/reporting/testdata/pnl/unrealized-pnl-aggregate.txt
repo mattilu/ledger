@@ -1,0 +1,3 @@
+Assets:Brokerage:Bar:Cash +150 EUR / +0.03 EUR/USD ; Position: 5000 USD {{ 4250 EUR }} { 0.85 EUR } Price: 0.88 EUR Value: 4400 EUR
+Assets:Brokerage:Foo:Stock +100 CHF / +10 CHF/QQQ ; Position: 10 QQQ {{ 4500 CHF }} { 450 CHF } Price: 460 CHF Value: 4600 CHF
+Assets:Brokerage:Foo:Stock -150 CHF / -7.5 CHF/VT ; Position: 20 VT {{ 2150 CHF }} { 107.5 CHF } Price: 100 CHF Value: 2000 CHF

@@ -1,0 +1,27 @@
+2026-04-01 * "Opening Balance"
+  Assets:Brokerage:Foo:Cash   10,000 CHF
+  Assets:Brokerage:Bar:Cash   10,000 EUR
+  Equity:Opening-Balances
+
+2026-04-01 * "Buy VT"
+  Assets:Brokerage:Foo:Stock      10 VT {{ 1,050 CHF }}
+  Assets:Brokerage:Foo:Cash
+
+2026-04-01 * "Buy VT"
+  Assets:Brokerage:Foo:Stock      10 VT {{ 1,100 CHF }}
+  Assets:Brokerage:Foo:Cash
+
+2026-04-01 * "Buy QQQ"
+  Assets:Brokerage:Foo:Stock      10 QQQ {{ 4,500 CHF }}
+  Assets:Brokerage:Foo:Cash
+
+2026-04-01 * "Forex"
+  Assets:Brokerage:Bar:Cash    5,000 USD { 0.85 EUR }
+  Assets:Brokerage:Bar:Cash
+
+2026-04-02 price VT              100 CHF
+2026-04-02 price QQQ             460 CHF
+; Note: no direct price conversion for EUR/USD, but the report can figure it out
+; from the EUR/CHF and USD/CHF prices.
+2026-04-02 price CHF            1.10 EUR
+2026-04-02 price USD            0.80 CHF

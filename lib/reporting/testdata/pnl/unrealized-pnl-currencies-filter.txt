@@ -1,0 +1,1 @@
+Assets:Brokerage:Bar:Cash +150 EUR / +0.03 EUR/USD ; Position: 5000 USD {{ 4250 EUR }} { 0.85 EUR } Price: 0.88 EUR Value: 4400 EUR
