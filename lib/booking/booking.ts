@@ -420,8 +420,8 @@ function bookPosting(
       const postings: BookedPosting[] = [];
       const prices: PriceDirective[] = [];
       for (const posting of bookResult.right[0]) {
-        let postings1: BookedPosting[] = [];
-        let prices1: PriceDirective[] = [];
+        let postings1: BookedPosting[];
+        let prices1: PriceDirective[];
         [postings1, inventories, balance, prices1] = doBook(
           transaction,
           inventories,
