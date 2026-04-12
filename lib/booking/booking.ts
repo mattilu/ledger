@@ -332,27 +332,31 @@ function bookPosting(
       const costSpec = posting.costSpec;
       return F.pipe(
         validateCostSpecForAugmentation(costSpec),
-        E.map(() =>
-          doBook(
-            transaction,
+        E.let(
+          'cost',
+          () =>
+            new Cost(
+              costSpec.amounts.map(amount =>
+                getPerUnitAmount(amount, postingAmount, costSpec),
+              ),
+              costSpec.dates.length === 1
+                ? costSpec.dates[0]
+                : transaction.date,
+              costSpec.dateSpecs.length === 1
+                ? costSpec.dateSpecs[0]
+                : transaction.dateSpec,
+              costSpec.tags,
+            ),
+        ),
+        E.map(({ cost }) => [
+          ...doBook(
             inventories,
             balance,
             {
               account: posting.account,
               flag: posting.flag,
               amount: postingAmount,
-              cost: new Cost(
-                costSpec.amounts.map(amount =>
-                  getPerUnitAmount(amount, postingAmount, costSpec),
-                ),
-                costSpec.dates.length === 1
-                  ? costSpec.dates[0]
-                  : transaction.date,
-                costSpec.dateSpecs.length === 1
-                  ? costSpec.dateSpecs[0]
-                  : transaction.dateSpec,
-                costSpec.tags,
-              ),
+              cost,
               meta: posting.meta,
             },
             {
@@ -370,7 +374,8 @@ function bookPosting(
               meta: Map() as Metadata,
             })),
           ),
-        ),
+          makePriceDirectives(transaction, postingAmount.currency, cost),
+        ]),
       );
     }
 
@@ -420,12 +425,9 @@ function bookPosting(
     }
 
     const postings: BookedPosting[] = [];
-    const prices: PriceDirective[] = [];
     for (const posting of bookResult.right[0]) {
       let postings1: BookedPosting[];
-      let prices1: PriceDirective[];
-      [postings1, inventories, balance, prices1] = doBook(
-        transaction,
+      [postings1, inventories, balance] = doBook(
         inventories,
         balance,
         // Post the reduction as we got it from the booking method, e.g.
@@ -463,7 +465,6 @@ function bookPosting(
         })),
       );
       postings.push(...postings1);
-      prices.push(...prices1);
     }
 
     // Overwrite the inventory for the account with the result from the
@@ -474,20 +475,21 @@ function bookPosting(
       mergeInventories(inventoryRest, bookResult.right[1]),
     );
 
-    return E.right([postings, inventories, balance, prices]);
+    return E.right([postings, inventories, balance, []]);
   }
 
   if (posting.amount !== null) {
     // Posting is fully specified, we can just book it.
-    return E.right(
-      doBook(transaction, inventories, balance, {
+    return E.right([
+      ...doBook(inventories, balance, {
         account: posting.account,
         flag: posting.flag,
         amount: posting.amount,
         cost: null,
         meta: posting.meta,
       }),
-    );
+      [],
+    ]);
   }
 
   // Posting doesn't specify amount, so we infer it to be the running balance of
@@ -501,7 +503,8 @@ function bookPosting(
       meta: posting.meta,
     }),
   );
-  return E.right(doBook(transaction, inventories, balance, ...balancePostings));
+
+  return E.right([...doBook(inventories, balance, ...balancePostings), []]);
 }
 
 function validateCostSpecForAugmentation(
@@ -598,13 +601,10 @@ function mergeInventories(a: Inventory, b: Inventory): Inventory {
 }
 
 function doBook(
-  transaction: TransactionDirective,
   inventories: InventoryMap,
   balance: Inventory,
   ...postings: BookedPosting[]
-): [BookedPosting[], InventoryMap, balance: Inventory, PriceDirective[]] {
-  const prices: PriceDirective[] = [];
-
+): [BookedPosting[], InventoryMap, balance: Inventory] {
   inventories = inventories.withMutations(inventories => {
     for (const posting of postings) {
       inventories = inventories.update(posting.account, inventory =>
@@ -613,23 +613,32 @@ function doBook(
         ),
       );
       balance = balance.addAmount(posting.amount);
-      if (posting.cost && posting.cost.amounts.length === 1) {
-        prices.push({
-          type: 'price',
-          date: posting.cost.date,
-          currency: posting.amount.currency,
-          price: posting.cost.amounts[0],
-          meta: Map([
-            ['synthetized-from', { type: 'string', value: 'cost-spec' }],
-          ]),
-          optionMap: transaction.optionMap,
-          srcCtx: transaction.srcCtx,
-        });
-      }
     }
   });
 
-  return [postings, inventories, balance, prices];
+  return [postings, inventories, balance];
+}
+
+function makePriceDirectives(
+  transaction: TransactionDirective,
+  currency: string,
+  cost: Cost,
+): PriceDirective[] {
+  if (cost.amounts.length !== 1) {
+    return [];
+  }
+
+  return [
+    {
+      type: 'price',
+      date: cost.date,
+      currency,
+      price: cost.amounts[0],
+      meta: Map([['synthetized-from', { type: 'string', value: 'cost-spec' }]]),
+      optionMap: transaction.optionMap,
+      srcCtx: transaction.srcCtx,
+    },
+  ];
 }
 
 function getTotalAmount(

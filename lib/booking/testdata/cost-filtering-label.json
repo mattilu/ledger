@@ -263,16 +263,6 @@
           "synthetized-from": { "type": "string", "value": "cost-spec" }
         },
         "optionMap": {}
-      },
-      {
-        "type": "price",
-        "date": "2025-08-01T00:00:00.000Z",
-        "currency": "USD",
-        "price": { "amount": "0.7", "currency": "CHF" },
-        "meta": {
-          "synthetized-from": { "type": "string", "value": "cost-spec" }
-        },
-        "optionMap": {}
       }
     ]
   }
