@@ -1,5 +1,3 @@
-import { strict as assert } from 'node:assert';
-
 import { ExactNumber } from 'exactnumber';
 import { either as E, function as F } from 'fp-ts';
 import { Map } from 'immutable';
@@ -299,12 +297,19 @@ function bookPosting(
   [BookedPosting[], InventoryMap, balance: Inventory, PriceDirective[]]
 > {
   if (posting.costSpec !== null) {
+    if (posting.amount === null) {
+      return E.left(
+        new Error(`Amount interpolation with cost spec is invalid`),
+      );
+    }
+
     const tradingAccount = getTradingAccount(
       transaction,
       posting,
       accountDirective?.type === 'open' ? accountDirective : null,
     );
-    if (posting.amount !== null && posting.costSpec.amounts.length > 0) {
+
+    if (posting.costSpec.amounts.length > 0) {
       // Both cost and amount are known. We increase the account by the amount
       // at-cost, and post the opposite amount to the trading account. This
       // leaves the amount of the cost in the running balance, which is usually
@@ -369,113 +374,107 @@ function bookPosting(
       );
     }
 
-    if (posting.amount !== null) {
-      assert(posting.costSpec.amounts.length === 0);
+    // Amount is known, but cost is not. We treat this as a reduction, and
+    // invoke the booking method.
+    //
+    // Example (assuming the open position from previous example):
+    //
+    // 2025-04-02 * "Close Long"
+    //   Assets:Broker  -2 VT {}
+    //   Assets:Broker 350 CHF
+    //   Income:Trading
+    //
+    //  ->
+    //
+    // 2025-04-02 * "Close Long"
+    //   Assets:Broker     -2 VT { 150 CHF }
+    //   Trading:Default    2 VT
+    //   Trading:Default -300 CHF
+    //   Assets:Broker    350 CHF
+    //   Income:Trading ; -50 CHF, inferred
 
-      // Amount is known, but cost is not. We treat this as a reduction, and
-      // invoke the booking method.
-      //
-      // Example (assuming the open position from previous example):
-      //
-      // 2025-04-02 * "Close Long"
-      //   Assets:Broker  -2 VT {}
-      //   Assets:Broker 350 CHF
-      //   Income:Trading
-      //
-      //  ->
-      //
-      // 2025-04-02 * "Close Long"
-      //   Assets:Broker     -2 VT { 150 CHF }
-      //   Trading:Default    2 VT
-      //   Trading:Default -300 CHF
-      //   Assets:Broker    350 CHF
-      //   Income:Trading ; -50 CHF, inferred
+    const [inventoryUsable, inventoryRest] = filterInventoryForReduction(
+      inventories.get(posting.account) ?? Inventory.Empty,
+      posting.costSpec,
+    );
 
-      const [inventoryUsable, inventoryRest] = filterInventoryForReduction(
-        inventories.get(posting.account) ?? Inventory.Empty,
-        posting.costSpec,
-      );
-
-      const postingAmount = posting.amount;
-      const bookResult = F.pipe(
-        getBookingMethod(
-          transaction,
-          posting,
-          accountDirective?.type === 'open' ? accountDirective : null,
+    const postingAmount = posting.amount;
+    const bookResult = F.pipe(
+      getBookingMethod(
+        transaction,
+        posting,
+        accountDirective?.type === 'open' ? accountDirective : null,
+      ),
+      E.flatMap(bookingMethod =>
+        bookingMethod.book(
+          posting.account,
+          posting.flag,
+          posting.meta,
+          postingAmount,
+          inventoryUsable,
         ),
-        E.flatMap(bookingMethod =>
-          bookingMethod.book(
-            posting.account,
-            posting.flag,
-            posting.meta,
-            postingAmount,
-            inventoryUsable,
-          ),
-        ),
-      );
-      if (E.isLeft(bookResult)) {
-        return bookResult;
-      }
-
-      const postings: BookedPosting[] = [];
-      const prices: PriceDirective[] = [];
-      for (const posting of bookResult.right[0]) {
-        let postings1: BookedPosting[];
-        let prices1: PriceDirective[];
-        [postings1, inventories, balance, prices1] = doBook(
-          transaction,
-          inventories,
-          balance,
-          // Post the reduction as we got it from the booking method, e.g.
-          //
-          // Assets:Broker    -60 USD { 1.2 CHF }
-          //
-          posting,
-          // Additonally, post the amount, negated, and the total cost, to the
-          // trading accounts, e.g.
-          //
-          // Trading:Default   60 USD
-          // Trading:Default  -72 CHF  ; 60 USD * 1.2 CHF/USD
-          //
-          // And if we got 80 CHF for the sale, then our PnL would be 8 CHF:
-          //
-          //   Assets:Broker   -60 USD { 1.2 CHF }
-          //   Trading:Default  60 USD
-          //   Trading:Default -72 CHF
-          //   Assets:Broker    80 CHF
-          //   Income:Trading ; -8 CHF, inferred
-          //
-          {
-            account: tradingAccount,
-            flag: posting.flag,
-            amount: posting.amount.neg(),
-            cost: null,
-            meta: Map(),
-          },
-          ...(posting.cost?.amounts ?? []).map(cost => ({
-            account: tradingAccount,
-            flag: posting.flag,
-            amount: cost.mul(posting.amount.amount),
-            cost: null,
-            meta: Map() as Metadata,
-          })),
-        );
-        postings.push(...postings1);
-        prices.push(...prices1);
-      }
-
-      // Overwrite the inventory for the account with the result from the
-      // booking method, as it could apply different changes, like averaging
-      // cost of positions.
-      inventories = inventories.set(
-        posting.account,
-        mergeInventories(inventoryRest, bookResult.right[1]),
-      );
-
-      return E.right([postings, inventories, balance, prices]);
+      ),
+    );
+    if (E.isLeft(bookResult)) {
+      return bookResult;
     }
 
-    return E.left(new Error(`Amount interpolation with cost spec is invalid`));
+    const postings: BookedPosting[] = [];
+    const prices: PriceDirective[] = [];
+    for (const posting of bookResult.right[0]) {
+      let postings1: BookedPosting[];
+      let prices1: PriceDirective[];
+      [postings1, inventories, balance, prices1] = doBook(
+        transaction,
+        inventories,
+        balance,
+        // Post the reduction as we got it from the booking method, e.g.
+        //
+        // Assets:Broker    -60 USD { 1.2 CHF }
+        //
+        posting,
+        // Additonally, post the amount, negated, and the total cost, to the
+        // trading accounts, e.g.
+        //
+        // Trading:Default   60 USD
+        // Trading:Default  -72 CHF  ; 60 USD * 1.2 CHF/USD
+        //
+        // And if we got 80 CHF for the sale, then our PnL would be 8 CHF:
+        //
+        //   Assets:Broker   -60 USD { 1.2 CHF }
+        //   Trading:Default  60 USD
+        //   Trading:Default -72 CHF
+        //   Assets:Broker    80 CHF
+        //   Income:Trading ; -8 CHF, inferred
+        //
+        {
+          account: tradingAccount,
+          flag: posting.flag,
+          amount: posting.amount.neg(),
+          cost: null,
+          meta: Map(),
+        },
+        ...(posting.cost?.amounts ?? []).map(cost => ({
+          account: tradingAccount,
+          flag: posting.flag,
+          amount: cost.mul(posting.amount.amount),
+          cost: null,
+          meta: Map() as Metadata,
+        })),
+      );
+      postings.push(...postings1);
+      prices.push(...prices1);
+    }
+
+    // Overwrite the inventory for the account with the result from the
+    // booking method, as it could apply different changes, like averaging
+    // cost of positions.
+    inventories = inventories.set(
+      posting.account,
+      mergeInventories(inventoryRest, bookResult.right[1]),
+    );
+
+    return E.right([postings, inventories, balance, prices]);
   }
 
   if (posting.amount !== null) {
