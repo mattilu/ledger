@@ -1,0 +1,15 @@
+2026-04-01 * "Buy liabilities (total)"
+  Assets:Broker   10 LBLT {{ -100 CHF }}
+  Assets:Broker  ;100 CHF
+
+2026-04-02 * "Buy liabilities (per-unit)"
+  Assets:Broker   10 LBLT { -9 CHF }
+  Assets:Broker  ;90 CHF
+
+2026-04-03 * "Sell liabilities (total)"
+  Assets:Broker  -10 LBLT {{ 80 CHF }}
+  Assets:Broker ;-80 CHF
+
+2026-04-04 * "Sell liabilities (per-unit)"
+  Assets:Broker  -10 LBLT { -7 CHF }
+  Assets:Broker ;-70 CHF

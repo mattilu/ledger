@@ -1,0 +1,211 @@
+{
+  "_tag": "Right",
+  "right": {
+    "transactions": [
+      {
+        "date": "2026-04-01T00:00:00.000Z",
+        "description": "Buy liabilities (total)",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "10", "currency": "LBLT" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-10", "currency": "LBLT" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-100", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "100", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": {
+            "CHF": [{ "amount": "100", "cost": null }],
+            "LBLT": [{ "amount": "10", "cost": null }]
+          },
+          "Trading:Default": {
+            "CHF": [{ "amount": "-100", "cost": null }],
+            "LBLT": [{ "amount": "-10", "cost": null }]
+          }
+        }
+      },
+      {
+        "date": "2026-04-02T00:00:00.000Z",
+        "description": "Buy liabilities (per-unit)",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "10", "currency": "LBLT" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-10", "currency": "LBLT" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-90", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "90", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": {
+            "CHF": [{ "amount": "190", "cost": null }],
+            "LBLT": [{ "amount": "20", "cost": null }]
+          },
+          "Trading:Default": {
+            "CHF": [{ "amount": "-190", "cost": null }],
+            "LBLT": [{ "amount": "-20", "cost": null }]
+          }
+        }
+      },
+      {
+        "date": "2026-04-03T00:00:00.000Z",
+        "description": "Sell liabilities (total)",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "-10", "currency": "LBLT" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "10", "currency": "LBLT" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "80", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "-80", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "flag": "*",
+        "inventoriesAfter": {
+          "Assets:Broker": {
+            "CHF": [{ "amount": "110", "cost": null }],
+            "LBLT": [{ "amount": "10", "cost": null }]
+          },
+          "Trading:Default": {
+            "CHF": [{ "amount": "-110", "cost": null }],
+            "LBLT": [{ "amount": "-10", "cost": null }]
+          }
+        }
+      },
+      {
+        "date": "2026-04-04T00:00:00.000Z",
+        "description": "Sell liabilities (per-unit)",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "-10", "currency": "LBLT" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "10", "currency": "LBLT" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "70", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "-70", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": {
+            "CHF": [{ "amount": "40", "cost": null }]
+          },
+          "Trading:Default": {
+            "CHF": [{ "amount": "-40", "cost": null }]
+          }
+        }
+      }
+    ],
+    "prices": [
+      {
+        "type": "price",
+        "date": "2026-04-01T00:00:00.000Z",
+        "currency": "LBLT",
+        "price": { "amount": "-10", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "price-spec" }
+        },
+        "optionMap": {}
+      },
+      {
+        "type": "price",
+        "date": "2026-04-02T00:00:00.000Z",
+        "currency": "LBLT",
+        "price": { "amount": "-9", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "price-spec" }
+        },
+        "optionMap": {}
+      },
+      {
+        "type": "price",
+        "date": "2026-04-03T00:00:00.000Z",
+        "currency": "LBLT",
+        "price": { "amount": "-8", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "price-spec" }
+        },
+        "optionMap": {}
+      },
+      {
+        "type": "price",
+        "date": "2026-04-04T00:00:00.000Z",
+        "currency": "LBLT",
+        "price": { "amount": "-7", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "price-spec" }
+        },
+        "optionMap": {}
+      }
+    ]
+  }
+}
