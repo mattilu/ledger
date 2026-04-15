@@ -10,6 +10,7 @@ import { PriceDirective } from '../loading/directives/price.js';
 import {
   CostSpec,
   Posting,
+  PriceSpec,
   TransactionDirective,
 } from '../loading/directives/transaction.js';
 import { Ledger } from '../loading/ledger.js';
@@ -337,7 +338,7 @@ function bookPosting(
           () =>
             new Cost(
               costSpec.amounts.map(amount =>
-                getPerUnitAmount(amount, postingAmount, costSpec),
+                getPerUnitAmount(amount, postingAmount, costSpec.kind),
               ),
               costSpec.dates.length === 1
                 ? costSpec.dates[0]
@@ -374,7 +375,12 @@ function bookPosting(
               meta: Map() as Metadata,
             })),
           ),
-          makePriceDirectives(transaction, postingAmount.currency, cost),
+          makePriceDirectives(
+            transaction,
+            postingAmount,
+            posting.priceSpec,
+            cost,
+          ),
         ]),
       );
     }
@@ -621,24 +627,43 @@ function doBook(
 
 function makePriceDirectives(
   transaction: TransactionDirective,
-  currency: string,
+  amount: Amount,
+  priceSpec: PriceSpec | null,
   cost: Cost,
 ): PriceDirective[] {
-  if (cost.amounts.length !== 1) {
-    return [];
+  if (priceSpec !== null) {
+    return [
+      {
+        type: 'price',
+        date: transaction.date,
+        currency: amount.currency,
+        price: getPerUnitAmount(priceSpec.amount, amount, priceSpec.kind),
+        meta: Map([
+          ['synthetized-from', { type: 'string', value: 'price-spec' }],
+        ]),
+        optionMap: transaction.optionMap,
+        srcCtx: transaction.srcCtx,
+      },
+    ];
   }
 
-  return [
-    {
-      type: 'price',
-      date: cost.date,
-      currency,
-      price: cost.amounts[0],
-      meta: Map([['synthetized-from', { type: 'string', value: 'cost-spec' }]]),
-      optionMap: transaction.optionMap,
-      srcCtx: transaction.srcCtx,
-    },
-  ];
+  if (cost.amounts.length === 1) {
+    return [
+      {
+        type: 'price',
+        date: cost.date,
+        currency: amount.currency,
+        price: cost.amounts[0],
+        meta: Map([
+          ['synthetized-from', { type: 'string', value: 'cost-spec' }],
+        ]),
+        optionMap: transaction.optionMap,
+        srcCtx: transaction.srcCtx,
+      },
+    ];
+  }
+
+  return [];
 }
 
 function getTotalAmount(
@@ -656,9 +681,9 @@ function getTotalAmount(
 function getPerUnitAmount(
   amount: Amount,
   baseAmount: Amount,
-  costSpec: CostSpec,
+  kind: 'per-unit' | 'total',
 ): Amount {
-  if (costSpec.kind === 'per-unit') {
+  if (kind === 'per-unit') {
     return amount;
   } else {
     return amount.div(baseAmount.amount);
