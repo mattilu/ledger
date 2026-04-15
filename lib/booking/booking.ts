@@ -370,7 +370,7 @@ function bookPosting(
             ...costSpec.amounts.map(amount => ({
               account: tradingAccount,
               flag: posting.flag,
-              amount: getTotalAmount(amount, postingAmount, costSpec),
+              amount: getTotalAmount(amount, postingAmount, costSpec.kind),
               cost: null,
               meta: Map() as Metadata,
             })),
@@ -482,6 +482,54 @@ function bookPosting(
     );
 
     return E.right([postings, inventories, balance, []]);
+  }
+
+  if (posting.priceSpec !== null) {
+    if (posting.amount === null) {
+      return E.left(
+        new Error(`Amount interpolation with price spec is invalid`),
+      );
+    }
+
+    const tradingAccount = getTradingAccount(
+      transaction,
+      posting,
+      accountDirective?.type === 'open' ? accountDirective : null,
+    );
+
+    // Similar to the cost case, but here we don't hold the position at cost.
+    return E.right([
+      ...doBook(
+        inventories,
+        balance,
+        {
+          account: posting.account,
+          flag: posting.flag,
+          amount: posting.amount,
+          cost: null,
+          meta: posting.meta,
+        },
+        {
+          account: tradingAccount,
+          flag: posting.flag,
+          amount: posting.amount.neg(),
+          cost: null,
+          meta: Map(),
+        },
+        {
+          account: tradingAccount,
+          flag: posting.flag,
+          amount: getTotalAmount(
+            posting.priceSpec.amount,
+            posting.amount,
+            posting.priceSpec.kind,
+          ),
+          cost: null,
+          meta: Map() as Metadata,
+        },
+      ),
+      makePriceDirectives(transaction, posting.amount, posting.priceSpec, null),
+    ]);
   }
 
   if (posting.amount !== null) {
@@ -629,7 +677,7 @@ function makePriceDirectives(
   transaction: TransactionDirective,
   amount: Amount,
   priceSpec: PriceSpec | null,
-  cost: Cost,
+  cost: Cost | null,
 ): PriceDirective[] {
   if (priceSpec !== null) {
     return [
@@ -647,7 +695,7 @@ function makePriceDirectives(
     ];
   }
 
-  if (cost.amounts.length === 1) {
+  if (cost !== null && cost.amounts.length === 1) {
     return [
       {
         type: 'price',
@@ -669,9 +717,9 @@ function makePriceDirectives(
 function getTotalAmount(
   amount: Amount,
   baseAmount: Amount,
-  costSpec: CostSpec,
+  kind: 'per-unit' | 'total',
 ): Amount {
-  if (costSpec.kind === 'total') {
+  if (kind === 'total') {
     return amount;
   } else {
     return amount.mul(baseAmount.amount);
