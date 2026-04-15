@@ -74,6 +74,7 @@
               "currency": "CHF"
             },
             "costSpec": null,
+            "priceSpec": null,
             "flag": "*",
             "meta": {
               "number-key": {

@@ -1,17 +1,211 @@
 {
   "_tag": "Right",
   "right": {
-    "transactions": [],
+    "transactions": [
+      {
+        "date": "2026-04-01T00:00:00.000Z",
+        "description": "Buy USD with CHF",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "flag": "*",
+            "amount": { "amount": "12", "currency": "USD" },
+            "cost": null
+          },
+          {
+            "account": "Trading:Default",
+            "flag": "*",
+            "amount": { "amount": "-12", "currency": "USD" },
+            "cost": null
+          },
+          {
+            "account": "Trading:Default",
+            "flag": "*",
+            "amount": { "amount": "10", "currency": "CHF" },
+            "cost": null
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": {
+              "amount": "-10",
+              "currency": "CHF"
+            },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": {
+            "CHF": [{ "amount": "-10", "cost": null }],
+            "USD": [{ "amount": "12", "cost": null }]
+          },
+          "Trading:Default": {
+            "CHF": [{ "amount": "10", "cost": null }],
+            "USD": [{ "amount": "-12", "cost": null }]
+          }
+        }
+      },
+      {
+        "date": "2026-04-02T00:00:00.000Z",
+        "description": "Sell USD for CHF",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "flag": "*",
+            "amount": { "amount": "-12", "currency": "USD" },
+            "cost": null
+          },
+          {
+            "account": "Trading:Default",
+            "flag": "*",
+            "amount": { "amount": "12", "currency": "USD" },
+            "cost": null
+          },
+          {
+            "account": "Trading:Default",
+            "flag": "*",
+            "amount": { "amount": "-11", "currency": "CHF" },
+            "cost": null
+          },
+          {
+            "account": "Assets:Broker",
+            "flag": "*",
+            "amount": { "amount": "11", "currency": "CHF" },
+            "cost": null
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": {
+            "CHF": [{ "amount": "1", "cost": null }]
+          },
+          "Trading:Default": {
+            "CHF": [{ "amount": "-1", "cost": null }]
+          }
+        }
+      },
+      {
+        "date": "2026-04-03T00:00:00.000Z",
+        "description": "Buy EUR with CHF",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "12", "currency": "EUR" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "-12", "currency": "EUR" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Trading:Default",
+            "amount": { "amount": "9.6", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          },
+          {
+            "account": "Assets:Broker",
+            "amount": { "amount": "-9.6", "currency": "CHF" },
+            "cost": null,
+            "flag": "*"
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": {
+            "CHF": [{ "amount": "-8.6", "cost": null }],
+            "EUR": [{ "amount": "12", "cost": null }]
+          },
+          "Trading:Default": {
+            "CHF": [{ "amount": "8.6", "cost": null }],
+            "EUR": [{ "amount": "-12", "cost": null }]
+          }
+        }
+      },
+      {
+        "date": "2026-04-04T00:00:00.000Z",
+        "description": "Sell EUR for CHF",
+        "flag": "*",
+        "postings": [
+          {
+            "account": "Assets:Broker",
+            "flag": "*",
+            "amount": { "amount": "-12", "currency": "EUR" },
+            "cost": null
+          },
+          {
+            "account": "Trading:Default",
+            "flag": "*",
+            "amount": { "amount": "12", "currency": "EUR" },
+            "cost": null
+          },
+          {
+            "account": "Trading:Default",
+            "flag": "*",
+            "amount": { "amount": "-10.8", "currency": "CHF" },
+            "cost": null
+          },
+          {
+            "account": "Assets:Broker",
+            "flag": "*",
+            "amount": { "amount": "10.8", "currency": "CHF" },
+            "cost": null
+          }
+        ],
+        "inventoriesAfter": {
+          "Assets:Broker": {
+            "CHF": [{ "amount": "2.2", "cost": null }]
+          },
+          "Trading:Default": {
+            "CHF": [{ "amount": "-2.2", "cost": null }]
+          }
+        }
+      }
+    ],
     "prices": [
       {
         "type": "price",
-        "date": "2025-12-01T00:00:00.000Z",
-        "optionMap": {},
+        "date": "2026-04-01T00:00:00.000Z",
         "currency": "USD",
-        "price": {
-          "amount": "0.8033",
-          "currency": "CHF"
-        }
+        "price": { "amount": "0.8(3)", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "price-spec" }
+        },
+        "optionMap": {}
+      },
+      {
+        "type": "price",
+        "date": "2026-04-02T00:00:00.000Z",
+        "currency": "USD",
+        "price": { "amount": "0.91(6)", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "price-spec" }
+        },
+        "optionMap": {}
+      },
+      {
+        "type": "price",
+        "date": "2026-04-03T00:00:00.000Z",
+        "currency": "EUR",
+        "price": { "amount": "0.8", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "price-spec" }
+        },
+        "optionMap": {}
+      },
+      {
+        "type": "price",
+        "date": "2026-04-04T00:00:00.000Z",
+        "currency": "EUR",
+        "price": { "amount": "0.9", "currency": "CHF" },
+        "meta": {
+          "synthetized-from": { "type": "string", "value": "price-spec" }
+        },
+        "optionMap": {}
       }
     ]
   }

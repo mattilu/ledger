@@ -115,6 +115,7 @@
               "currency": "CHF"
             },
             "costSpec": null,
+            "priceSpec": null,
             "meta": {
               "amount-key": {
                 "type": "amount",

@@ -363,6 +363,12 @@ async function doLoad(
                         ? evaluateAmount(posting.amount)
                         : null,
                       costSpec,
+                      priceSpec: posting.priceSpec
+                        ? {
+                            kind: posting.priceSpec.kind,
+                            amount: evaluateAmount(posting.priceSpec.amount),
+                          }
+                        : null,
                       meta,
                     }),
                   ),

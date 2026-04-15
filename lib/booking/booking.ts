@@ -10,6 +10,7 @@ import { PriceDirective } from '../loading/directives/price.js';
 import {
   CostSpec,
   Posting,
+  PriceSpec,
   TransactionDirective,
 } from '../loading/directives/transaction.js';
 import { Ledger } from '../loading/ledger.js';
@@ -337,7 +338,7 @@ function bookPosting(
           () =>
             new Cost(
               costSpec.amounts.map(amount =>
-                getPerUnitAmount(amount, postingAmount, costSpec),
+                getPerUnitAmount(amount, postingAmount, costSpec.kind),
               ),
               costSpec.dates.length === 1
                 ? costSpec.dates[0]
@@ -369,12 +370,17 @@ function bookPosting(
             ...costSpec.amounts.map(amount => ({
               account: tradingAccount,
               flag: posting.flag,
-              amount: getTotalAmount(amount, postingAmount, costSpec),
+              amount: getTotalAmount(amount, postingAmount, costSpec.kind),
               cost: null,
               meta: Map() as Metadata,
             })),
           ),
-          makePriceDirectives(transaction, postingAmount.currency, cost),
+          makePriceDirectives(
+            transaction,
+            postingAmount,
+            posting.priceSpec,
+            cost,
+          ),
         ]),
       );
     }
@@ -476,6 +482,54 @@ function bookPosting(
     );
 
     return E.right([postings, inventories, balance, []]);
+  }
+
+  if (posting.priceSpec !== null) {
+    if (posting.amount === null) {
+      return E.left(
+        new Error(`Amount interpolation with price spec is invalid`),
+      );
+    }
+
+    const tradingAccount = getTradingAccount(
+      transaction,
+      posting,
+      accountDirective?.type === 'open' ? accountDirective : null,
+    );
+
+    // Similar to the cost case, but here we don't hold the position at cost.
+    return E.right([
+      ...doBook(
+        inventories,
+        balance,
+        {
+          account: posting.account,
+          flag: posting.flag,
+          amount: posting.amount,
+          cost: null,
+          meta: posting.meta,
+        },
+        {
+          account: tradingAccount,
+          flag: posting.flag,
+          amount: posting.amount.neg(),
+          cost: null,
+          meta: Map(),
+        },
+        {
+          account: tradingAccount,
+          flag: posting.flag,
+          amount: getTotalAmount(
+            posting.priceSpec.amount,
+            posting.amount,
+            posting.priceSpec.kind,
+          ),
+          cost: null,
+          meta: Map() as Metadata,
+        },
+      ),
+      makePriceDirectives(transaction, posting.amount, posting.priceSpec, null),
+    ]);
   }
 
   if (posting.amount !== null) {
@@ -621,32 +675,51 @@ function doBook(
 
 function makePriceDirectives(
   transaction: TransactionDirective,
-  currency: string,
-  cost: Cost,
+  amount: Amount,
+  priceSpec: PriceSpec | null,
+  cost: Cost | null,
 ): PriceDirective[] {
-  if (cost.amounts.length !== 1) {
-    return [];
+  if (priceSpec !== null) {
+    return [
+      {
+        type: 'price',
+        date: transaction.date,
+        currency: amount.currency,
+        price: getPerUnitAmount(priceSpec.amount, amount, priceSpec.kind),
+        meta: Map([
+          ['synthetized-from', { type: 'string', value: 'price-spec' }],
+        ]),
+        optionMap: transaction.optionMap,
+        srcCtx: transaction.srcCtx,
+      },
+    ];
   }
 
-  return [
-    {
-      type: 'price',
-      date: cost.date,
-      currency,
-      price: cost.amounts[0],
-      meta: Map([['synthetized-from', { type: 'string', value: 'cost-spec' }]]),
-      optionMap: transaction.optionMap,
-      srcCtx: transaction.srcCtx,
-    },
-  ];
+  if (cost !== null && cost.amounts.length === 1) {
+    return [
+      {
+        type: 'price',
+        date: cost.date,
+        currency: amount.currency,
+        price: cost.amounts[0],
+        meta: Map([
+          ['synthetized-from', { type: 'string', value: 'cost-spec' }],
+        ]),
+        optionMap: transaction.optionMap,
+        srcCtx: transaction.srcCtx,
+      },
+    ];
+  }
+
+  return [];
 }
 
 function getTotalAmount(
   amount: Amount,
   baseAmount: Amount,
-  costSpec: CostSpec,
+  kind: 'per-unit' | 'total',
 ): Amount {
-  if (costSpec.kind === 'total') {
+  if (kind === 'total') {
     return amount;
   } else {
     return amount.mul(baseAmount.amount);
@@ -656,9 +729,9 @@ function getTotalAmount(
 function getPerUnitAmount(
   amount: Amount,
   baseAmount: Amount,
-  costSpec: CostSpec,
+  kind: 'per-unit' | 'total',
 ): Amount {
-  if (costSpec.kind === 'per-unit') {
+  if (kind === 'per-unit') {
     return amount;
   } else {
     return amount.div(baseAmount.amount);

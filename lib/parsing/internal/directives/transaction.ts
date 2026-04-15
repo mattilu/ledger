@@ -12,6 +12,7 @@ import {
 import {
   CostSpec,
   PostingSpec,
+  PriceSpec,
   TransactionDirectiveSpec,
 } from '../../spec/directives/transaction.js';
 import { accountParser } from '../account.js';
@@ -59,15 +60,21 @@ const costSpecParser = apply(
       tok(TokenKind.DoubleCloseBrace),
     ),
   ),
-  ([token, costSpec]): CostSpec => {
-    return {
-      kind: token.kind === TokenKind.OpenBrace ? 'per-unit' : 'total',
-      amounts: costSpec?.amounts ?? [],
-      currencies: costSpec?.currencies ?? [],
-      dates: costSpec?.dates ?? [],
-      tags: costSpec?.tags ?? [],
-    };
-  },
+  ([token, costSpec]): CostSpec => ({
+    kind: token.kind === TokenKind.OpenBrace ? 'per-unit' : 'total',
+    amounts: costSpec?.amounts ?? [],
+    currencies: costSpec?.currencies ?? [],
+    dates: costSpec?.dates ?? [],
+    tags: costSpec?.tags ?? [],
+  }),
+);
+
+const priceSpecParser = apply(
+  seq(alt_sc(tok(TokenKind.At), tok(TokenKind.DoubleAt)), amountParser),
+  ([token, amount]): PriceSpec => ({
+    kind: token.kind === TokenKind.At ? 'per-unit' : 'total',
+    amount,
+  }),
 );
 
 const postingParser = apply(
@@ -76,13 +83,15 @@ const postingParser = apply(
     accountParser,
     opt_sc(amountParser),
     opt_sc(costSpecParser),
+    opt_sc(priceSpecParser),
     metadataParser,
   ),
-  ([flag, account, amount, costSpec, meta]): PostingSpec => ({
+  ([flag, account, amount, costSpec, priceSpec, meta]): PostingSpec => ({
     account,
     flag: flag?.text ?? null,
     amount: amount ?? null,
     costSpec: costSpec ?? null,
+    priceSpec: priceSpec ?? null,
     meta,
   }),
 );
