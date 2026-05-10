@@ -5,6 +5,7 @@ import { Map } from 'immutable';
 import { Amount } from '../core/amount.js';
 import { Directive, DirectiveCommon } from '../loading/directive.js';
 import { CloseDirective } from '../loading/directives/close.js';
+import { CurrencyDirective } from '../loading/directives/currency.js';
 import { OpenDirective } from '../loading/directives/open.js';
 import { PriceDirective } from '../loading/directives/price.js';
 import {
@@ -133,7 +134,12 @@ Delta: ${formatter.formatAmount(delta)}`;
         break;
       }
       case 'transaction': {
-        const got = bookTransaction(directive, inventories, accountMap);
+        const got = bookTransaction(
+          directive,
+          inventories,
+          accountMap,
+          currencyMap,
+        );
         if (E.isLeft(got)) {
           return E.left(enrichError(got.left, directive));
         }
@@ -217,6 +223,7 @@ function bookTransaction(
   transaction: TransactionDirective,
   inventories: InventoryMap,
   accountMap: AccountMap,
+  currencyMap: Map<string, CurrencyDirective>,
 ): E.Either<Error, [Transaction, PriceDirective[]]> {
   const inventoriesBefore = inventories;
   const postings: BookedPosting[] = [];
@@ -253,9 +260,10 @@ function bookTransaction(
     if (allowedCurrencies.length > 0) {
       for (const posting of bookedPostings) {
         if (allowedCurrencies.indexOf(posting.amount.currency) === -1) {
+          const formatter = new Formatter({ currencyMap });
           return E.left(
             new Error(
-              `Currency ${posting.amount.currency} not allowed in account ${posting.account}`,
+              `Cannot post ${formatter.formatAmount(posting.amount)} to account ${posting.account}: currency ${posting.amount.currency} not allowed`,
             ),
           );
         }
