@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 
-import { inspect, InspectOptionsStylized } from 'util';
+import { inspect, InspectContext } from 'util';
 
 import { Amount } from '../core/amount.js';
 import { DateSpec } from '../parsing/spec/date.js';
@@ -28,7 +28,7 @@ export class Cost {
     return `{ ${parts.join(', ')} }`;
   }
 
-  [inspect.custom](_depth: number, options: InspectOptionsStylized) {
+  [inspect.custom](_depth: number, options: InspectContext) {
     return options.stylize(this.toString(), 'special');
   }
 }

@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 
 import { Map, Record, RecordOf, Seq, Set } from 'immutable';
-import { inspect, InspectOptionsStylized } from 'util';
+import { inspect, InspectContext } from 'util';
 
 import { Amount } from '../core/amount.js';
 import { Position } from './position.js';
@@ -198,7 +198,7 @@ export class Inventory {
       .join('\n');
   }
 
-  [inspect.custom](_depth: number, options: InspectOptionsStylized) {
+  [inspect.custom](_depth: number, options: InspectContext) {
     return inspect(
       this.inventories
         .entrySeq()

@@ -1,6 +1,5 @@
-import { inspect, InspectOptionsStylized } from 'node:util';
-
 import { ExactNumber, ExactNumberType as N, RoundingMode } from 'exactnumber';
+import { inspect, InspectContext } from 'util';
 
 const ZERO = ExactNumber(0);
 
@@ -150,7 +149,7 @@ export class Amount {
     };
   }
 
-  [inspect.custom](_depth: number, options: InspectOptionsStylized) {
+  [inspect.custom](_depth: number, options: InspectContext) {
     return options.stylize(this.toString(), 'number');
   }
 

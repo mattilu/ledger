@@ -1,4 +1,4 @@
-import { inspect, InspectOptionsStylized } from 'util';
+import { inspect, InspectContext } from 'util';
 
 import { Amount } from '../core/amount.js';
 import { Cost } from './cost.js';
@@ -22,7 +22,7 @@ export class Position {
     return parts.join(' ');
   }
 
-  [inspect.custom](_depth: number, options: InspectOptionsStylized) {
+  [inspect.custom](_depth: number, options: InspectContext) {
     const parts = [inspect(this.amount, options)];
     if (this.cost !== null) {
       parts.push(inspect(this.cost, options));
