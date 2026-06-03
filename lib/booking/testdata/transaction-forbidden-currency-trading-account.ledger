@@ -1,0 +1,8 @@
+2026-06-01 open Assets:Foo
+  trading-account: Trading:Foo
+
+2026-06-01 open Trading:Foo CHF
+
+2026-06-01 * "Forbidden Currency"
+  Assets:Foo  1 CHF @ 1 EUR
+  Assets:Foo

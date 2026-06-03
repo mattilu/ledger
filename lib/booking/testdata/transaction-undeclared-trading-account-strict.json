@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "While processing 'transaction' directive at lib/booking/testdata/transaction-undeclared-trading-account-strict.ledger:6: Account Trading:Foo has not been opened"
+  }
+}

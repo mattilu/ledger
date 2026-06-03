@@ -255,10 +255,21 @@ function bookTransaction(
     let priceDirectives: PriceDirective[];
     [bookedPostings, inventories, balance, priceDirectives] = got.right;
 
-    const allowedCurrencies =
-      accountCheck?.right?.type === 'open' ? accountCheck.right.currencies : [];
-    if (allowedCurrencies.length > 0) {
-      for (const posting of bookedPostings) {
+    for (const posting of bookedPostings) {
+      const accountCheck = checkValidAccount(
+        accountMap,
+        transaction.optionMap,
+        posting.account,
+      );
+      if (E.isLeft(accountCheck)) {
+        return accountCheck;
+      }
+
+      const allowedCurrencies =
+        accountCheck?.right?.type === 'open'
+          ? accountCheck.right.currencies
+          : [];
+      if (allowedCurrencies.length > 0) {
         if (allowedCurrencies.indexOf(posting.amount.currency) === -1) {
           const formatter = new Formatter({ currencyMap });
           return E.left(
