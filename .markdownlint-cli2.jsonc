@@ -1,0 +1,13 @@
+{
+  "config": {
+    "default": true,
+    // Turn off rules that Prettier handles to prevent conflicts
+    "line-length": false,
+    "no-trailing-spaces": false,
+    "no-multiple-blanks": false,
+    "single-trailing-newline": false
+  },
+  "ignores": [
+    "node_modules"
+  ]
+}

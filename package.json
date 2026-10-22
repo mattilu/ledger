@@ -6,14 +6,16 @@
   "main": "main.ts",
   "scripts": {
     "main": "tsx main.ts",
-    "lint": "eslint .",
-    "pre-commit": "concurrently --timings --group npm:lint npm:prettier-check npm:test npm:typecheck",
-    "prettier-check": "prettier --check '**/*.ts'",
-    "prettier-format": "prettier --write '**/*.ts'",
+    "lint:code": "eslint .",
+    "lint:docs": "markdownlint-cli2 '**/*.md'",
+    "pre-commit": "concurrently --timings --group npm:lint:code npm:lint:docs npm:prettier-check npm:test npm:typecheck",
+    "prettier-check": "prettier --check '**/*.ts' '**/*.md'",
+    "prettier-format": "prettier --write '**/*.ts' '**/*.md'",
     "test": "tsx --enable-source-maps --test --test-reporter=spec",
     "test-coverage": "npm run test -- --experimental-test-coverage",
     "test-watch": "npm run test -- --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepare": "husky"
   },
   "bin": {
     "ledger": "main.ts"
@@ -21,7 +23,7 @@
   "author": "Luca Emanuele Mattiello <lucae.mattiello@gmail.com>",
   "license": "ISC",
   "engines": {
-    "node": ">=16.0"
+    "node": ">=22.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -30,6 +32,8 @@
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-simple-import-sort": "^12.1.1",
+    "husky": "^9.1.7",
+    "markdownlint-cli2": "^0.24.0",
     "prettier": "^3.7.3",
     "tsx": "^4.19.3",
     "typescript": "^6.0.2",
