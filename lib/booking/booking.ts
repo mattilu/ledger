@@ -35,19 +35,14 @@ const ZERO = ExactNumber(0);
  * Runs booking logic, transforming a Ledger to a BookedLedger.
  *
  * @param ledger Ledger containing directives to evaluate.
- * @param start Optional, starting state to book from. Can be used to execute
- *   additional directives on top of a previous `book` result.
  * @returns A BookedLedger, or a BookingError in case of failure.
  */
-export function book(
-  ledger: Ledger,
-  start?: BookedLedger,
-): E.Either<BookingError, BookedLedger> {
+export function book(ledger: Ledger): E.Either<BookingError, BookedLedger> {
   const transactions: Transaction[] = [];
   const prices: PriceDirective[] = [];
-  let accountMap: AccountMap = start?.accountMap ?? Map();
-  const currencyMap = start?.currencyMap ?? ledger.currencyMap;
-  let inventories: InventoryMap = start?.inventories ?? Map();
+  let accountMap: AccountMap = Map();
+  const currencyMap = ledger.currencyMap;
+  let inventories: InventoryMap = Map();
 
   for (const directive of ledger.directives) {
     switch (directive.type) {
