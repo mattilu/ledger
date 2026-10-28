@@ -7,18 +7,21 @@ import { glob, readFile } from 'fs/promises';
 
 import { Directive } from './directive.js';
 import { CurrencyDirective } from './directives/currency.js';
+import { Posting } from './directives/transaction.js';
 import { Ledger } from './ledger.js';
 import { load } from './loader.js';
 import { Metadata } from './metadata.js';
 
-const loadForTest = async (path: string) =>
+type TestOptions = Record<string, never>;
+
+const loadForTest = async (path: string, options?: TestOptions) =>
   F.pipe(
     await load(path),
     E.bimap(
       err => ({
         error: `${err.message} at ${err.srcCtx.filePath}:${err.srcCtx.row}`,
       }),
-      res => canonicalize(cleanup(res)),
+      res => canonicalize(cleanup(res, options)),
     ),
   );
 
@@ -40,9 +43,11 @@ await describe('load', async () => {
 
   for (const t of tests) {
     await test(t.testName, async () => {
-      const wantContent = await readFile(t.wantPath, { encoding: 'utf-8' });
-      const got = await loadForTest(t.srcPath);
-      assert.deepEqual(got, JSON.parse(wantContent), t.wantPath);
+      const { want, options } = JSON.parse(
+        await readFile(t.wantPath, { encoding: 'utf-8' }),
+      );
+      const got = await loadForTest(t.srcPath, options);
+      assert.deepEqual(got, want, t.wantPath);
     });
   }
 
@@ -53,39 +58,49 @@ await describe('load', async () => {
   });
 });
 
-function cleanup(ledger: Ledger) {
+function cleanup(ledger: Ledger, _options?: TestOptions) {
+  function cleanupDirective(directive: Directive | CurrencyDirective) {
+    return {
+      ...directive,
+      postings:
+        directive.type === 'transaction'
+          ? directive.postings.map(cleanupPosting)
+          : undefined,
+      balances:
+        directive.type === 'balance'
+          ? directive.balances.map(b => ({
+              ...b,
+              approx: b.approx?.toNumber(),
+            }))
+          : undefined,
+      srcCtx: undefined,
+      meta: cleanupMeta(directive.meta),
+    };
+  }
+
+  function cleanupPosting(posting: Posting) {
+    return {
+      ...posting,
+      meta: cleanupMeta(posting.meta),
+    };
+  }
+
+  function cleanupMeta(meta: Metadata) {
+    if (meta.isEmpty()) {
+      return undefined;
+    }
+    return meta.map(value => ({
+      type: value.type,
+      value: value.type === 'number' ? value.value.toNumber() : value.value,
+    }));
+  }
+
   return {
-    directives: ledger.directives.map(cleanupDirective),
+    directives: ledger.directives.map(directive => cleanupDirective(directive)),
     currencyMap: ledger.currencyMap.isEmpty()
       ? undefined
-      : ledger.currencyMap.map(cleanupDirective),
+      : ledger.currencyMap.map(directive => cleanupDirective(directive)),
   };
-}
-
-function cleanupDirective(directive: Directive | CurrencyDirective) {
-  return {
-    ...directive,
-    postings:
-      directive.type === 'transaction'
-        ? directive.postings.map(p => ({ ...p, meta: cleanupMeta(p.meta) }))
-        : undefined,
-    balances:
-      directive.type === 'balance'
-        ? directive.balances.map(b => ({ ...b, approx: b.approx?.toNumber() }))
-        : undefined,
-    srcCtx: undefined,
-    meta: cleanupMeta(directive.meta),
-  };
-}
-
-function cleanupMeta(meta: Metadata) {
-  if (meta.isEmpty()) {
-    return undefined;
-  }
-  return meta.map(value => ({
-    type: value.type,
-    value: value.type === 'number' ? value.value.toNumber() : value.value,
-  }));
 }
 
 function canonicalize<T>(x: T): T {
