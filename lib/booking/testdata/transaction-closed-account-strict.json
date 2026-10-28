@@ -1,6 +1,8 @@
 {
-  "_tag": "Left",
-  "left": {
-    "error": "While processing 'transaction' directive at lib/booking/testdata/transaction-closed-account-strict.ledger:6: Account Assets:Foo has been closed (at lib/booking/testdata/transaction-closed-account-strict.ledger:4)"
+  "want": {
+    "_tag": "Left",
+    "left": {
+      "error": "While processing 'transaction' directive at lib/booking/testdata/transaction-closed-account-strict.ledger:6: Account Assets:Foo has been closed (at lib/booking/testdata/transaction-closed-account-strict.ledger:4)"
+    }
   }
 }

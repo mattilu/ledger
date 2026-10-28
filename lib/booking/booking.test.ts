@@ -12,6 +12,8 @@ import { Cost } from './cost.js';
 import { Inventory } from './inventory.js';
 import { BookedLedger } from './ledger.js';
 
+type TestOptions = Record<string, never>;
+
 await describe('book', async () => {
   const tests = [];
   const dirname = 'lib/booking/testdata/';
@@ -28,7 +30,9 @@ await describe('book', async () => {
 
   for (const t of tests) {
     await test(t.testName, async () => {
-      const wantContent = await readFile(t.wantPath, { encoding: 'utf-8' });
+      const { want, options } = JSON.parse(
+        await readFile(t.wantPath, { encoding: 'utf-8' }),
+      );
       const ledger = await load(t.srcPath);
       assert(E.isRight(ledger));
 
@@ -40,21 +44,34 @@ await describe('book', async () => {
               `While processing '${directive.type}' directive at ` +
               `${directive.srcCtx.filePath}:${directive.srcCtx.row}: ${message}`,
           }),
-          res => canonicalize(cleanup(res)),
+          res => canonicalize(cleanup(res, options)),
         ),
       );
 
-      assert.deepEqual(got, JSON.parse(wantContent), t.wantPath);
+      assert.deepEqual(got, want, t.wantPath);
     });
   }
 });
 
-function cleanup(ledger: BookedLedger) {
+function cleanup(ledger: BookedLedger, _options?: TestOptions) {
+  function cleanupMeta(meta: Metadata) {
+    if (meta.isEmpty()) {
+      return undefined;
+    }
+    return meta.map(value => ({
+      type: value.type,
+      value: value.type === 'number' ? value.value.toNumber() : value.value,
+    }));
+  }
+
   return {
     transactions: ledger.transactions.map(x => ({
       ...x,
       meta: cleanupMeta(x.meta),
-      postings: x.postings.map(p => ({ ...p, meta: cleanupMeta(p.meta) })),
+      postings: x.postings.map(p => ({
+        ...p,
+        meta: cleanupMeta(p.meta),
+      })),
       inventoriesBefore: undefined,
       inventoriesAfter: x.inventoriesAfter.map(makeInventoryMap),
       srcCtx: undefined,
@@ -75,16 +92,6 @@ function cleanup(ledger: BookedLedger) {
           srcCtx: undefined,
         })),
   };
-}
-
-function cleanupMeta(meta: Metadata) {
-  if (meta.isEmpty()) {
-    return undefined;
-  }
-  return meta.map(value => ({
-    type: value.type,
-    value: value.type === 'number' ? value.value.toNumber() : value.value,
-  }));
 }
 
 function canonicalize<T>(x: T): T {

@@ -1,6 +1,8 @@
 {
-  "_tag": "Left",
-  "left": {
-    "error": "While processing 'transaction' directive at lib/booking/testdata/transaction-forbidden-currency.ledger:3: Cannot post 0 EUR to account Assets:Foo: currency EUR not allowed"
+  "want": {
+    "_tag": "Left",
+    "left": {
+      "error": "While processing 'transaction' directive at lib/booking/testdata/transaction-forbidden-currency.ledger:3: Cannot post 0 EUR to account Assets:Foo: currency EUR not allowed"
+    }
   }
 }

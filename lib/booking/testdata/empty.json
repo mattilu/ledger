@@ -1,6 +1,8 @@
 {
-  "_tag": "Right",
-  "right": {
-    "transactions": []
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "transactions": []
+    }
   }
 }
