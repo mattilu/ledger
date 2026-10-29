@@ -4,73 +4,76 @@
     "directives": [
       {
         "type": "open",
-        "account": "Assets:Foo",
-        "currencies": [],
         "date": {
           "date": "2025-04-01",
           "time": null,
           "timezone": null
-        }
+        },
+        "account": "Assets:Foo",
+        "currencies": []
       },
       {
         "type": "open",
-        "account": "Liabilities:Foo",
-        "currencies": [],
         "date": {
           "date": "2025-04-01",
           "time": "00:00",
           "timezone": null
-        }
+        },
+        "account": "Liabilities:Foo",
+        "currencies": []
       },
       {
         "type": "open",
-        "account": "Income:Foo",
-        "currencies": [],
         "date": {
           "date": "2025-04-01",
           "time": "00:00:00",
           "timezone": null
-        }
+        },
+        "account": "Income:Foo",
+        "currencies": []
       },
       {
         "type": "open",
-        "account": "Expenses:Foo",
-        "currencies": [],
         "date": {
           "date": "2025-04-01",
           "time": "00:00:00",
           "timezone": "+00:00"
-        }
+        },
+        "account": "Expenses:Foo",
+        "currencies": []
       },
       {
         "type": "open",
-        "account": "Equity:Foo",
-        "currencies": [],
         "date": {
           "date": "2025-04-01",
           "time": "00:00:00",
           "timezone": "Z"
-        }
+        },
+        "account": "Equity:Foo",
+        "currencies": []
       },
       {
         "type": "open",
-        "account": "Assets:Foo:123",
-        "currencies": [],
         "date": {
           "date": "2025-04-01",
           "time": null,
           "timezone": null
-        }
+        },
+        "account": "Assets:Foo:123",
+        "currencies": []
       },
       {
         "type": "open",
-        "account": "Assets:Bar",
-        "currencies": ["CHF", "EUR"],
         "date": {
           "date": "2025-05-01",
           "time": null,
           "timezone": null
-        }
+        },
+        "account": "Assets:Bar",
+        "currencies": [
+          "CHF",
+          "EUR"
+        ]
       }
     ]
   }

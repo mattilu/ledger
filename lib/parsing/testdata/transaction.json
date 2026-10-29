@@ -4,24 +4,24 @@
     "directives": [
       {
         "type": "transaction",
-        "description": "No Postings",
-        "flag": "*",
         "date": {
           "date": "2025-04-01",
           "time": null,
           "timezone": null
         },
+        "description": "No Postings",
+        "flag": "*",
         "postings": []
       },
       {
         "type": "transaction",
-        "description": "Posting without amount",
-        "flag": "*",
         "date": {
           "date": "2025-04-02",
           "time": null,
           "timezone": null
         },
+        "description": "Posting without amount",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Foo",
@@ -34,13 +34,13 @@
       },
       {
         "type": "transaction",
-        "description": "Postings with amount",
-        "flag": "*",
         "date": {
           "date": "2025-04-03",
           "time": null,
           "timezone": null
         },
+        "description": "Postings with amount",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Foo",
@@ -72,13 +72,13 @@
       },
       {
         "type": "transaction",
-        "description": "Postings with and without amount",
-        "flag": "*",
         "date": {
           "date": "2025-04-04",
           "time": null,
           "timezone": null
         },
+        "description": "Postings with and without amount",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Foo",
@@ -104,13 +104,13 @@
       },
       {
         "type": "transaction",
-        "description": "Posting with total cost spec",
-        "flag": "*",
         "date": {
           "date": "2025-04-05",
           "time": null,
           "timezone": null
         },
+        "description": "Posting with total cost spec",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Foo",
@@ -150,13 +150,13 @@
       },
       {
         "type": "transaction",
-        "description": "Posting with per-unit cost spec",
-        "flag": "*",
         "date": {
           "date": "2025-04-05",
           "time": null,
           "timezone": null
         },
+        "description": "Posting with per-unit cost spec",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Foo",
@@ -196,13 +196,13 @@
       },
       {
         "type": "transaction",
-        "description": "Posting with cost spec, with multiple costs",
-        "flag": "*",
         "date": {
           "date": "2025-04-06",
           "time": null,
           "timezone": null
         },
+        "description": "Posting with cost spec, with multiple costs",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Foo",
@@ -249,13 +249,13 @@
       },
       {
         "type": "transaction",
-        "description": "Posting with cost spec, empty",
-        "flag": "*",
         "date": {
           "date": "2025-04-07",
           "time": null,
           "timezone": null
         },
+        "description": "Posting with cost spec, empty",
+        "flag": "*",
         "postings": [
           {
             "account": "Assets:Foo",
@@ -287,34 +287,34 @@
       },
       {
         "type": "transaction",
-        "description": "Txn Syntax",
         "date": {
           "date": "2025-06-01",
           "time": null,
           "timezone": null
         },
+        "description": "Txn Syntax",
         "flag": "*",
         "postings": []
       },
       {
         "type": "transaction",
-        "description": "ExclamationMark Flag",
         "date": {
           "date": "2025-06-01",
           "time": null,
           "timezone": null
         },
+        "description": "ExclamationMark Flag",
         "flag": "!",
         "postings": []
       },
       {
         "type": "transaction",
-        "description": "Posting Flag",
         "date": {
           "date": "2025-06-01",
           "time": null,
           "timezone": null
         },
+        "description": "Posting Flag",
         "flag": "*",
         "postings": [
           {
@@ -328,12 +328,12 @@
       },
       {
         "type": "transaction",
-        "description": "Posting with cost spec, with currencies",
         "date": {
           "date": "2025-08-01",
           "time": null,
           "timezone": null
         },
+        "description": "Posting with cost spec, with currencies",
         "flag": "*",
         "postings": [
           {
@@ -349,7 +349,10 @@
             "costSpec": {
               "kind": "per-unit",
               "amounts": [],
-              "currencies": ["EUR", "USD"],
+              "currencies": [
+                "EUR",
+                "USD"
+              ],
               "dates": [],
               "tags": []
             },
@@ -366,12 +369,12 @@
       },
       {
         "type": "transaction",
-        "description": "Posting with cost spec, with date",
         "date": {
           "date": "2025-08-02",
           "time": null,
           "timezone": null
         },
+        "description": "Posting with cost spec, with date",
         "flag": "*",
         "postings": [
           {
@@ -410,12 +413,12 @@
       },
       {
         "type": "transaction",
-        "description": "Posting with cost spec, with date and time",
         "date": {
           "date": "2025-08-02",
           "time": null,
           "timezone": null
         },
+        "description": "Posting with cost spec, with date and time",
         "flag": "*",
         "postings": [
           {
@@ -454,12 +457,12 @@
       },
       {
         "type": "transaction",
-        "description": "Posting with cost spec, with date time and timezone",
         "date": {
           "date": "2025-08-02",
           "time": null,
           "timezone": null
         },
+        "description": "Posting with cost spec, with date time and timezone",
         "flag": "*",
         "postings": [
           {
@@ -498,12 +501,12 @@
       },
       {
         "type": "transaction",
-        "description": "Posting with cost spec, with tags",
         "date": {
           "date": "2025-08-03",
           "time": null,
           "timezone": null
         },
+        "description": "Posting with cost spec, with tags",
         "flag": "*",
         "postings": [
           {
@@ -521,7 +524,10 @@
               "amounts": [],
               "currencies": [],
               "dates": [],
-              "tags": ["tag-1", "tag-2"]
+              "tags": [
+                "tag-1",
+                "tag-2"
+              ]
             },
             "priceSpec": null
           },
@@ -536,12 +542,12 @@
       },
       {
         "type": "transaction",
-        "description": "Posting with price spec, per unit",
         "date": {
           "date": "2025-12-01",
           "time": null,
           "timezone": null
         },
+        "description": "Posting with price spec, per unit",
         "flag": "*",
         "postings": [
           {
@@ -556,33 +562,33 @@
             },
             "costSpec": null,
             "priceSpec": {
+              "kind": "per-unit",
               "amount": {
                 "amount": {
                   "type": "literal",
                   "value": "1"
                 },
                 "currency": "USD"
-              },
-              "kind": "per-unit"
+              }
             }
           },
           {
             "account": "Assets:Foo",
+            "flag": null,
             "amount": null,
             "costSpec": null,
-            "flag": null,
             "priceSpec": null
           }
         ]
       },
       {
         "type": "transaction",
-        "description": "Posting with price spec, total",
         "date": {
           "date": "2025-12-01",
           "time": null,
           "timezone": null
         },
+        "description": "Posting with price spec, total",
         "flag": "*",
         "postings": [
           {
@@ -597,14 +603,14 @@
             },
             "costSpec": null,
             "priceSpec": {
+              "kind": "total",
               "amount": {
                 "amount": {
                   "type": "literal",
                   "value": "10"
                 },
                 "currency": "USD"
-              },
-              "kind": "total"
+              }
             }
           },
           {
@@ -618,12 +624,12 @@
       },
       {
         "type": "transaction",
-        "description": "Posting with cost spec and price spec",
         "date": {
           "date": "2025-12-01",
           "time": null,
           "timezone": null
         },
+        "description": "Posting with cost spec and price spec",
         "flag": "*",
         "postings": [
           {
@@ -637,6 +643,7 @@
               "currency": "CHF"
             },
             "costSpec": {
+              "kind": "total",
               "amounts": [
                 {
                   "amount": {
@@ -648,18 +655,17 @@
               ],
               "currencies": [],
               "dates": [],
-              "kind": "total",
               "tags": []
             },
             "priceSpec": {
+              "kind": "total",
               "amount": {
                 "amount": {
                   "type": "literal",
                   "value": "10"
                 },
                 "currency": "USD"
-              },
-              "kind": "total"
+              }
             }
           },
           {

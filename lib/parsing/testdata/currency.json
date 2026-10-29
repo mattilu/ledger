@@ -4,48 +4,48 @@
     "directives": [
       {
         "type": "currency",
-        "currency": "CHF",
         "date": {
           "date": "2026-06-01",
           "time": null,
           "timezone": null
-        }
+        },
+        "currency": "CHF"
       },
       {
         "type": "commodity",
-        "currency": "FOO-BAR",
         "date": {
           "date": "2026-06-01",
           "time": null,
           "timezone": null
-        }
+        },
+        "currency": "FOO-BAR"
       },
       {
         "type": "commodity",
-        "currency": "FOO_BAR",
         "date": {
           "date": "2026-06-01",
           "time": null,
           "timezone": null
-        }
+        },
+        "currency": "FOO_BAR"
       },
       {
         "type": "commodity",
-        "currency": "FOO.BAR",
         "date": {
           "date": "2026-06-01",
           "time": null,
           "timezone": null
-        }
+        },
+        "currency": "FOO.BAR"
       },
       {
         "type": "commodity",
-        "currency": "FOO-2.0",
         "date": {
           "date": "2026-06-01",
           "time": null,
           "timezone": null
-        }
+        },
+        "currency": "FOO-2.0"
       }
     ]
   }

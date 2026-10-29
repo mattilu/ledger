@@ -10,11 +10,21 @@
           "postings": [
             {
               "account": "Assets:Crypto",
-              "amount": { "amount": "1", "currency": "ETH-BTC-LP" },
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ETH-BTC-LP"
+              },
               "cost": {
                 "amounts": [
-                  { "amount": "1", "currency": "BTC" },
-                  { "amount": "34", "currency": "ETH" }
+                  {
+                    "amount": "1",
+                    "currency": "BTC"
+                  },
+                  {
+                    "amount": "34",
+                    "currency": "ETH"
+                  }
                 ],
                 "date": "2025-12-01T00:00:00.000Z",
                 "dateSpec": {
@@ -23,38 +33,52 @@
                   "timezone": null
                 },
                 "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ETH-BTC-LP"
               },
-              "flag": "*"
+              "cost": null
             },
             {
               "account": "Trading:Default",
-              "amount": { "amount": "-1", "currency": "ETH-BTC-LP" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "BTC"
+              },
+              "cost": null
             },
             {
               "account": "Trading:Default",
-              "amount": { "amount": "1", "currency": "BTC" },
-              "cost": null,
-              "flag": "*"
-            },
-            {
-              "account": "Trading:Default",
-              "amount": { "amount": "34", "currency": "ETH" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "34",
+                "currency": "ETH"
+              },
+              "cost": null
             },
             {
               "account": "Assets:Crypto",
-              "amount": { "amount": "-1", "currency": "BTC" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "BTC"
+              },
+              "cost": null
             },
             {
               "account": "Assets:Crypto",
-              "amount": { "amount": "-34", "currency": "ETH" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "-34",
+                "currency": "ETH"
+              },
+              "cost": null
             }
           ],
           "inventoriesAfter": {
@@ -64,8 +88,14 @@
                   "amount": "1",
                   "cost": {
                     "amounts": [
-                      { "amount": "1", "currency": "BTC" },
-                      { "amount": "34", "currency": "ETH" }
+                      {
+                        "amount": "1",
+                        "currency": "BTC"
+                      },
+                      {
+                        "amount": "34",
+                        "currency": "ETH"
+                      }
                     ],
                     "date": "2025-12-01T00:00:00.000Z",
                     "dateSpec": {
@@ -77,13 +107,38 @@
                   }
                 }
               ],
-              "BTC": [{ "amount": "-1", "cost": null }],
-              "ETH": [{ "amount": "-34", "cost": null }]
+              "BTC": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ],
+              "ETH": [
+                {
+                  "amount": "-34",
+                  "cost": null
+                }
+              ]
             },
             "Trading:Default": {
-              "ETH-BTC-LP": [{ "amount": "-1", "cost": null }],
-              "BTC": [{ "amount": "1", "cost": null }],
-              "ETH": [{ "amount": "34", "cost": null }]
+              "ETH-BTC-LP": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ],
+              "BTC": [
+                {
+                  "amount": "1",
+                  "cost": null
+                }
+              ],
+              "ETH": [
+                {
+                  "amount": "34",
+                  "cost": null
+                }
+              ]
             }
           }
         },
@@ -94,11 +149,21 @@
           "postings": [
             {
               "account": "Assets:Crypto",
-              "amount": { "amount": "-1", "currency": "ETH-BTC-LP" },
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ETH-BTC-LP"
+              },
               "cost": {
                 "amounts": [
-                  { "amount": "1", "currency": "BTC" },
-                  { "amount": "34", "currency": "ETH" }
+                  {
+                    "amount": "1",
+                    "currency": "BTC"
+                  },
+                  {
+                    "amount": "34",
+                    "currency": "ETH"
+                  }
                 ],
                 "date": "2025-12-01T00:00:00.000Z",
                 "dateSpec": {
@@ -107,54 +172,81 @@
                   "timezone": null
                 },
                 "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ETH-BTC-LP"
               },
-              "flag": "*"
+              "cost": null
             },
             {
               "account": "Trading:Default",
-              "amount": { "amount": "1", "currency": "ETH-BTC-LP" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "BTC"
+              },
+              "cost": null
             },
             {
               "account": "Trading:Default",
-              "amount": { "amount": "-1", "currency": "BTC" },
-              "cost": null,
-              "flag": "*"
-            },
-            {
-              "account": "Trading:Default",
-              "amount": { "amount": "-34", "currency": "ETH" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "-34",
+                "currency": "ETH"
+              },
+              "cost": null
             },
             {
               "account": "Assets:Crypto",
-              "amount": { "amount": "1", "currency": "BTC" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "BTC"
+              },
+              "cost": null
             },
             {
               "account": "Assets:Crypto",
-              "amount": { "amount": "35", "currency": "ETH" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "35",
+                "currency": "ETH"
+              },
+              "cost": null
             },
             {
               "account": "Income:Profit",
-              "amount": { "amount": "-1", "currency": "ETH" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ETH"
+              },
+              "cost": null
             }
           ],
           "inventoriesAfter": {
             "Assets:Crypto": {
-              "ETH": [{ "amount": "1", "cost": null }]
+              "ETH": [
+                {
+                  "amount": "1",
+                  "cost": null
+                }
+              ]
             },
+            "Trading:Default": {},
             "Income:Profit": {
-              "ETH": [{ "amount": "-1", "cost": null }]
-            },
-            "Trading:Default": {}
+              "ETH": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ]
+            }
           }
         }
       ]

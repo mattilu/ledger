@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 
 import { either as E, function as F } from 'fp-ts';
-import { glob, readFile } from 'fs/promises';
+import { glob } from 'fs/promises';
 import path, { dirname } from 'path';
 
 import { book } from '../../booking/booking.js';
@@ -12,7 +12,6 @@ export interface TestCase {
   readonly testName: string;
   readonly ledger: BookedLedger;
   readonly wantPath: string;
-  readonly wantReport: string;
 }
 
 export async function collectTests(scenario: string): Promise<TestCase[]> {
@@ -22,7 +21,6 @@ export async function collectTests(scenario: string): Promise<TestCase[]> {
   for await (const wantPath of glob([`${dataDir}**/${scenario}.txt`])) {
     const testName = dirname(wantPath.replace(dataDir, ''));
     const srcPath = path.join(dataDir, testName, 'main.ledger');
-    const wantContent = await readFile(wantPath, { encoding: 'utf-8' });
 
     const got = F.pipe(await load(srcPath), E.flatMap(book));
     assert(E.isRight(got));
@@ -31,7 +29,6 @@ export async function collectTests(scenario: string): Promise<TestCase[]> {
       testName,
       ledger: got.right,
       wantPath,
-      wantReport: wantContent.trim(),
     });
   }
 

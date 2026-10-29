@@ -6,29 +6,35 @@
         {
           "type": "open",
           "date": "2025-06-01T00:00:00.000Z",
-          "account": "Assets:Bar",
-          "currencies": [],
           "meta": {
             "currency-key": {
               "type": "currency",
               "value": "CHF"
             }
-          }
+          },
+          "account": "Assets:Bar",
+          "currencies": []
         },
         {
           "type": "close",
           "date": "2025-06-01T00:00:00.000Z",
-          "account": "Assets:Bar",
           "meta": {
             "date-key": {
               "type": "date",
               "value": "2025-06-02T00:00:00.000Z"
             }
-          }
+          },
+          "account": "Assets:Bar"
         },
         {
           "type": "balance",
           "date": "2025-06-01T00:00:00.000Z",
+          "meta": {
+            "string-key": {
+              "type": "string",
+              "value": "string-value"
+            }
+          },
           "balances": [
             {
               "account": "Assets:Foo",
@@ -37,13 +43,7 @@
                 "currency": "CHF"
               }
             }
-          ],
-          "meta": {
-            "string-key": {
-              "type": "string",
-              "value": "string-value"
-            }
-          }
+          ]
         },
         {
           "type": "transaction",
@@ -53,8 +53,6 @@
             "time": null,
             "timezone": null
           },
-          "description": "Test",
-          "flag": "*",
           "meta": {
             "amount-key": {
               "type": "amount",
@@ -64,16 +62,18 @@
               }
             }
           },
+          "description": "Test",
+          "flag": "*",
           "postings": [
             {
               "account": "Assets:Foo",
+              "flag": "*",
               "amount": {
                 "amount": "1",
                 "currency": "CHF"
               },
               "costSpec": null,
               "priceSpec": null,
-              "flag": "*",
               "meta": {
                 "number-key": {
                   "type": "number",

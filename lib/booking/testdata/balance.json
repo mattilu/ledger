@@ -29,10 +29,20 @@
           ],
           "inventoriesAfter": {
             "Assets:Foo": {
-              "USD": [{ "amount": "1", "cost": null }]
+              "USD": [
+                {
+                  "amount": "1",
+                  "cost": null
+                }
+              ]
             },
             "Equity:Opening-Balances": {
-              "USD": [{ "amount": "-1", "cost": null }]
+              "USD": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ]
             }
           }
         }

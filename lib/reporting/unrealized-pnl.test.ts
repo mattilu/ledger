@@ -1,4 +1,3 @@
-import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
 
 import { collectTests } from './internal/testing.js';
@@ -95,9 +94,11 @@ await describe('UnrealizedPnlReport', async () => {
       await describe(testCase.name, async () => {
         const tests = await collectTests(testCase.scenario);
         for (const t of tests) {
-          await it(t.testName, async () => {
+          await it(t.testName, async ctx => {
             const got = new UnrealizedPnlReport(testCase.options).run(t.ledger);
-            assert.equal(got.trim(), t.wantReport, t.wantPath);
+            ctx.assert.fileSnapshot(got.trim() + '\n', t.wantPath, {
+              serializers: [],
+            });
           });
         }
       });

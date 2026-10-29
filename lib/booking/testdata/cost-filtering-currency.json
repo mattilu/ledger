@@ -10,9 +10,18 @@
           "postings": [
             {
               "account": "Assets:Broker",
-              "amount": { "amount": "10", "currency": "USD" },
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
               "cost": {
-                "amounts": [{ "amount": "0.8", "currency": "CHF" }],
+                "amounts": [
+                  {
+                    "amount": "0.8",
+                    "currency": "CHF"
+                  }
+                ],
                 "date": "2025-08-01T00:00:00.000Z",
                 "dateSpec": {
                   "date": "2025-08-01",
@@ -20,26 +29,40 @@
                   "timezone": null
                 },
                 "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
               },
-              "flag": "*"
+              "cost": null
             },
             {
               "account": "Trading:Default",
-              "amount": { "amount": "-10", "currency": "USD" },
-              "cost": null,
-              "flag": "*"
-            },
-            {
-              "account": "Trading:Default",
-              "amount": { "amount": "8", "currency": "CHF" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "8",
+                "currency": "CHF"
+              },
+              "cost": null
             },
             {
               "account": "Assets:Broker",
-              "amount": { "amount": "10", "currency": "USD" },
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
               "cost": {
-                "amounts": [{ "amount": "0.7", "currency": "EUR" }],
+                "amounts": [
+                  {
+                    "amount": "0.7",
+                    "currency": "EUR"
+                  }
+                ],
                 "date": "2025-08-01T00:00:00.000Z",
                 "dateSpec": {
                   "date": "2025-08-01",
@@ -47,26 +70,40 @@
                   "timezone": null
                 },
                 "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
               },
-              "flag": "*"
+              "cost": null
             },
             {
               "account": "Trading:Default",
-              "amount": { "amount": "-10", "currency": "USD" },
-              "cost": null,
-              "flag": "*"
-            },
-            {
-              "account": "Trading:Default",
-              "amount": { "amount": "7", "currency": "EUR" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "7",
+                "currency": "EUR"
+              },
+              "cost": null
             },
             {
               "account": "Assets:Broker",
-              "amount": { "amount": "10", "currency": "USD" },
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
               "cost": {
-                "amounts": [{ "amount": "150", "currency": "JPY" }],
+                "amounts": [
+                  {
+                    "amount": "150",
+                    "currency": "JPY"
+                  }
+                ],
                 "date": "2025-08-01T00:00:00.000Z",
                 "dateSpec": {
                   "date": "2025-08-01",
@@ -74,50 +111,66 @@
                   "timezone": null
                 },
                 "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
               },
-              "flag": "*"
+              "cost": null
             },
             {
               "account": "Trading:Default",
-              "amount": { "amount": "-10", "currency": "USD" },
-              "cost": null,
-              "flag": "*"
-            },
-            {
-              "account": "Trading:Default",
-              "amount": { "amount": "1500", "currency": "JPY" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "1500",
+                "currency": "JPY"
+              },
+              "cost": null
             },
             {
               "account": "Assets:Broker",
-              "amount": { "amount": "-8", "currency": "CHF" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "-8",
+                "currency": "CHF"
+              },
+              "cost": null
             },
             {
               "account": "Assets:Broker",
-              "amount": { "amount": "-7", "currency": "EUR" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "-7",
+                "currency": "EUR"
+              },
+              "cost": null
             },
             {
               "account": "Assets:Broker",
-              "amount": { "amount": "-1500", "currency": "JPY" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "-1500",
+                "currency": "JPY"
+              },
+              "cost": null
             }
           ],
           "inventoriesAfter": {
             "Assets:Broker": {
-              "CHF": [{ "amount": "-8", "cost": null }],
-              "EUR": [{ "amount": "-7", "cost": null }],
-              "JPY": [{ "amount": "-1500", "cost": null }],
               "USD": [
                 {
                   "amount": "10",
                   "cost": {
-                    "amounts": [{ "amount": "0.8", "currency": "CHF" }],
+                    "amounts": [
+                      {
+                        "amount": "0.8",
+                        "currency": "CHF"
+                      }
+                    ],
                     "date": "2025-08-01T00:00:00.000Z",
                     "dateSpec": {
                       "date": "2025-08-01",
@@ -130,7 +183,12 @@
                 {
                   "amount": "10",
                   "cost": {
-                    "amounts": [{ "amount": "0.7", "currency": "EUR" }],
+                    "amounts": [
+                      {
+                        "amount": "0.7",
+                        "currency": "EUR"
+                      }
+                    ],
                     "date": "2025-08-01T00:00:00.000Z",
                     "dateSpec": {
                       "date": "2025-08-01",
@@ -143,7 +201,12 @@
                 {
                   "amount": "10",
                   "cost": {
-                    "amounts": [{ "amount": "150", "currency": "JPY" }],
+                    "amounts": [
+                      {
+                        "amount": "150",
+                        "currency": "JPY"
+                      }
+                    ],
                     "date": "2025-08-01T00:00:00.000Z",
                     "dateSpec": {
                       "date": "2025-08-01",
@@ -153,13 +216,51 @@
                     "tags": []
                   }
                 }
+              ],
+              "CHF": [
+                {
+                  "amount": "-8",
+                  "cost": null
+                }
+              ],
+              "EUR": [
+                {
+                  "amount": "-7",
+                  "cost": null
+                }
+              ],
+              "JPY": [
+                {
+                  "amount": "-1500",
+                  "cost": null
+                }
               ]
             },
             "Trading:Default": {
-              "CHF": [{ "amount": "8", "cost": null }],
-              "EUR": [{ "amount": "7", "cost": null }],
-              "JPY": [{ "amount": "1500", "cost": null }],
-              "USD": [{ "amount": "-30", "cost": null }]
+              "USD": [
+                {
+                  "amount": "-30",
+                  "cost": null
+                }
+              ],
+              "CHF": [
+                {
+                  "amount": "8",
+                  "cost": null
+                }
+              ],
+              "EUR": [
+                {
+                  "amount": "7",
+                  "cost": null
+                }
+              ],
+              "JPY": [
+                {
+                  "amount": "1500",
+                  "cost": null
+                }
+              ]
             }
           }
         },
@@ -170,9 +271,18 @@
           "postings": [
             {
               "account": "Assets:Broker",
-              "amount": { "amount": "-10", "currency": "USD" },
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
               "cost": {
-                "amounts": [{ "amount": "0.7", "currency": "EUR" }],
+                "amounts": [
+                  {
+                    "amount": "0.7",
+                    "currency": "EUR"
+                  }
+                ],
                 "date": "2025-08-01T00:00:00.000Z",
                 "dateSpec": {
                   "date": "2025-08-01",
@@ -180,44 +290,57 @@
                   "timezone": null
                 },
                 "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
               },
-              "flag": "*"
+              "cost": null
             },
             {
               "account": "Trading:Default",
-              "amount": { "amount": "10", "currency": "USD" },
-              "cost": null,
-              "flag": "*"
-            },
-            {
-              "account": "Trading:Default",
-              "amount": { "amount": "-7", "currency": "EUR" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "-7",
+                "currency": "EUR"
+              },
+              "cost": null
             },
             {
               "account": "Assets:Broker",
-              "amount": { "amount": "8", "currency": "EUR" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "8",
+                "currency": "EUR"
+              },
+              "cost": null
             },
             {
               "account": "Income:Trading",
-              "amount": { "amount": "-1", "currency": "EUR" },
-              "cost": null,
-              "flag": "*"
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "EUR"
+              },
+              "cost": null
             }
           ],
           "inventoriesAfter": {
             "Assets:Broker": {
-              "CHF": [{ "amount": "-8", "cost": null }],
-              "EUR": [{ "amount": "1", "cost": null }],
-              "JPY": [{ "amount": "-1500", "cost": null }],
               "USD": [
                 {
                   "amount": "10",
                   "cost": {
-                    "amounts": [{ "amount": "0.8", "currency": "CHF" }],
+                    "amounts": [
+                      {
+                        "amount": "0.8",
+                        "currency": "CHF"
+                      }
+                    ],
                     "date": "2025-08-01T00:00:00.000Z",
                     "dateSpec": {
                       "date": "2025-08-01",
@@ -230,7 +353,12 @@
                 {
                   "amount": "10",
                   "cost": {
-                    "amounts": [{ "amount": "150", "currency": "JPY" }],
+                    "amounts": [
+                      {
+                        "amount": "150",
+                        "currency": "JPY"
+                      }
+                    ],
                     "date": "2025-08-01T00:00:00.000Z",
                     "dateSpec": {
                       "date": "2025-08-01",
@@ -240,15 +368,53 @@
                     "tags": []
                   }
                 }
+              ],
+              "CHF": [
+                {
+                  "amount": "-8",
+                  "cost": null
+                }
+              ],
+              "EUR": [
+                {
+                  "amount": "1",
+                  "cost": null
+                }
+              ],
+              "JPY": [
+                {
+                  "amount": "-1500",
+                  "cost": null
+                }
+              ]
+            },
+            "Trading:Default": {
+              "USD": [
+                {
+                  "amount": "-20",
+                  "cost": null
+                }
+              ],
+              "CHF": [
+                {
+                  "amount": "8",
+                  "cost": null
+                }
+              ],
+              "JPY": [
+                {
+                  "amount": "1500",
+                  "cost": null
+                }
               ]
             },
             "Income:Trading": {
-              "EUR": [{ "amount": "-1", "cost": null }]
-            },
-            "Trading:Default": {
-              "CHF": [{ "amount": "8", "cost": null }],
-              "JPY": [{ "amount": "1500", "cost": null }],
-              "USD": [{ "amount": "-20", "cost": null }]
+              "EUR": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ]
             }
           }
         }
@@ -258,9 +424,15 @@
           "type": "price",
           "date": "2025-08-01T00:00:00.000Z",
           "currency": "USD",
-          "price": { "amount": "0.8", "currency": "CHF" },
+          "price": {
+            "amount": "0.8",
+            "currency": "CHF"
+          },
           "meta": {
-            "synthetized-from": { "type": "string", "value": "cost-spec" }
+            "synthetized-from": {
+              "type": "string",
+              "value": "cost-spec"
+            }
           },
           "optionMap": {}
         },
@@ -268,9 +440,15 @@
           "type": "price",
           "date": "2025-08-01T00:00:00.000Z",
           "currency": "USD",
-          "price": { "amount": "0.7", "currency": "EUR" },
+          "price": {
+            "amount": "0.7",
+            "currency": "EUR"
+          },
           "meta": {
-            "synthetized-from": { "type": "string", "value": "cost-spec" }
+            "synthetized-from": {
+              "type": "string",
+              "value": "cost-spec"
+            }
           },
           "optionMap": {}
         },
@@ -278,9 +456,15 @@
           "type": "price",
           "date": "2025-08-01T00:00:00.000Z",
           "currency": "USD",
-          "price": { "amount": "150", "currency": "JPY" },
+          "price": {
+            "amount": "150",
+            "currency": "JPY"
+          },
           "meta": {
-            "synthetized-from": { "type": "string", "value": "cost-spec" }
+            "synthetized-from": {
+              "type": "string",
+              "value": "cost-spec"
+            }
           },
           "optionMap": {}
         }

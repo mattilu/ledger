@@ -235,7 +235,9 @@
               "costSpec": {
                 "kind": "per-unit",
                 "amounts": [],
-                "currencies": ["EUR"],
+                "currencies": [
+                  "EUR"
+                ],
                 "dateSpecs": [
                   {
                     "date": "2025-08-01",
@@ -243,8 +245,12 @@
                     "timezone": null
                   }
                 ],
-                "dates": ["2025-08-01T00:00:00.000Z"],
-                "tags": ["tag-1"]
+                "dates": [
+                  "2025-08-01T00:00:00.000Z"
+                ],
+                "tags": [
+                  "tag-1"
+                ]
               },
               "priceSpec": null
             },
@@ -286,7 +292,9 @@
                     "timezone": null
                   }
                 ],
-                "dates": ["2025-12-01T01:02:00.000Z"],
+                "dates": [
+                  "2025-12-01T01:02:00.000Z"
+                ],
                 "tags": []
               },
               "priceSpec": null
@@ -329,7 +337,9 @@
                     "timezone": "+01:00"
                   }
                 ],
-                "dates": ["2025-12-01T01:03:00.000Z"],
+                "dates": [
+                  "2025-12-01T01:03:00.000Z"
+                ],
                 "tags": []
               },
               "priceSpec": null
@@ -357,14 +367,17 @@
             {
               "account": "Assets:Foo",
               "flag": "*",
-              "amount": { "amount": "10", "currency": "CHF" },
+              "amount": {
+                "amount": "10",
+                "currency": "CHF"
+              },
               "costSpec": null,
               "priceSpec": {
+                "kind": "per-unit",
                 "amount": {
                   "amount": "1",
                   "currency": "EUR"
-                },
-                "kind": "per-unit"
+                }
               }
             },
             {
@@ -390,11 +403,17 @@
             {
               "account": "Assets:Foo",
               "flag": "*",
-              "amount": { "amount": "10", "currency": "CHF" },
+              "amount": {
+                "amount": "10",
+                "currency": "CHF"
+              },
               "costSpec": null,
               "priceSpec": {
-                "amount": { "amount": "10", "currency": "EUR" },
-                "kind": "total"
+                "kind": "total",
+                "amount": {
+                  "amount": "10",
+                  "currency": "EUR"
+                }
               }
             },
             {
@@ -420,18 +439,29 @@
             {
               "account": "Assets:Foo",
               "flag": "*",
-              "amount": { "amount": "10", "currency": "CHF" },
+              "amount": {
+                "amount": "10",
+                "currency": "CHF"
+              },
               "costSpec": {
-                "amounts": [{ "amount": "1", "currency": "EUR" }],
+                "kind": "per-unit",
+                "amounts": [
+                  {
+                    "amount": "1",
+                    "currency": "EUR"
+                  }
+                ],
                 "currencies": [],
                 "dateSpecs": [],
                 "dates": [],
-                "kind": "per-unit",
                 "tags": []
               },
               "priceSpec": {
-                "amount": { "amount": "10", "currency": "USD" },
-                "kind": "total"
+                "kind": "total",
+                "amount": {
+                  "amount": "10",
+                  "currency": "USD"
+                }
               }
             },
             {

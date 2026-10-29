@@ -12,6 +12,7 @@
     "prettier-check": "prettier --check '**/*.ts' '**/*.md'",
     "prettier-format": "prettier --write '**/*.ts' '**/*.md'",
     "test": "tsx --enable-source-maps --test --test-reporter=spec",
+    "test:update": "npm run test -- --test-update-snapshots",
     "test-coverage": "npm run test -- --experimental-test-coverage",
     "test-watch": "npm run test -- --watch",
     "typecheck": "tsc --noEmit",

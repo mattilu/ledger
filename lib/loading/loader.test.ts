@@ -44,12 +44,15 @@ await describe('load', async () => {
   assert(tests.length > 0);
 
   for (const t of tests) {
-    await test(t.testName, async () => {
-      const { want, options } = JSON.parse(
+    await test(t.testName, async ctx => {
+      const { options } = JSON.parse(
         await readFile(t.wantPath, { encoding: 'utf-8' }),
       );
       const got = await loadForTest(t.srcPath, options);
-      assert.deepEqual(got, want, t.wantPath);
+
+      ctx.assert.fileSnapshot({ options, want: got }, t.wantPath, {
+        serializers: [x => JSON.stringify(x, null, 2) + '\n'],
+      });
     });
   }
 
