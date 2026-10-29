@@ -14,6 +14,8 @@ import { Metadata } from './metadata.js';
 
 type TestOptions = {
   readonly compareOptionMap?: boolean;
+  readonly compareAccountMap?: boolean;
+  readonly compareSignConventions?: boolean;
 };
 
 const loadForTest = async (path: string, options?: TestOptions) =>
@@ -76,11 +78,19 @@ function cleanup(ledger: Ledger, options?: TestOptions) {
           ? directive.balances.map(b => ({
               ...b,
               approx: b.approx?.toNumber(),
+              normalBalanceSide: options?.compareSignConventions
+                ? b.normalBalanceSide
+                : undefined,
             }))
           : undefined,
       srcCtx: undefined,
       meta: cleanupMeta(directive.meta),
       optionMap: options?.compareOptionMap ? directive.optionMap : undefined,
+      accountMap: undefined,
+      signConvention:
+        options?.compareSignConventions && 'signConvention' in directive
+          ? directive.signConvention
+          : undefined,
     };
   }
 
@@ -88,6 +98,9 @@ function cleanup(ledger: Ledger, options?: TestOptions) {
     return {
       ...posting,
       meta: cleanupMeta(posting.meta),
+      normalBalanceSide: options?.compareSignConventions
+        ? posting.normalBalanceSide
+        : undefined,
     };
   }
 
@@ -102,10 +115,15 @@ function cleanup(ledger: Ledger, options?: TestOptions) {
   }
 
   return {
+    ...ledger,
     directives: ledger.directives.map(directive => cleanupDirective(directive)),
     currencyMap: ledger.currencyMap.isEmpty()
       ? undefined
       : ledger.currencyMap.map(directive => cleanupDirective(directive)),
+    accountMap: options?.compareAccountMap ? ledger.accountMap : undefined,
+    signConvention: options?.compareSignConventions
+      ? ledger.signConvention
+      : undefined,
   };
 }
 

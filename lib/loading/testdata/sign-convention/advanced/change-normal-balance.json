@@ -1,0 +1,143 @@
+{
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "directives": [
+        {
+          "type": "transaction",
+          "date": "2026-10-01T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2026-10-01",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Buy stock",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Brokerage:Stock",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "costSpec": {
+                "kind": "total",
+                "amounts": [
+                  {
+                    "amount": "100",
+                    "currency": "USD"
+                  }
+                ],
+                "currencies": [],
+                "dateSpecs": [],
+                "dates": [],
+                "tags": []
+              },
+              "priceSpec": null
+            },
+            {
+              "account": "Assets:Brokerage:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "-100",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null
+            }
+          ]
+        },
+        {
+          "type": "transaction",
+          "date": "2026-10-02T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2026-10-02",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Sell for loss",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Brokerage:Stock",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "costSpec": {
+                "kind": "per-unit",
+                "amounts": [],
+                "currencies": [],
+                "dateSpecs": [],
+                "dates": [],
+                "tags": []
+              },
+              "priceSpec": null
+            },
+            {
+              "account": "Assets:Brokerage:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "90",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null
+            },
+            {
+              "account": "Income:Capital-Gains:Realized-Losses",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null
+            }
+          ]
+        },
+        {
+          "type": "balance",
+          "date": "2026-10-03T00:00:00.000Z",
+          "balances": [
+            {
+              "account": "Income:Capital-Gains:Realized-Losses",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "type": "open",
+          "date": "2026-10-03T00:00:00.000Z",
+          "meta": {
+            "normal-balance": {
+              "type": "string",
+              "value": "debit"
+            }
+          },
+          "account": "Income:Capital-Gains:Realized-Losses",
+          "currencies": [],
+          "normalBalanceSide": "debit"
+        },
+        {
+          "type": "balance",
+          "date": "2026-10-04T00:00:00.000Z",
+          "balances": [
+            {
+              "account": "Income:Capital-Gains:Realized-Losses",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

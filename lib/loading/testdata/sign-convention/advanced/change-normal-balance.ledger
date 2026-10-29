@@ -1,0 +1,19 @@
+option "sign-convention" "normal-balance-positive"
+
+2026-10-01 * "Buy stock"
+  Assets:Brokerage:Stock                   1 ACME {{ 100 USD }}
+  Assets:Brokerage:Cash                 -100 USD
+
+2026-10-02 * "Sell for loss"
+  Assets:Brokerage:Stock                  -1 ACME {}
+  Assets:Brokerage:Cash                   90 USD
+  Income:Capital-Gains:Realized-Losses   -10 USD
+
+2026-10-03 balance
+  Income:Capital-Gains:Realized-Losses   -10 USD
+
+2026-10-03 open Income:Capital-Gains:Realized-Losses
+  normal-balance: "debit"
+
+2026-10-04 balance
+  Income:Capital-Gains:Realized-Losses    10 USD

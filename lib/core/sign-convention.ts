@@ -83,6 +83,9 @@ export enum SignConvention {
   NetWorthPositive = 'net-worth-positive',
 }
 
+/** Default sign convention. */
+export const DefaultSignConvention = SignConvention.Legacy;
+
 const KnownSignConventionsStr = Object.values(SignConvention)
   .map(x => [`'${x}'`])
   .join(', ');

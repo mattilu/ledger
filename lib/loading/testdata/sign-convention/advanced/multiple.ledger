@@ -1,0 +1,27 @@
+option "sign-convention" "legacy"
+
+2026-01-01 * "Opening balances"
+  Assets:Bank               2,000 USD
+  Liabilities:Credit-Card    -200 USD
+  Equity:Opening-Balances  -1,800 USD
+
+option "sign-convention" "beancount"
+
+2026-01-02 balance
+  Assets:Bank               2,000 USD
+  Liabilities:Credit-Card    -200 USD
+  Equity:Opening-Balances  -1,800 USD
+
+option "sign-convention" "normal-balance-positive"
+
+2026-01-02 balance
+  Assets:Bank               2,000 USD
+  Liabilities:Credit-Card     200 USD
+  Equity:Opening-Balances   1,800 USD
+
+option "sign-convention" "net-worth-positive"
+
+2026-01-02 balance
+  Assets:Bank               2,000 USD
+  Liabilities:Credit-Card    -200 USD
+  Equity:Opening-Balances   1,800 USD

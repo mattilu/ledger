@@ -6,7 +6,14 @@ import { glob, readFile } from 'fs/promises';
 import { Map as ImmutableMap } from 'immutable';
 import { resolve } from 'path';
 
+import { parseNormalBalanceSide } from '../core/account.js';
 import { Amount } from '../core/amount.js';
+import {
+  CanonicalAmountConverter,
+  DefaultSignConvention,
+  parseSignConvention,
+  SignConvention,
+} from '../core/sign-convention.js';
 import { parse } from '../parsing/parser.js';
 import { SourcePosition } from '../parsing/source-position.js';
 import { AmountSpec } from '../parsing/spec/amount.js';
@@ -16,15 +23,42 @@ import { CostSpec } from '../parsing/spec/directives/transaction.js';
 import { Expression } from '../parsing/spec/expression.js';
 import { MetadataSpec } from '../parsing/spec/metadata.js';
 import { Directive } from './directive.js';
+import { BalanceDirective, BalanceEntry } from './directives/balance.js';
+import { CloseDirective } from './directives/close.js';
 import { CurrencyDirective } from './directives/currency.js';
+import { OpenDirective } from './directives/open.js';
 import {
   CostSpec as EvaluatedCostSpec,
   Posting,
+  TransactionDirective,
 } from './directives/transaction.js';
 import { LoadError } from './error.js';
-import { Ledger } from './ledger.js';
+import { AccountMap, Ledger } from './ledger.js';
 import { Metadata, MetadataValue } from './metadata.js';
 import { makeSourceContext, SourceContext } from './source-context.js';
+
+type PartialOpenDirective = Omit<OpenDirective, 'accountMap'>;
+type PartialCloseDirective = Omit<CloseDirective, 'accountMap'>;
+
+type PartialBalanceEntry = Omit<BalanceEntry, 'normalBalanceSide'>;
+type PartialBalanceDirective = Omit<BalanceDirective, 'balances'> & {
+  readonly balances: readonly PartialBalanceEntry[];
+};
+
+type PartialPosting = Omit<Posting, 'normalBalanceSide'>;
+type PartialTransactionDirective = Omit<TransactionDirective, 'postings'> & {
+  readonly postings: readonly PartialPosting[];
+};
+
+type PartialDirective =
+  | Exclude<
+      Directive,
+      OpenDirective | CloseDirective | BalanceDirective | TransactionDirective
+    >
+  | PartialOpenDirective
+  | PartialCloseDirective
+  | PartialBalanceDirective
+  | PartialTransactionDirective;
 
 /**
  * Loads a ledger from a file.
@@ -35,27 +69,26 @@ import { makeSourceContext, SourceContext } from './source-context.js';
 export async function load(
   filePath: string,
 ): Promise<E.Either<LoadError, Ledger>> {
-  const directives: Directive[] = [];
+  const directives: PartialDirective[] = [];
   const currencyMap = new Map<string, CurrencyDirective>();
   const context: LoadContext = {
     stackTrace: [],
     loadedMap: new Map(),
     defaultTimezone: 'Z',
+    signConvention: DefaultSignConvention,
     optionMap: ImmutableMap(),
   };
 
   return F.pipe(
     await doLoad(filePath, directives, currencyMap, context),
-    E.tap(
-      F.flow(
-        () => directives.sort((a, b) => a.date.getTime() - b.date.getTime()),
-        E.right,
-      ),
-    ),
+    E.bindTo('ctx'),
+    E.bind('normalized', () => normalizeDirectives(directives)),
     E.map(
-      (): Ledger => ({
-        directives,
+      ({ ctx, normalized }): Ledger => ({
+        directives: normalized.directives,
         currencyMap: ImmutableMap(currencyMap),
+        accountMap: normalized.accountMap,
+        signConvention: ctx.signConvention,
       }),
     ),
   );
@@ -69,6 +102,8 @@ interface LoadContext {
   readonly loadedMap: Map<string, readonly SourceContext[]>;
   // Current default timezone.
   readonly defaultTimezone: string;
+  // Current sign convention.
+  readonly signConvention: SignConvention;
   // Current options.
   readonly optionMap: ImmutableMap<string, string>;
 }
@@ -79,14 +114,14 @@ interface LoadContext {
  * @param filePath Path of the file to load.
  * @param directives Output array to collect directives into.
  * @param ctx Current context for the load
- * @returns Either a LoadError, or void.
+ * @returns Either a LoadError, or the final state of LoadContext.
  */
 async function doLoad(
   filePath: string,
-  directives: Directive[],
+  directives: PartialDirective[],
   currencyMap: Map<string, CurrencyDirective>,
   ctx: LoadContext,
-): Promise<E.Either<LoadError, unknown>> {
+): Promise<E.Either<LoadError, LoadContext>> {
   ctx.loadedMap.set(filePath, ctx.stackTrace);
 
   const parsed = F.pipe(
@@ -192,6 +227,7 @@ async function doLoad(
                     ? null
                     : evaluateExpression(balance.approx),
               })),
+              signConvention: ctx.signConvention,
               srcCtx: makeSourceContext(filePath, directive.srcPos),
               optionMap: ctx.optionMap,
             });
@@ -290,13 +326,40 @@ async function doLoad(
           E.Do,
           E.bind('meta', () => makeMeta(directive)),
           E.bind('date', () => makeDate(directive)),
-          E.map(({ date, meta }) => {
+          E.bind('normalBalanceSide', ({ meta }) => {
+            const normalBalance = meta.get('normal-balance');
+            if (normalBalance === undefined) {
+              return E.of(undefined);
+            }
+            if (normalBalance.type !== 'string') {
+              return E.left(
+                new LoadError(
+                  'Invalid normal-balance metadata type',
+                  makeSourceContext(filePath, directive.srcPos),
+                  ctx.stackTrace,
+                ),
+              );
+            }
+            return F.pipe(
+              parseNormalBalanceSide(normalBalance.value),
+              E.mapLeft(
+                err =>
+                  new LoadError(
+                    `Invalid normal-balance value '${normalBalance.value}': ${err}`,
+                    makeSourceContext(filePath, directive.srcPos),
+                    ctx.stackTrace,
+                  ),
+              ),
+            );
+          }),
+          E.map(({ date, meta, normalBalanceSide }) => {
             directives.push({
               type: 'open',
               date: date,
               meta: meta,
               account: directive.account,
               currencies: directive.currencies,
+              normalBalanceSide: normalBalanceSide,
               srcCtx: makeSourceContext(filePath, directive.srcPos),
               optionMap: ctx.optionMap,
             });
@@ -304,7 +367,26 @@ async function doLoad(
         );
         break;
       }
-      case 'option':
+      case 'option': {
+        switch (directive.optionName) {
+          case 'default-timezone':
+            ctx = { ...ctx, defaultTimezone: directive.optionValue };
+            break;
+          case 'sign-convention': {
+            const convention = parseSignConvention(directive.optionValue);
+            if (E.isLeft(convention)) {
+              return E.left(
+                new LoadError(
+                  `Invalid sign-convention option '${directive.optionValue}': ${convention.left}`,
+                  makeSourceContext(filePath, directive.srcPos),
+                  ctx.stackTrace,
+                ),
+              );
+            }
+            ctx = { ...ctx, signConvention: convention.right };
+            break;
+          }
+        }
         ctx = {
           ...ctx,
           optionMap: ctx.optionMap.set(
@@ -312,11 +394,9 @@ async function doLoad(
             directive.optionValue,
           ),
         };
-        if (directive.optionName === 'default-timezone') {
-          ctx = { ...ctx, defaultTimezone: directive.optionValue };
-        }
         result = E.of(undefined);
         break;
+      }
       case 'price': {
         result = F.pipe(
           E.Do,
@@ -356,7 +436,7 @@ async function doLoad(
                       : E.right(null),
                   ),
                   E.map(
-                    ({ meta, costSpec }): Posting => ({
+                    ({ meta, costSpec }): PartialPosting => ({
                       account: posting.account,
                       flag: posting.flag ?? directive.flag,
                       amount: posting.amount
@@ -385,6 +465,7 @@ async function doLoad(
               description: directive.description,
               flag: directive.flag,
               postings: postings,
+              signConvention: ctx.signConvention,
               srcCtx: makeSourceContext(filePath, directive.srcPos),
               optionMap: ctx.optionMap,
             });
@@ -409,7 +490,81 @@ async function doLoad(
     }
   }
 
-  return E.right(undefined);
+  return E.right(ctx);
+}
+
+function normalizeDirectives(directives: PartialDirective[]): E.Either<
+  LoadError,
+  {
+    directives: Directive[];
+    accountMap: AccountMap;
+  }
+> {
+  directives.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+  const normalized: Directive[] = [];
+  let accountMap: AccountMap = ImmutableMap();
+  const converter: CanonicalAmountConverter = new CanonicalAmountConverter({
+    get(account) {
+      return accountMap.get(account)?.open?.normalBalanceSide;
+    },
+  });
+
+  for (const directive of directives) {
+    switch (directive.type) {
+      case 'open': {
+        // Note, we intentionally don't keep a previous `close`
+        accountMap = accountMap.set(directive.account, { open: directive });
+        normalized.push({ ...directive, accountMap });
+        converter.clearCache();
+        break;
+      }
+      case 'close':
+        accountMap = accountMap.update(directive.account, (state = {}) => ({
+          ...state,
+          close: directive,
+        }));
+        normalized.push({ ...directive, accountMap });
+        break;
+      case 'balance':
+        normalized.push({
+          ...directive,
+          balances: directive.balances.map(balance => ({
+            ...balance,
+            amount: converter.convert(
+              balance.amount,
+              directive.signConvention,
+              balance.account,
+            ),
+            normalBalanceSide: converter.getNormalBalanceSide(balance.account),
+          })),
+        });
+        break;
+      case 'transaction': {
+        normalized.push({
+          ...directive,
+          postings: directive.postings.map(posting => ({
+            ...posting,
+            amount:
+              posting.amount === null
+                ? null
+                : converter.convert(
+                    posting.amount,
+                    directive.signConvention,
+                    posting.account,
+                  ),
+            normalBalanceSide: converter.getNormalBalanceSide(posting.account),
+          })),
+        });
+        break;
+      }
+      default:
+        normalized.push(directive);
+        break;
+    }
+  }
+
+  return E.right({ directives: normalized, accountMap });
 }
 
 async function read(filePath: string): Promise<E.Either<Error, string>> {

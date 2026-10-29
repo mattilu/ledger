@@ -67,6 +67,11 @@ const debugLoadResultAndFilter =
     return E.right({
       directives: ledger.directives.slice(0, index + 1),
       currencyMap: ledger.currencyMap,
+      signConvention: ledger.signConvention,
+      // This is inaccurate as the filtering could have dropped later open/close
+      // directives, which still show up here.
+      // TODO: Fix this.
+      accountMap: ledger.accountMap,
     });
   };
 

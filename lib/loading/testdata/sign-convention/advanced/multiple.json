@@ -1,0 +1,153 @@
+{
+  "options": {
+    "compareSignConventions": true
+  },
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "directives": [
+        {
+          "type": "transaction",
+          "date": "2026-01-01T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2026-01-01",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Opening balances",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Bank",
+              "flag": "*",
+              "amount": {
+                "amount": "2000",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Liabilities:Credit-Card",
+              "flag": "*",
+              "amount": {
+                "amount": "-200",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "credit"
+            },
+            {
+              "account": "Equity:Opening-Balances",
+              "flag": "*",
+              "amount": {
+                "amount": "-1800",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "credit"
+            }
+          ],
+          "signConvention": "legacy"
+        },
+        {
+          "type": "balance",
+          "date": "2026-01-02T00:00:00.000Z",
+          "balances": [
+            {
+              "account": "Assets:Bank",
+              "amount": {
+                "amount": "2000",
+                "currency": "USD"
+              },
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Liabilities:Credit-Card",
+              "amount": {
+                "amount": "-200",
+                "currency": "USD"
+              },
+              "normalBalanceSide": "credit"
+            },
+            {
+              "account": "Equity:Opening-Balances",
+              "amount": {
+                "amount": "-1800",
+                "currency": "USD"
+              },
+              "normalBalanceSide": "credit"
+            }
+          ],
+          "signConvention": "beancount"
+        },
+        {
+          "type": "balance",
+          "date": "2026-01-02T00:00:00.000Z",
+          "balances": [
+            {
+              "account": "Assets:Bank",
+              "amount": {
+                "amount": "2000",
+                "currency": "USD"
+              },
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Liabilities:Credit-Card",
+              "amount": {
+                "amount": "-200",
+                "currency": "USD"
+              },
+              "normalBalanceSide": "credit"
+            },
+            {
+              "account": "Equity:Opening-Balances",
+              "amount": {
+                "amount": "-1800",
+                "currency": "USD"
+              },
+              "normalBalanceSide": "credit"
+            }
+          ],
+          "signConvention": "normal-balance-positive"
+        },
+        {
+          "type": "balance",
+          "date": "2026-01-02T00:00:00.000Z",
+          "balances": [
+            {
+              "account": "Assets:Bank",
+              "amount": {
+                "amount": "2000",
+                "currency": "USD"
+              },
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Liabilities:Credit-Card",
+              "amount": {
+                "amount": "-200",
+                "currency": "USD"
+              },
+              "normalBalanceSide": "credit"
+            },
+            {
+              "account": "Equity:Opening-Balances",
+              "amount": {
+                "amount": "-1800",
+                "currency": "USD"
+              },
+              "normalBalanceSide": "credit"
+            }
+          ],
+          "signConvention": "net-worth-positive"
+        }
+      ],
+      "signConvention": "net-worth-positive"
+    }
+  }
+}

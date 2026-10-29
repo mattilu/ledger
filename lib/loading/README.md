@@ -15,6 +15,13 @@ and booking's domain operations.
 - `source-context.ts` tracks source file and location; `error.ts` defines
   `LoadError` with source and include-stack context.
 
+Sign conventions are captured positionally, validated, and used to normalize
+transaction amounts and balance assertions into canonical signed amounts.
+`normal-balance` metadata on `open` directives supplies normal balance side
+overrides. Directives preserve presentation context for booking and reporting.
+
+## Dependencies
+
 The loader depends on `lib/parsing/` for syntax and `lib/core/` for values. Keep
 accounting validation and inventory transitions in `lib/booking/`.
 
