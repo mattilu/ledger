@@ -6,7 +6,6 @@
         {
           "type": "close",
           "date": "2025-05-01T00:00:00.000Z",
-          "optionMap": {},
           "account": "Assets:Foo"
         }
       ]

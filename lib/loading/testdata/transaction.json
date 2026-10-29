@@ -11,7 +11,6 @@
             "time": null,
             "timezone": null
           },
-          "optionMap": {},
           "description": "No Postings",
           "flag": "*",
           "postings": []
@@ -24,7 +23,6 @@
             "time": null,
             "timezone": null
           },
-          "optionMap": {},
           "description": "Posting without amount",
           "flag": "*",
           "postings": [
@@ -45,7 +43,6 @@
             "time": null,
             "timezone": null
           },
-          "optionMap": {},
           "description": "Postings with amount",
           "flag": "*",
           "postings": [
@@ -79,7 +76,6 @@
             "time": null,
             "timezone": null
           },
-          "optionMap": {},
           "description": "Postings with and without amount",
           "flag": "*",
           "postings": [
@@ -110,7 +106,6 @@
             "time": null,
             "timezone": null
           },
-          "optionMap": {},
           "description": "Posting with total cost spec",
           "flag": "*",
           "postings": [
@@ -153,7 +148,6 @@
             "time": null,
             "timezone": null
           },
-          "optionMap": {},
           "description": "Posting with per-unit cost spec",
           "flag": "*",
           "postings": [
@@ -196,7 +190,6 @@
             "time": null,
             "timezone": null
           },
-          "optionMap": {},
           "description": "ExclamationMark Flag",
           "flag": "!",
           "postings": []
@@ -209,7 +202,6 @@
             "time": null,
             "timezone": null
           },
-          "optionMap": {},
           "description": "Posting Flag",
           "flag": "*",
           "postings": [
@@ -230,7 +222,6 @@
             "time": null,
             "timezone": null
           },
-          "optionMap": {},
           "description": "Posting with cost spec filtering specs",
           "flag": "*",
           "postings": [
@@ -274,7 +265,6 @@
             "time": null,
             "timezone": null
           },
-          "optionMap": {},
           "description": "Posting with cost spec with date and time",
           "flag": "*",
           "postings": [
@@ -318,7 +308,6 @@
             "time": null,
             "timezone": null
           },
-          "optionMap": {},
           "description": "Posting with cost spec with date time and timezone",
           "flag": "*",
           "postings": [
@@ -362,7 +351,6 @@
             "time": null,
             "timezone": null
           },
-          "optionMap": {},
           "description": "Posting with per-unit price spec",
           "flag": "*",
           "postings": [
@@ -396,7 +384,6 @@
             "time": null,
             "timezone": null
           },
-          "optionMap": {},
           "description": "Posting with total price spec",
           "flag": "*",
           "postings": [
@@ -427,7 +414,6 @@
             "time": null,
             "timezone": null
           },
-          "optionMap": {},
           "description": "Posting with cost spec and price spec",
           "flag": "*",
           "postings": [

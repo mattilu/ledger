@@ -1,4 +1,7 @@
 {
+  "options": {
+    "compareOptionMap": true
+  },
   "want": {
     "_tag": "Right",
     "right": {

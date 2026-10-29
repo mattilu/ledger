@@ -12,7 +12,9 @@ import { Ledger } from './ledger.js';
 import { load } from './loader.js';
 import { Metadata } from './metadata.js';
 
-type TestOptions = Record<string, never>;
+type TestOptions = {
+  readonly compareOptionMap?: boolean;
+};
 
 const loadForTest = async (path: string, options?: TestOptions) =>
   F.pipe(
@@ -58,7 +60,7 @@ await describe('load', async () => {
   });
 });
 
-function cleanup(ledger: Ledger, _options?: TestOptions) {
+function cleanup(ledger: Ledger, options?: TestOptions) {
   function cleanupDirective(directive: Directive | CurrencyDirective) {
     return {
       ...directive,
@@ -75,6 +77,7 @@ function cleanup(ledger: Ledger, _options?: TestOptions) {
           : undefined,
       srcCtx: undefined,
       meta: cleanupMeta(directive.meta),
+      optionMap: options?.compareOptionMap ? directive.optionMap : undefined,
     };
   }
 

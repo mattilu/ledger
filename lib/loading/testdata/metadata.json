@@ -13,8 +13,7 @@
               "type": "currency",
               "value": "CHF"
             }
-          },
-          "optionMap": {}
+          }
         },
         {
           "type": "close",
@@ -25,8 +24,7 @@
               "type": "date",
               "value": "2025-06-02T00:00:00.000Z"
             }
-          },
-          "optionMap": {}
+          }
         },
         {
           "type": "balance",
@@ -45,8 +43,7 @@
               "type": "string",
               "value": "string-value"
             }
-          },
-          "optionMap": {}
+          }
         },
         {
           "type": "transaction",
@@ -84,8 +81,7 @@
                 }
               }
             }
-          ],
-          "optionMap": {}
+          ]
         }
       ]
     }
