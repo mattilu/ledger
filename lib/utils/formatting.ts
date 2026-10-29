@@ -186,7 +186,7 @@ export class Formatter {
 
   formatAccounts<T>(
     accountMap: ImmutableMap<string, T>,
-    format: (value: T) => string[],
+    format: (value: T, account: string) => string[],
     options?: FormatAccountsOptions<T>,
   ) {
     if (options?.tree) {
@@ -210,12 +210,14 @@ export class Formatter {
           ((options.filter?.(node.data) ?? true) || node.children.length > 0),
       );
 
-      return formatTree(root, node => format(node.data));
+      return formatTree(root, (node, depth, account) =>
+        format(node.data, account),
+      );
     }
 
     const lines: string[] = [];
     for (const [account, inventory] of accountMap.entrySeq().sortBy(fst)) {
-      for (const line of format(inventory)) {
+      for (const line of format(inventory, account)) {
         lines.push(`${account} ${line}`);
       }
     }

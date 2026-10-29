@@ -104,6 +104,7 @@ await describe('formatTree', async () => {
   const testCases: Array<{
     name: string;
     root: Node<number[]>;
+    withContext?: boolean;
     want: string;
   }> = [
     {
@@ -386,11 +387,75 @@ await describe('formatTree', async () => {
    └─ Gamma    8
       └        16`,
     },
+    {
+      name: 'root, children and grandchildren with data',
+      root: {
+        name: '',
+        data: [1],
+        children: [
+          {
+            name: 'Foo',
+            data: [2],
+            children: [
+              {
+                name: 'Alpha',
+                data: [3, 4],
+                children: [],
+              },
+              {
+                name: 'Bravo',
+                data: [5],
+                children: [],
+              },
+            ],
+          },
+          {
+            name: 'Bar',
+            data: [6],
+            children: [],
+          },
+          {
+            name: 'Baz',
+            data: [7],
+            children: [
+              {
+                name: 'Aleph',
+                data: [8],
+                children: [
+                  {
+                    name: 'Zero',
+                    data: [9],
+                    children: [],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      withContext: true,
+      want: `\
+╿              1 [0] []
+├─ Foo         2 [1] [Foo]
+│  ├─ Alpha    3 [2] [Foo:Alpha]
+│  │  └        4 [2] [Foo:Alpha]
+│  └─ Bravo    5 [2] [Foo:Bravo]
+├─ Bar         6 [1] [Bar]
+└─ Baz         7 [1] [Baz]
+   └─ Aleph    8 [2] [Baz:Aleph]
+      └─ Zero  9 [3] [Baz:Aleph:Zero]`,
+    },
   ];
 
   for (const t of testCases) {
     await it(t.name, () => {
-      const got = formatTree(t.root, node => node.data.map(x => x.toString()));
+      const got = formatTree(t.root, (node, depth, account) =>
+        node.data.map(
+          value =>
+            value.toString() +
+            (t.withContext ? ` [${depth}] [${account}]` : ''),
+        ),
+      );
       assert.deepEqual(got, t.want);
     });
   }

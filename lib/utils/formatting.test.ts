@@ -8,6 +8,7 @@ import { Cost } from '../booking/cost.js';
 import { Inventory, InventoryMap } from '../booking/inventory.js';
 import { Position } from '../booking/position.js';
 import { Transaction } from '../booking/transaction.js';
+import { AccountType, getAccountTypeUnchecked } from '../core/account.js';
 import { Amount } from '../core/amount.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
 import {
@@ -472,11 +473,15 @@ await describe('Formatter', async () => {
       const value = values.reduce((a, b) => a + b, 0);
       return value === 0 ? [] : [value.toString()];
     };
+    const formatAccountAware = (values: number[], account: string) =>
+      getAccountTypeUnchecked(account) === AccountType.Liabilities
+        ? formatAsSum(values.map(x => -x))
+        : formatAsSum(values);
 
     const tests: Array<{
       name: string;
       accountMap: Map<string, number[]>;
-      format?: (xs: number[]) => string[];
+      format?: (xs: number[], account: string) => string[];
       options?: FormatAccountsOptions<number[]>;
       want: string;
     }> = [
@@ -513,6 +518,16 @@ Assets:Test:Bar 2
 Assets:Test:Baz 3
 Assets:Test:Foo 1
 Liabilities:Test:Qux 4`,
+      },
+      {
+        name: 'multiple accounts, account aware',
+        accountMap: accountMaps.multipleAccounts,
+        format: formatAccountAware,
+        want: `\
+Assets:Test:Bar 2
+Assets:Test:Baz 3
+Assets:Test:Foo 1
+Liabilities:Test:Qux -4`,
       },
       {
         name: 'multiple entries, format each',
@@ -597,6 +612,22 @@ Assets:Test 6`,
 └─ Liabilities
    └─ Test
       └─ Qux    4`,
+      },
+      {
+        name: 'multiple accounts as tree, account aware',
+        accountMap: accountMaps.multipleAccounts,
+        format: formatAccountAware,
+        options: formatTreeOptions(),
+        want: `\
+╿
+├─ Assets
+│  └─ Test
+│     ├─ Bar    2
+│     ├─ Baz    3
+│     └─ Foo    1
+└─ Liabilities
+   └─ Test
+      └─ Qux    -4`,
       },
       {
         name: 'multiple accounts as tree, max depth, format each',
