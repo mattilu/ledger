@@ -16,11 +16,25 @@ type TestOptions = {
   readonly compareOptionMap?: boolean;
   readonly compareAccountMap?: boolean;
   readonly compareSignConventions?: boolean;
+  readonly maxDate?: string;
 };
+
+function* dateFilter(date: Date, directives: Iterable<Directive>) {
+  for (const directive of directives) {
+    if (directive.date.getTime() > date.getTime()) {
+      return;
+    }
+    yield true;
+  }
+}
 
 const loadForTest = async (path: string, options?: TestOptions) =>
   F.pipe(
-    await load(path),
+    await load(path, {
+      takeWhile: options?.maxDate
+        ? directives => dateFilter(new Date(options.maxDate!), directives)
+        : undefined,
+    }),
     E.bimap(
       err => ({
         error: `${err.message} at ${err.srcCtx.filePath}:${err.srcCtx.row}`,
@@ -32,13 +46,13 @@ const loadForTest = async (path: string, options?: TestOptions) =>
 await describe('load', async () => {
   const tests = [];
   const dirname = 'lib/loading/testdata/';
-  for await (const f of glob([`${dirname}**/*.ledger`], {
+  for await (const f of glob([`${dirname}**/*.json`], {
     exclude: f => basename(f).startsWith('_'),
   })) {
     tests.push({
-      testName: f.replace(dirname, '').replace('.ledger', ''),
-      srcPath: f,
-      wantPath: f.replace('.ledger', '.json'),
+      testName: f.replace(dirname, '').replace('.json', ''),
+      srcPath: f.replace(/([.][\w-]+)?[.]json/, '.ledger'),
+      wantPath: f,
     });
   }
 

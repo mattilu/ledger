@@ -1,0 +1,13 @@
+{
+  "options": {
+    "compareAccountMap": true,
+    "maxDate": "2026-09-30"
+  },
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "directives": [],
+      "accountMap": {}
+    }
+  }
+}

@@ -15,14 +15,13 @@ import { ArgParser, ParsingInto } from 'cmd-ts/dist/cjs/argparser.js';
 import { either as E, function as F } from 'fp-ts';
 
 import { book } from '../lib/booking/booking.js';
-import { Ledger } from '../lib/loading/ledger.js';
+import { Directive } from '../lib/loading/directive.js';
 import { load } from '../lib/loading/loader.js';
 import { CashFlowReport } from '../lib/reporting/cash-flow.js';
 import { InventoryReport } from '../lib/reporting/inventory.js';
 import { Report } from '../lib/reporting/report.js';
 import { TransactionsReport } from '../lib/reporting/transactions.js';
 import { UnrealizedPnlReport } from '../lib/reporting/unrealized-pnl.js';
-import { partitionLo } from '../lib/utils/bounds.js';
 import {
   FormatBalanceMode,
   FormatInventoriesOptions,
@@ -235,29 +234,26 @@ async function runReport(
   { inputFile, date }: Output<typeof commonArgs>,
 ): Promise<E.Either<CommandError, void>> {
   return F.pipe(
-    await load(inputFile),
+    await load(inputFile, {
+      takeWhile: date ? dateFilter(date) : undefined,
+    }),
     E.mapLeft(CommandError.fromLoadError),
-    E.map(date ? dropAfter(date) : F.identity),
     E.flatMap(F.flow(book, E.mapLeft(CommandError.fromBookingError))),
     E.tap(F.flow(l => report.run(l), console.log, E.right)),
     E.asUnit,
   );
 }
 
-const dropAfter =
-  (date: Date) =>
-  (ledger: Ledger): Ledger => ({
-    directives: partitionLo(
-      ledger.directives,
-      t => t.date.getTime() <= date.getTime(),
-    ),
-    currencyMap: ledger.currencyMap,
-    signConvention: ledger.signConvention,
-    // This is inaccurate as the filtering could have dropped later open/close
-    // directives, which still show up here.
-    // TODO: Fix this.
-    accountMap: ledger.accountMap,
-  });
+const dateFilter = (date: Date) => {
+  return function* (directives: Iterable<Directive>) {
+    for (const directive of directives) {
+      if (directive.date.getTime() > date.getTime()) {
+        return;
+      }
+      yield true;
+    }
+  };
+};
 
 export const report = subcommands({
   name: 'report',
