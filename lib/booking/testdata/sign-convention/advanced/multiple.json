@@ -1,0 +1,76 @@
+{
+  "options": {
+    "compareSignConventions": true
+  },
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "transactions": [
+        {
+          "date": "2026-01-01T00:00:00.000Z",
+          "description": "Opening balances",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Bank",
+              "flag": "*",
+              "amount": {
+                "amount": "2000",
+                "currency": "USD"
+              },
+              "cost": null,
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Liabilities:Credit-Card",
+              "flag": "*",
+              "amount": {
+                "amount": "-200",
+                "currency": "USD"
+              },
+              "cost": null,
+              "normalBalanceSide": "credit"
+            },
+            {
+              "account": "Equity:Opening-Balances",
+              "flag": "*",
+              "amount": {
+                "amount": "-1800",
+                "currency": "USD"
+              },
+              "cost": null,
+              "normalBalanceSide": "credit"
+            }
+          ],
+          "signConvention": "legacy",
+          "inventoriesAfter": {
+            "Assets:Bank": {
+              "USD": [
+                {
+                  "amount": "2000",
+                  "cost": null
+                }
+              ]
+            },
+            "Liabilities:Credit-Card": {
+              "USD": [
+                {
+                  "amount": "-200",
+                  "cost": null
+                }
+              ]
+            },
+            "Equity:Opening-Balances": {
+              "USD": [
+                {
+                  "amount": "-1800",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import { Map } from 'immutable';
 
+import { SignConvention } from '../core/sign-convention.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
 import { PriceDirective } from '../loading/directives/price.js';
 import { AccountMap } from '../loading/ledger.js';
@@ -17,4 +18,6 @@ export interface BookedLedger {
   readonly accountMap: AccountMap;
   /** State of inventories at the end of booking. */
   readonly inventories: InventoryMap;
+  /** Active sign convention. */
+  readonly signConvention: SignConvention;
 }

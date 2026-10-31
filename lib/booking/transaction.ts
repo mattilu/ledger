@@ -1,4 +1,6 @@
+import { NormalBalanceSide } from '../core/account.js';
 import { Amount } from '../core/amount.js';
+import { SignConvention } from '../core/sign-convention.js';
 import { Metadata } from '../loading/metadata.js';
 import { SourceContext } from '../loading/source-context.js';
 import { Cost } from './cost.js';
@@ -15,6 +17,8 @@ export interface BookedPosting {
   readonly cost: Cost | null;
   /** Metadata of the posting. */
   readonly meta: Metadata;
+  /** Normal balance side of the account at the time of the posting. */
+  readonly normalBalanceSide: NormalBalanceSide;
 }
 
 export interface Transaction {
@@ -28,6 +32,8 @@ export interface Transaction {
   readonly postings: readonly BookedPosting[];
   /** Metadata of the transaction. */
   readonly meta: Metadata;
+  /** Sign convention active at the time of the transaction. */
+  readonly signConvention: SignConvention;
   /** State of inventories before the transaction. */
   readonly inventoriesBefore: InventoryMap;
   /** State of inventories after the transaction. */

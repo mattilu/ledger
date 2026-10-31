@@ -8,7 +8,11 @@ import { Cost } from '../booking/cost.js';
 import { Inventory, InventoryMap } from '../booking/inventory.js';
 import { Position } from '../booking/position.js';
 import { Transaction } from '../booking/transaction.js';
-import { AccountType, getAccountTypeUnchecked } from '../core/account.js';
+import {
+  AccountType,
+  getAccountTypeUnchecked,
+  NormalBalanceSide,
+} from '../core/account.js';
 import { Amount } from '../core/amount.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
 import {
@@ -229,6 +233,7 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
             {
               account: 'Assets:Test',
@@ -236,6 +241,7 @@ await describe('Formatter', async () => {
               cost: cost([amount(1, 'USD')], '2025-06-01'),
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
           ],
         },
@@ -257,6 +263,7 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '!',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
             {
               account: 'Assets:Bar',
@@ -264,6 +271,7 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
           ],
         },
@@ -285,6 +293,7 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
             {
               account: 'Assets:Test:Bar',
@@ -292,6 +301,7 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
           ],
           inventoriesBefore: Map(),
@@ -317,6 +327,7 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
             {
               account: 'Assets:Test',
@@ -324,6 +335,7 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
           ],
           inventoriesBefore: Map(),
@@ -349,6 +361,7 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
             {
               account: 'Assets:Test',
@@ -356,6 +369,7 @@ await describe('Formatter', async () => {
               cost: cost([amount(2, 'USD')], '2025-11-01'),
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
           ],
           inventoriesBefore: Map(),
@@ -382,6 +396,7 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
             {
               account: 'Assets:Test',
@@ -389,6 +404,7 @@ await describe('Formatter', async () => {
               cost: cost([amount(2, 'USD')], '2025-11-01'),
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
           ],
           inventoriesBefore: Map(),
@@ -414,6 +430,7 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
           ],
           inventoriesBefore: Map([

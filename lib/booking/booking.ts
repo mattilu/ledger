@@ -3,6 +3,7 @@ import { either as E, function as F } from 'fp-ts';
 import { Map } from 'immutable';
 
 import { Amount } from '../core/amount.js';
+import { CanonicalAmountConverter } from '../core/sign-convention.js';
 import { Directive, DirectiveCommon } from '../loading/directive.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
 import { PriceDirective } from '../loading/directives/price.js';
@@ -41,6 +42,11 @@ export function book(ledger: Ledger): E.Either<BookingError, BookedLedger> {
   let accountMap: AccountMap = Map();
   const currencyMap = ledger.currencyMap;
   let inventories: InventoryMap = Map();
+  const converter = new CanonicalAmountConverter({
+    get(account) {
+      return accountMap.get(account)?.open?.normalBalanceSide;
+    },
+  });
 
   for (const directive of ledger.directives) {
     switch (directive.type) {
@@ -72,10 +78,15 @@ export function book(ledger: Ledger): E.Either<BookingError, BookedLedger> {
           );
           if (delta.abs().gt(maxDelta)) {
             const formatter = new Formatter({ currencyMap });
+            const fromCanonicalAmount = converter.getConvertFn(
+              directive.signConvention,
+              balance.account,
+            );
+
             let msg = `Balance for ${balance.account} does not match.
-Expected: ${formatter.formatAmount(balance.amount)}
-Actual: ${formatter.formatAmount(amount)}
-Delta: ${formatter.formatAmount(delta)}`;
+Expected: ${formatter.formatAmount(fromCanonicalAmount(balance.amount))}
+Actual: ${formatter.formatAmount(fromCanonicalAmount(amount))}
+Delta: ${formatter.formatAmount(fromCanonicalAmount(delta))}`;
             if (!maxDelta.isZero()) {
               msg += `\nMaxDelta: ${formatter.formatAmount(maxDelta)}`;
             }
@@ -105,6 +116,8 @@ Delta: ${formatter.formatAmount(delta)}`;
           );
         }
         accountMap = directive.accountMap;
+        // Note: no need to clear the cache here, closing cannot alter the
+        // normal-balance side.
         break;
       }
       case 'open': {
@@ -120,6 +133,7 @@ Delta: ${formatter.formatAmount(delta)}`;
           );
         }
         accountMap = directive.accountMap;
+        converter.clearCache();
         break;
       }
       case 'price': {
@@ -132,6 +146,7 @@ Delta: ${formatter.formatAmount(delta)}`;
           inventories,
           accountMap,
           currencyMap,
+          converter,
         );
         if (E.isLeft(got)) {
           return E.left(enrichError(got.left, directive));
@@ -163,6 +178,7 @@ Delta: ${formatter.formatAmount(delta)}`;
     accountMap,
     currencyMap,
     inventories,
+    signConvention: ledger.signConvention,
   });
 }
 
@@ -217,6 +233,7 @@ function bookTransaction(
   inventories: InventoryMap,
   accountMap: AccountMap,
   currencyMap: Map<string, CurrencyDirective>,
+  converter: CanonicalAmountConverter,
 ): E.Either<Error, [Transaction, PriceDirective[]]> {
   const inventoriesBefore = inventories;
   const postings: BookedPosting[] = [];
@@ -239,6 +256,7 @@ function bookTransaction(
       inventories,
       balance,
       accountCheck.right,
+      converter,
     );
     if (E.isLeft(got)) {
       return got;
@@ -288,6 +306,7 @@ function bookTransaction(
       flag: transaction.flag,
       postings,
       meta: transaction.meta,
+      signConvention: transaction.signConvention,
       inventoriesBefore,
       inventoriesAfter: inventories,
       srcCtx: transaction.srcCtx,
@@ -302,6 +321,7 @@ function bookPosting(
   inventories: InventoryMap,
   balance: Inventory,
   accountMapValue: AccountMapValue,
+  converter: CanonicalAmountConverter,
 ): E.Either<
   Error,
   [BookedPosting[], InventoryMap, balance: Inventory, PriceDirective[]]
@@ -318,6 +338,8 @@ function bookPosting(
       posting,
       accountMapValue,
     );
+    const tradingAccountNormalBalanceSide =
+      converter.getNormalBalanceSide(tradingAccount);
 
     if (posting.costSpec.amounts.length > 0) {
       // Both cost and amount are known. We increase the account by the amount
@@ -368,6 +390,7 @@ function bookPosting(
               amount: postingAmount,
               cost,
               meta: posting.meta,
+              normalBalanceSide: posting.normalBalanceSide,
             },
             {
               account: tradingAccount,
@@ -375,6 +398,7 @@ function bookPosting(
               amount: postingAmount.neg(),
               cost: null,
               meta: Map(),
+              normalBalanceSide: tradingAccountNormalBalanceSide,
             },
             ...costSpec.amounts.map(amount => ({
               account: tradingAccount,
@@ -382,6 +406,7 @@ function bookPosting(
               amount: getTotalAmount(amount, postingAmount, costSpec.kind),
               cost: null,
               meta: Map() as Metadata,
+              normalBalanceSide: tradingAccountNormalBalanceSide,
             })),
           ),
           makePriceDirectives(
@@ -445,7 +470,10 @@ function bookPosting(
         //
         // Assets:Broker    -60 USD { 1.2 CHF }
         //
-        posting,
+        {
+          ...posting,
+          normalBalanceSide: converter.getNormalBalanceSide(posting.account),
+        },
         // Additonally, post the amount, negated, and the total cost, to the
         // trading accounts, e.g.
         //
@@ -466,6 +494,7 @@ function bookPosting(
           amount: posting.amount.neg(),
           cost: null,
           meta: Map(),
+          normalBalanceSide: tradingAccountNormalBalanceSide,
         },
         ...(posting.cost?.amounts ?? []).map(cost => ({
           account: tradingAccount,
@@ -473,6 +502,7 @@ function bookPosting(
           amount: cost.mul(posting.amount.amount),
           cost: null,
           meta: Map() as Metadata,
+          normalBalanceSide: tradingAccountNormalBalanceSide,
         })),
       );
       postings.push(...postings1);
@@ -501,6 +531,8 @@ function bookPosting(
       posting,
       accountMapValue,
     );
+    const tradingAccountNormalBalanceSide =
+      converter.getNormalBalanceSide(tradingAccount);
 
     // Similar to the cost case, but here we don't hold the position at cost.
     return E.right([
@@ -513,6 +545,7 @@ function bookPosting(
           amount: posting.amount,
           cost: null,
           meta: posting.meta,
+          normalBalanceSide: posting.normalBalanceSide,
         },
         {
           account: tradingAccount,
@@ -520,6 +553,7 @@ function bookPosting(
           amount: posting.amount.neg(),
           cost: null,
           meta: Map(),
+          normalBalanceSide: tradingAccountNormalBalanceSide,
         },
         {
           account: tradingAccount,
@@ -531,6 +565,7 @@ function bookPosting(
           ),
           cost: null,
           meta: Map() as Metadata,
+          normalBalanceSide: tradingAccountNormalBalanceSide,
         },
       ),
       makePriceDirectives(transaction, posting.amount, posting.priceSpec, null),
@@ -546,6 +581,7 @@ function bookPosting(
         amount: posting.amount,
         cost: null,
         meta: posting.meta,
+        normalBalanceSide: posting.normalBalanceSide,
       }),
       [],
     ]);
@@ -560,6 +596,7 @@ function bookPosting(
       amount: amount.amount.neg(),
       cost: null,
       meta: posting.meta,
+      normalBalanceSide: posting.normalBalanceSide,
     }),
   );
 

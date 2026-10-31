@@ -26,6 +26,10 @@ configured Trading account receives generated balancing postings, not the
 position inventory. This keeps reductions scoped to the source account and lets
 booking methods focus on selecting lots and updating inventory.
 
+Booking retains sign-convention and normal-side presentation context without
+changing the canonical amounts it validates and books. It uses that context only
+to format balance assertion failures and transaction residual diagnostics.
+
 ## Tests and changes
 
 `booking.test.ts` discovers `.ledger` / `.json` fixture pairs in `testdata/`;

@@ -12,7 +12,10 @@ import { Cost } from './cost.js';
 import { Inventory } from './inventory.js';
 import { BookedLedger } from './ledger.js';
 
-type TestOptions = Record<string, never>;
+type TestOptions = {
+  readonly compareAccountMaps?: boolean;
+  readonly compareSignConventions?: boolean;
+};
 
 await describe('book', async () => {
   const tests = [];
@@ -55,7 +58,7 @@ await describe('book', async () => {
   }
 });
 
-function cleanup(ledger: BookedLedger, _options?: TestOptions) {
+function cleanup(ledger: BookedLedger, options?: TestOptions) {
   function cleanupMeta(meta: Metadata) {
     if (meta.isEmpty()) {
       return undefined;
@@ -73,9 +76,15 @@ function cleanup(ledger: BookedLedger, _options?: TestOptions) {
       postings: x.postings.map(p => ({
         ...p,
         meta: cleanupMeta(p.meta),
+        normalBalanceSide: options?.compareSignConventions
+          ? p.normalBalanceSide
+          : undefined,
       })),
       inventoriesBefore: undefined,
       inventoriesAfter: x.inventoriesAfter.map(makeInventoryMap),
+      signConvention: options?.compareSignConventions
+        ? x.signConvention
+        : undefined,
       srcCtx: undefined,
     })),
     prices:
@@ -93,6 +102,7 @@ function cleanup(ledger: BookedLedger, _options?: TestOptions) {
           meta: cleanupMeta(c.meta),
           srcCtx: undefined,
         })),
+    accountMap: options?.compareAccountMaps ? ledger.accountMap : undefined,
   };
 }
 

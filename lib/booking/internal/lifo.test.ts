@@ -10,7 +10,7 @@ import { Metadata } from '../../loading/metadata.js';
 import { Cost } from '../cost.js';
 import { Inventory } from '../inventory.js';
 import { Position } from '../position.js';
-import { BookedPosting } from '../transaction.js';
+import { PartialBookedPosting } from './booking-method.js';
 import { LIFO } from './lifo.js';
 
 const amount = (n: number | string, currency: string) =>
@@ -36,7 +36,7 @@ const posting = (
   cost: Cost | null,
   flag = '*',
   meta: Metadata = Map(),
-): BookedPosting => ({
+): PartialBookedPosting => ({
   account,
   flag,
   amount,

@@ -5,8 +5,9 @@ import { Metadata } from '../../loading/metadata.js';
 import { Inventory } from '../inventory.js';
 import { BookedPosting } from '../transaction.js';
 
+export type PartialBookedPosting = Omit<BookedPosting, 'normalBalanceSide'>;
 export type BookResult = [
-  postings: readonly BookedPosting[],
+  postings: readonly PartialBookedPosting[],
   newInventory: Inventory,
 ];
 
