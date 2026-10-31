@@ -13,6 +13,11 @@ in loading.
   indirect price lookup and interpolation options.
 - `bounds.ts` provides partition/bound searches over sorted arrays.
 - `heap.ts` provides heap operations used by booking methods and graph search.
+- `iter.ts` provides lazy iterator transformers.
+
+Code in the `internal/` directory is meant to support implementation of code in
+the parent folder, and should not be accessed directly by Ledger library users.
+
 - `internal/account-tree.ts` formats hierarchical account results.
 - `internal/graph.ts` provides weighted path search used by indirect price
   conversion.
