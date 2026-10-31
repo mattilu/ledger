@@ -7,9 +7,14 @@ import { InventoryMap } from './inventory.js';
 import { Transaction } from './transaction.js';
 
 export interface BookedLedger {
-  readonly transactions: Transaction[];
-  readonly prices: PriceDirective[];
-  readonly accountMap: AccountMap;
+  /** List of booked transactions. */
+  readonly transactions: readonly Transaction[];
+  /** List of price directives, both from user and synthetic. */
+  readonly prices: readonly PriceDirective[];
+  /** Map from currency name to its defining directive. */
   readonly currencyMap: Map<string, CurrencyDirective>;
+  /** State of accounts at the end of booking. */
+  readonly accountMap: AccountMap;
+  /** State of inventories at the end of booking. */
   readonly inventories: InventoryMap;
 }

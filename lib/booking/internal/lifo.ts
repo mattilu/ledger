@@ -7,7 +7,7 @@ import { Cost } from '../cost.js';
 import { Inventory } from '../inventory.js';
 import { Position } from '../position.js';
 import { BookedPosting } from '../transaction.js';
-import { BookingMethod } from './booking-method.js';
+import { BookingMethod, BookResult } from './booking-method.js';
 
 type PositionWithCost = Position & { readonly cost: Cost };
 
@@ -24,7 +24,7 @@ class LifoBookingMethod implements BookingMethod {
     meta: Metadata,
     amount: Amount,
     inventory: Inventory,
-  ): E.Either<Error, [postings: BookedPosting[], newInventory: Inventory]> {
+  ): E.Either<Error, BookResult> {
     const postings: BookedPosting[] = [];
 
     const positions = inventory

@@ -124,6 +124,6 @@ function matches(value: string, regex: RegExp | null): boolean {
   return regex === null || regex.test(value);
 }
 
-function takeFrom(transactions: Transaction[], dateFrom: Date) {
+function takeFrom(transactions: readonly Transaction[], dateFrom: Date) {
   return partitionHi(transactions, t => t.date.getTime() < dateFrom.getTime());
 }

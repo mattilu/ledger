@@ -5,6 +5,11 @@ import { Metadata } from '../../loading/metadata.js';
 import { Inventory } from '../inventory.js';
 import { BookedPosting } from '../transaction.js';
 
+export type BookResult = [
+  postings: readonly BookedPosting[],
+  newInventory: Inventory,
+];
+
 /**
  * Interface to be implemented by booking methods (e.g. FIFO, LIFO, etc.)
  */
@@ -20,7 +25,7 @@ export interface BookingMethod {
    *   add additional metadata.
    * @param amount Amount to be booked.
    * @param inventory Current state of the inventory for the account.
-   * @returns A pair of [postings, newInventory].
+   * @returns Either a pair of [postings, newInventory], or an error.
    */
   book(
     account: string,
@@ -28,5 +33,5 @@ export interface BookingMethod {
     meta: Metadata,
     amount: Amount,
     inventory: Inventory,
-  ): E.Either<Error, [postings: BookedPosting[], newInventory: Inventory]>;
+  ): E.Either<Error, BookResult>;
 }
