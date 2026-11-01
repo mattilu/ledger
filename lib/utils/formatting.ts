@@ -7,11 +7,22 @@ import { Cost } from '../booking/cost.js';
 import { Inventory, InventoryMap } from '../booking/inventory.js';
 import { Position } from '../booking/position.js';
 import { BookedPosting, Transaction } from '../booking/transaction.js';
+import { getAccountTypeUnchecked, NormalBalanceSide } from '../core/account.js';
 import { Amount } from '../core/amount.js';
+import {
+  CanonicalAmountConverter,
+  DefaultSignConvention,
+  fromToCanonicalAmount,
+  SignConvention,
+} from '../core/sign-convention.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
 import { formatTree, makeAccountTree } from './internal/account-tree.js';
 
 export interface FormatterOptions {
+  /**
+   * Map from currency name to the directive that defines it.
+   * Used to determine currency formatting options.
+   */
   readonly currencyMap: ImmutableMap<string, CurrencyDirective>;
 }
 
@@ -31,6 +42,9 @@ export enum FormatBalanceMode {
 export type FormatTransactionOptions = {
   /** Determines how running balances are formatted. Defaults to `None`. */
   readonly formatBalance?: FormatBalanceMode;
+
+  /** If specified, use this sign convention instead of the transaction's. */
+  readonly signConvention?: SignConvention;
 };
 
 type FormatAccountsOptionsPlain = {
@@ -91,6 +105,12 @@ export type FormatInventoriesOptions = {
    * Only effective when `tree` is true.
    */
   readonly maxDepth?: number;
+
+  /** If specified, format inventory amounts using this sign convention. */
+  readonly signConvention?: SignConvention;
+
+  /** If specified, convert inventory amounts using this converter. */
+  readonly converter?: CanonicalAmountConverter;
 };
 
 export class Formatter {
@@ -146,10 +166,12 @@ export class Formatter {
     options?: FormatTransactionOptions,
   ): string {
     const parts = [this.formatTransactionHeader(transaction)];
+    const signConvention =
+      options?.signConvention ?? transaction.signConvention;
 
     let inventories = transaction.inventoriesBefore;
     for (const posting of transaction.postings) {
-      parts.push(this.formatPosting(transaction, posting));
+      parts.push(this.formatPosting(transaction, posting, signConvention));
 
       if (
         (options?.formatBalance ?? FormatBalanceMode.None) !==
@@ -172,10 +194,31 @@ export class Formatter {
             new Amount(ZERO, posting.amount.currency),
           );
 
-          parts.push(`  ; ${this.formatAmount(total)}`);
+          parts.push(
+            `  ; ${this.formatAmount(
+              this.convertAmount(
+                posting.account,
+                total,
+                signConvention,
+                posting.normalBalanceSide,
+              ),
+            )}`,
+          );
         } else {
           for (const position of positions) {
-            parts.push(`  ; ${this.formatPosition(position)}`);
+            parts.push(
+              `  ; ${this.formatPosition(
+                new Position(
+                  this.convertAmount(
+                    posting.account,
+                    position.amount,
+                    signConvention,
+                    posting.normalBalanceSide,
+                  ),
+                  position.cost,
+                ),
+              )}`,
+            );
           }
         }
       }
@@ -236,12 +279,25 @@ export class Formatter {
               inventory.getPositions().map(x => x.amount),
             );
 
+    const signConvention = options?.signConvention ?? DefaultSignConvention;
+    const converter =
+      options?.converter ?? new CanonicalAmountConverter(ImmutableMap());
+
     return this.formatAccounts(
       inventories,
-      inventory =>
+      (inventory, account) =>
         Seq(maybeAggregate(inventory).getPositions())
           .sortBy(x => Seq([x.amount.currency, x.cost?.date.getTime() ?? 0]))
-          .map(position => this.formatPosition(position))
+          .map(position =>
+            this.formatPosition(
+              account !== ''
+                ? new Position(
+                    converter.convert(position.amount, signConvention, account),
+                    position.cost,
+                  )
+                : position,
+            ),
+          )
           .toArray(),
       {
         tree: options?.tree,
@@ -261,10 +317,34 @@ export class Formatter {
     return `${this.formatDate(transaction.date)} ${transaction.flag} "${transaction.description}"`;
   }
 
-  private formatPosting(transaction: Transaction, posting: BookedPosting) {
+  private formatPosting(
+    transaction: Transaction,
+    posting: BookedPosting,
+    signConvention: SignConvention,
+  ) {
+    const amount = this.convertAmount(
+      posting.account,
+      posting.amount,
+      signConvention,
+      posting.normalBalanceSide,
+    );
     const flag = posting.flag !== transaction.flag ? `${posting.flag} ` : '';
     return posting.cost === null
-      ? `  ${flag}${posting.account} ${this.formatAmount(posting.amount)}`
-      : `  ${flag}${posting.account} ${this.formatAmount(posting.amount)} ${this.formatCost(posting.cost)}`;
+      ? `  ${flag}${posting.account} ${this.formatAmount(amount)}`
+      : `  ${flag}${posting.account} ${this.formatAmount(amount)} ${this.formatCost(posting.cost)}`;
+  }
+
+  private convertAmount(
+    account: string,
+    amount: Amount,
+    convention: SignConvention,
+    normalBalanceSide: NormalBalanceSide,
+  ): Amount {
+    return fromToCanonicalAmount(
+      amount,
+      convention,
+      getAccountTypeUnchecked(account),
+      normalBalanceSide,
+    );
   }
 }
