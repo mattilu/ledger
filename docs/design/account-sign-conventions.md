@@ -1,6 +1,6 @@
 # Account sign conventions
 
-- **Status:** Proposed.
+- **Status:** Implemented.
 - **Supersedes:** None.
 
 Ledger's fixed sign convention can make balances unintuitive: `Income`, `Equity`

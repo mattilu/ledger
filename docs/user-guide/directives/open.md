@@ -16,6 +16,7 @@ The supported keys are:
 | ----------------- | ------- | ------------------------------------------------------------------------------------------------------------ |
 | `trading-account` | Account | Selects the trading account used for generated postings when the transaction and posting do not override it. |
 | `booking-method`  | String  | Selects `fifo` or `lifo` when not overridden by transaction/posting metadata.                                |
+| `normal-balance`  | String  | Sets this account's normal side to `debit` or `credit` for sign presentation.                                |
 
 Example:
 
@@ -23,11 +24,20 @@ Example:
 2026-01-01 open Assets:Brokerage:Stocks USD
   trading-account: Trading:Brokerage
   booking-method: "fifo"
+
+2026-01-01 open Expenses:Credit-Card:Rebates
+  normal-balance: "credit"
 ```
 
 An account-level booking method applies when reducing costed positions in this
 account. Metadata precedence is described in the
 [transaction reference](./transaction.md#behavior-changing-metadata).
+
+`normal-balance` is inherited by descendant accounts unless they have a nearer
+override. The setting persists after the account is closed. Reopening with a new
+`normal-balance` replaces its override; reopening without the metadata clears
+that account's override. Invalid values or non-string metadata are load errors.
+See [Sign conventions](../options.md#sign-convention).
 
 See the [`open` syntax](../syntax.md#open) and
 [account-reference-checks](../options.md#account-reference-checks).
