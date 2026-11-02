@@ -4,6 +4,7 @@ import {
   flag,
   multioption,
   number,
+  oneOf,
   option,
   optional,
   positional,
@@ -15,6 +16,7 @@ import { ArgParser, ParsingInto } from 'cmd-ts/dist/cjs/argparser.js';
 import { either as E, function as F } from 'fp-ts';
 
 import { book } from '../lib/booking/booking.js';
+import { SignConvention } from '../lib/core/sign-convention.js';
 import { Directive } from '../lib/loading/directive.js';
 import { load } from '../lib/loading/loader.js';
 import { CashFlowReport } from '../lib/reporting/cash-flow.js';
@@ -59,6 +61,11 @@ const commonArgs = {
     type: array(string),
     description: 'Regex to match currencies to include; can be repeated',
   }),
+  signConvention: option({
+    long: 'sign-convention',
+    type: optional(oneOf(Object.values(SignConvention))),
+    description: `Sign convention to use for the report.`,
+  }),
 };
 
 const formatInventoryArgs = {
@@ -92,12 +99,14 @@ function makeInventoryFormatOptions(options: {
   tree: boolean;
   showTotals: boolean;
   maxDepth?: number;
-}): FormatInventoriesOptions {
+  signConvention?: SignConvention;
+}): Omit<FormatInventoriesOptions, 'converter'> {
   return {
     showCost: !options.hideCost,
     tree: options.tree,
     showTotals: options.showTotals,
     maxDepth: options.maxDepth,
+    signConvention: options.signConvention,
   };
 }
 

@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test';
 
+import { SignConvention } from '../core/sign-convention.js';
 import { CashFlowReport, CashFlowReportOptions } from './cash-flow.js';
 import { collectTests } from './internal/testing.js';
 
@@ -52,6 +53,17 @@ await describe('CashFlowReport', async () => {
         },
       },
       {
+        name: 'show from accounts, net-worth-positive convention',
+        scenario: 'cash-flow-net-worth-positive',
+        options: {
+          dateFrom: new Date('2025-11-04T00:00:00Z'),
+          showFromAccounts: true,
+          formatOptions: {
+            signConvention: SignConvention.NetWorthPositive,
+          },
+        },
+      },
+      {
         name: 'tree baseline',
         scenario: 'cash-flow-tree-baseline',
         options: {
@@ -72,6 +84,18 @@ await describe('CashFlowReport', async () => {
           dateFrom: new Date('2025-11-04T00:00:00Z'),
           showFromAccounts: true,
           formatOptions: { tree: true },
+        },
+      },
+      {
+        name: 'tree show from accounts',
+        scenario: 'cash-flow-tree-net-worth-positive',
+        options: {
+          dateFrom: new Date('2025-11-04T00:00:00Z'),
+          showFromAccounts: true,
+          formatOptions: {
+            tree: true,
+            signConvention: SignConvention.NetWorthPositive,
+          },
         },
       },
       {

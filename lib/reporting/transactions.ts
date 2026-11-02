@@ -1,5 +1,6 @@
 import { BookedLedger } from '../booking/ledger.js';
 import { BookedPosting, Transaction } from '../booking/transaction.js';
+import { SignConvention } from '../core/sign-convention.js';
 import { partitionHi } from '../utils/bounds.js';
 import { FormatBalanceMode, Formatter } from '../utils/formatting.js';
 import { makeRegexp } from './internal/regexp-utils.js';
@@ -43,6 +44,11 @@ export interface TransactionsReportOptions {
    * Determines how running balance is formatted. Defaults to `None`.
    */
   readonly formatBalance?: FormatBalanceMode;
+
+  /**
+   * Overrides each transaction's entry convention for this report.
+   */
+  readonly signConvention?: SignConvention;
 }
 
 /**
@@ -108,7 +114,10 @@ export class TransactionsReport implements Report {
               ...transaction,
               postings: postingsToReport,
             },
-            { formatBalance: this.options.formatBalance },
+            {
+              formatBalance: this.options.formatBalance,
+              signConvention: this.options.signConvention,
+            },
           ),
         );
 

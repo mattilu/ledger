@@ -23,7 +23,7 @@ export async function collectTests(scenario: string): Promise<TestCase[]> {
     const srcPath = path.join(dataDir, testName, 'main.ledger');
 
     const got = F.pipe(await load(srcPath), E.flatMap(book));
-    assert(E.isRight(got));
+    assert(E.isRight(got), `${got}`);
 
     tests.push({
       testName,

@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test';
 
+import { SignConvention } from '../core/sign-convention.js';
 import { FormatBalanceMode } from '../utils/formatting.js';
 import { collectTests } from './internal/testing.js';
 import {
@@ -64,6 +65,21 @@ await describe('InventoryReport', async () => {
         name: 'with running balance aggregated',
         scenario: 'transactions-balance-aggregated',
         options: { formatBalance: FormatBalanceMode.Aggregate },
+      },
+      {
+        name: 'normal-balance-positive convention',
+        scenario: 'transactions-normal-balance-positive',
+        options: {
+          signConvention: SignConvention.NormalBalancePositive,
+        },
+      },
+      {
+        name: 'normal-balance-positive convention, full balance',
+        scenario: 'transactions-normal-balance-positive-full-balance',
+        options: {
+          signConvention: SignConvention.NormalBalancePositive,
+          formatBalance: FormatBalanceMode.Full,
+        },
       },
     ];
 

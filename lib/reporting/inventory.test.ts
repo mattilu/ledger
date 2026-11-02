@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test';
 
+import { SignConvention } from '../core/sign-convention.js';
 import { collectTests } from './internal/testing.js';
 import { InventoryReport, InventoryReportOptions } from './inventory.js';
 
@@ -34,6 +35,15 @@ await describe('InventoryReport', async () => {
         },
       },
       {
+        name: 'normal-balance-positive convention',
+        scenario: 'inventory-normal-balance-positive',
+        options: {
+          formatOptions: {
+            signConvention: SignConvention.NormalBalancePositive,
+          },
+        },
+      },
+      {
         name: 'format as tree',
         scenario: 'inventory-format-as-tree',
         options: {
@@ -59,6 +69,16 @@ await describe('InventoryReport', async () => {
         scenario: 'inventory-format-as-tree-max-depth',
         options: {
           formatOptions: { tree: true, maxDepth: 1 },
+        },
+      },
+      {
+        name: 'format as tree, normal-balance-positive convention',
+        scenario: 'inventory-format-as-tree-normal-balance-positive',
+        options: {
+          formatOptions: {
+            tree: true,
+            signConvention: SignConvention.NormalBalancePositive,
+          },
         },
       },
     ];
