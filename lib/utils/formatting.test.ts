@@ -1090,6 +1090,25 @@ Assets:Test:Trading 2 VT`,
         inventories: inventories.multipleAccounts,
         options: { tree: true, showTotals: true },
         want: `\
+╿
+├─ Assets       1.00 CHF
+│  │            1 EUR
+│  │            1 JPY
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     │         1 JPY
+│     ├─ Bar    1 EUR
+│     ├─ Baz    1 JPY
+│     └─ Foo    1.00 CHF
+└─ Liabilities  -1 USD
+   └─ Test      -1 USD
+      └─ Qux    -1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, show totals including root',
+        inventories: inventories.multipleAccounts,
+        options: { tree: true, showTotals: true, showRootTotal: true },
+        want: `\
 ╿               1.00 CHF
 │               1 EUR
 │               1 JPY
@@ -1113,6 +1132,30 @@ Assets:Test:Trading 2 VT`,
         options: {
           tree: true,
           showTotals: true,
+          signConvention: SignConvention.NormalBalancePositive,
+        },
+        want: `\
+╿
+├─ Assets       1.00 CHF
+│  │            1 EUR
+│  │            1 JPY
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     │         1 JPY
+│     ├─ Bar    1 EUR
+│     ├─ Baz    1 JPY
+│     └─ Foo    1.00 CHF
+└─ Liabilities  1 USD
+   └─ Test      1 USD
+      └─ Qux    1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, show totals including root, sign convention',
+        inventories: inventories.multipleAccounts,
+        options: {
+          tree: true,
+          showTotals: true,
+          showRootTotal: true,
           signConvention: SignConvention.NormalBalancePositive,
         },
         want: `\
@@ -1145,6 +1188,33 @@ Assets:Test:Trading 2 VT`,
           ),
         },
         want: `\
+╿
+├─ Assets       1.00 CHF
+│  │            1 EUR
+│  │            1 JPY
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     │         1 JPY
+│     ├─ Bar    1 EUR
+│     ├─ Baz    1 JPY
+│     └─ Foo    -1.00 CHF
+└─ Liabilities  1 USD
+   └─ Test      1 USD
+      └─ Qux    1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, show totals including root, sign convention, normal-balance side override',
+        inventories: inventories.multipleAccounts,
+        options: {
+          tree: true,
+          showTotals: true,
+          showRootTotal: true,
+          signConvention: SignConvention.NormalBalancePositive,
+          converter: new CanonicalAmountConverter(
+            Map([['Assets:Test:Foo', NormalBalanceSide.Credit]]),
+          ),
+        },
+        want: `\
 ╿               1.00 CHF
 │               1 EUR
 │               1 JPY
@@ -1167,10 +1237,7 @@ Assets:Test:Trading 2 VT`,
         inventories: inventories.multipleAccounts,
         options: { tree: true, maxDepth: 2, showTotals: true },
         want: `\
-╿               1.00 CHF
-│               1 EUR
-│               1 JPY
-│               -1 USD
+╿
 ├─ Assets       1.00 CHF
 │  │            1 EUR
 │  │            1 JPY
@@ -1187,6 +1254,27 @@ Assets:Test:Trading 2 VT`,
           tree: true,
           maxDepth: 2,
           showTotals: true,
+          signConvention: SignConvention.NormalBalancePositive,
+        },
+        want: `\
+╿
+├─ Assets       1.00 CHF
+│  │            1 EUR
+│  │            1 JPY
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     └         1 JPY
+└─ Liabilities  1 USD
+   └─ Test      1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, max depth, show totals including root, sign convention',
+        inventories: inventories.multipleAccounts,
+        options: {
+          tree: true,
+          maxDepth: 2,
+          showTotals: true,
+          showRootTotal: true,
           signConvention: SignConvention.NormalBalancePositive,
         },
         want: `\
@@ -1210,6 +1298,33 @@ Assets:Test:Trading 2 VT`,
           tree: true,
           maxDepth: 2,
           showTotals: true,
+          signConvention: SignConvention.NormalBalancePositive,
+          converter: new CanonicalAmountConverter(
+            Map([
+              ['Assets:Test:Foo', NormalBalanceSide.Credit],
+              ['Liabilities:Test', NormalBalanceSide.Debit],
+            ]),
+          ),
+        },
+        want: `\
+╿
+├─ Assets       1.00 CHF
+│  │            1 EUR
+│  │            1 JPY
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     └         1 JPY
+└─ Liabilities  1 USD
+   └─ Test      -1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, max depth, show totals including root, sign convention, normal-balance side override',
+        inventories: inventories.multipleAccounts,
+        options: {
+          tree: true,
+          maxDepth: 2,
+          showTotals: true,
+          showRootTotal: true,
           signConvention: SignConvention.NormalBalancePositive,
           converter: new CanonicalAmountConverter(
             Map([
@@ -1271,9 +1386,7 @@ Assets:Test:Trading 2 VT`,
         inventories: inventories.costs,
         options: { tree: true, showTotals: true },
         want: `\
-╿                 1 QQQ { 500.00 CHF, 2025-11-01 }
-│                 1 VT { 150.00 CHF, 2025-11-01 }
-│                 1 VT { 140.00 CHF, 2025-11-02 }
+╿
 └─ Assets         1 QQQ { 500.00 CHF, 2025-11-01 }
    │              1 VT { 150.00 CHF, 2025-11-01 }
    │              1 VT { 140.00 CHF, 2025-11-02 }
@@ -1300,8 +1413,7 @@ Assets:Test:Trading 2 VT`,
         inventories: inventories.costs,
         options: { tree: true, showCost: false, showTotals: true },
         want: `\
-╿                 1 QQQ
-│                 2 VT
+╿
 └─ Assets         1 QQQ
    │              2 VT
    └─ Test        1 QQQ

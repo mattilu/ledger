@@ -106,10 +106,29 @@ await describe('CashFlowReport', async () => {
         },
       },
       {
+        name: 'tree show totals including root',
+        scenario: 'cash-flow-tree-totals-include-root',
+        options: {
+          formatOptions: { tree: true, showTotals: true, showRootTotal: true },
+        },
+      },
+      {
         name: 'tree show totals, hide cost',
         scenario: 'cash-flow-tree-totals-hide-cost',
         options: {
           formatOptions: { tree: true, showTotals: true, showCost: false },
+        },
+      },
+      {
+        name: 'tree show totals including root, hide cost',
+        scenario: 'cash-flow-tree-totals-hide-cost-include-root',
+        options: {
+          formatOptions: {
+            tree: true,
+            showTotals: true,
+            showRootTotal: true,
+            showCost: false,
+          },
         },
       },
       {

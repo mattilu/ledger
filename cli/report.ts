@@ -85,6 +85,13 @@ const formatInventoryArgs = {
     description:
       'Show totals of descendant accounts on each parent. Only effective with `--tree`',
   }),
+  showRootTotal: flag({
+    long: 'root-total',
+    short: 'R',
+    description:
+      'Show the aggregate root total. Only effective with `--tree` and `--totals`',
+    defaultValue: () => false,
+  }),
   maxDepth: option({
     long: 'max-depth',
     short: 'M',
@@ -98,6 +105,7 @@ function makeInventoryFormatOptions(options: {
   hideCost: boolean;
   tree: boolean;
   showTotals: boolean;
+  showRootTotal?: boolean;
   maxDepth?: number;
   signConvention?: SignConvention;
 }): Omit<FormatInventoriesOptions, 'converter'> {
@@ -105,6 +113,7 @@ function makeInventoryFormatOptions(options: {
     showCost: !options.hideCost,
     tree: options.tree,
     showTotals: options.showTotals,
+    showRootTotal: options.showRootTotal,
     maxDepth: options.maxDepth,
     signConvention: options.signConvention,
   };
@@ -212,7 +221,7 @@ const unrealizedPnl = command({
   name: 'unrealized-pnl',
   args: {
     ...commonArgs,
-    ...formatInventoryArgs,
+    ...(({ showRootTotal: _, ...rest }) => rest)(formatInventoryArgs),
     aggregate: flag({
       long: 'aggregate',
       description: 'Whether to display aggregate PnL instead of per-position',

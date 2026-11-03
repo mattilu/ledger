@@ -1,9 +1,6 @@
 Cash flows:
 
-╿                     -5250 CHF
-│                     5000 EUR
-│                     3000 USD
-│                     10 VT
+╿
 ├─ Assets             14750 CHF
 │  │                  5000 EUR
 │  │                  3000 USD

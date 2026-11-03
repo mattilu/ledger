@@ -7,7 +7,11 @@ import { Cost } from '../booking/cost.js';
 import { Inventory, InventoryMap } from '../booking/inventory.js';
 import { Position } from '../booking/position.js';
 import { BookedPosting, Transaction } from '../booking/transaction.js';
-import { getAccountTypeUnchecked, NormalBalanceSide } from '../core/account.js';
+import {
+  AccountType,
+  getAccountTypeUnchecked,
+  NormalBalanceSide,
+} from '../core/account.js';
 import { Amount } from '../core/amount.js';
 import {
   CanonicalAmountConverter,
@@ -105,6 +109,13 @@ export type FormatInventoriesOptions = {
    * Only effective when `tree` is true.
    */
   readonly maxDepth?: number;
+
+  /**
+   * If true, also show the total of the tree root. Since the root is not a real
+   * account, this is disabled by default. If enabled, the total is formatted
+   * according to the sign convention for a debit-normal Assets account.
+   */
+  readonly showRootTotal?: boolean;
 
   /** If specified, format inventory amounts using this sign convention. */
   readonly signConvention?: SignConvention;
@@ -286,19 +297,32 @@ export class Formatter {
     return this.formatAccounts(
       inventories,
       (inventory, account) =>
-        Seq(maybeAggregate(inventory).getPositions())
-          .sortBy(x => Seq([x.amount.currency, x.cost?.date.getTime() ?? 0]))
-          .map(position =>
-            this.formatPosition(
-              account !== ''
-                ? new Position(
-                    converter.convert(position.amount, signConvention, account),
+        account === '' && !options?.showRootTotal
+          ? []
+          : Seq(maybeAggregate(inventory).getPositions())
+              .sortBy(x =>
+                Seq([x.amount.currency, x.cost?.date.getTime() ?? 0]),
+              )
+              .map(position =>
+                this.formatPosition(
+                  new Position(
+                    account === ''
+                      ? fromToCanonicalAmount(
+                          position.amount,
+                          signConvention,
+                          AccountType.Assets,
+                          NormalBalanceSide.Debit,
+                        )
+                      : converter.convert(
+                          position.amount,
+                          signConvention,
+                          account,
+                        ),
                     position.cost,
-                  )
-                : position,
-            ),
-          )
-          .toArray(),
+                  ),
+                ),
+              )
+              .toArray(),
       {
         tree: options?.tree,
         aggregate: options?.showTotals,

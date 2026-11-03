@@ -65,6 +65,13 @@ await describe('InventoryReport', async () => {
         },
       },
       {
+        name: 'format as tree with totals including root',
+        scenario: 'inventory-format-as-tree-totals-include-root',
+        options: {
+          formatOptions: { tree: true, showTotals: true, showRootTotal: true },
+        },
+      },
+      {
         name: 'format as tree with max depth',
         scenario: 'inventory-format-as-tree-max-depth',
         options: {
