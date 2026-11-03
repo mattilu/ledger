@@ -23,9 +23,8 @@ await describe('parse', async () => {
   assert(tests.length > 0);
 
   for (const t of tests) {
-    await test(t.testName, async () => {
+    await test(t.testName, async ctx => {
       const srcContent = await readFile(t.srcPath, { encoding: 'utf-8' });
-      const wantContent = await readFile(t.wantPath, { encoding: 'utf-8' });
       const got = F.pipe(
         parse(srcContent),
         E.bimap(
@@ -36,7 +35,9 @@ await describe('parse', async () => {
         ),
       );
 
-      assert.deepEqual(got, JSON.parse(wantContent), t.wantPath);
+      ctx.assert.fileSnapshot(got, t.wantPath, {
+        serializers: [x => JSON.stringify(x, null, 2) + '\n'],
+      });
     });
   }
 });

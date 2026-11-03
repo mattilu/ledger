@@ -1,18 +1,23 @@
 import { Map } from 'immutable';
 
-import { CloseDirective } from '../loading/directives/close.js';
+import { SignConvention } from '../core/sign-convention.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
-import { OpenDirective } from '../loading/directives/open.js';
 import { PriceDirective } from '../loading/directives/price.js';
+import { AccountMap } from '../loading/ledger.js';
 import { InventoryMap } from './inventory.js';
 import { Transaction } from './transaction.js';
 
-export type AccountMap = Map<string, OpenDirective | CloseDirective>;
-
 export interface BookedLedger {
-  readonly transactions: Transaction[];
-  readonly prices: PriceDirective[];
-  readonly accountMap: AccountMap;
+  /** List of booked transactions. */
+  readonly transactions: readonly Transaction[];
+  /** List of price directives, both from user and synthetic. */
+  readonly prices: readonly PriceDirective[];
+  /** Map from currency name to its defining directive. */
   readonly currencyMap: Map<string, CurrencyDirective>;
+  /** State of accounts at the end of booking. */
+  readonly accountMap: AccountMap;
+  /** State of inventories at the end of booking. */
   readonly inventories: InventoryMap;
+  /** Active sign convention. */
+  readonly signConvention: SignConvention;
 }

@@ -1,0 +1,99 @@
+{
+  "options": {
+    "compareAccountMap": true,
+    "maxDate": "2026-10-06"
+  },
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "directives": [
+        {
+          "type": "open",
+          "date": "2026-10-01T00:00:00.000Z",
+          "account": "Assets:Foo",
+          "currencies": []
+        },
+        {
+          "type": "open",
+          "date": "2026-10-03T00:00:00.000Z",
+          "account": "Assets:Bar",
+          "currencies": []
+        },
+        {
+          "type": "open",
+          "date": "2026-10-03T00:00:00.000Z",
+          "account": "Assets:Baz",
+          "currencies": []
+        },
+        {
+          "type": "open",
+          "date": "2026-10-05T00:00:00.000Z",
+          "account": "Assets:Qux",
+          "currencies": []
+        }
+      ],
+      "accountMap": {
+        "Assets:Foo": {
+          "open": {
+            "type": "open",
+            "date": "2026-10-01T00:00:00.000Z",
+            "meta": {},
+            "account": "Assets:Foo",
+            "currencies": [],
+            "srcCtx": {
+              "row": 1,
+              "col": 1,
+              "filePath": "lib/loading/testdata/take-while/main.ledger"
+            },
+            "optionMap": {}
+          }
+        },
+        "Assets:Bar": {
+          "open": {
+            "type": "open",
+            "date": "2026-10-03T00:00:00.000Z",
+            "meta": {},
+            "account": "Assets:Bar",
+            "currencies": [],
+            "srcCtx": {
+              "row": 2,
+              "col": 1,
+              "filePath": "lib/loading/testdata/take-while/main.ledger"
+            },
+            "optionMap": {}
+          }
+        },
+        "Assets:Baz": {
+          "open": {
+            "type": "open",
+            "date": "2026-10-03T00:00:00.000Z",
+            "meta": {},
+            "account": "Assets:Baz",
+            "currencies": [],
+            "srcCtx": {
+              "row": 3,
+              "col": 1,
+              "filePath": "lib/loading/testdata/take-while/main.ledger"
+            },
+            "optionMap": {}
+          }
+        },
+        "Assets:Qux": {
+          "open": {
+            "type": "open",
+            "date": "2026-10-05T00:00:00.000Z",
+            "meta": {},
+            "account": "Assets:Qux",
+            "currencies": [],
+            "srcCtx": {
+              "row": 4,
+              "col": 1,
+              "filePath": "lib/loading/testdata/take-while/main.ledger"
+            },
+            "optionMap": {}
+          }
+        }
+      }
+    }
+  }
+}

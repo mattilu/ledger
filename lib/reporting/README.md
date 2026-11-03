@@ -13,7 +13,10 @@ CLI invokes those earlier pipeline stages.
 - `internal/regexp-utils.ts` contains shared report filtering logic.
 - `internal/testing.ts` provides test fixture collection helpers.
 
-Shared rendering and account-tree formatting live in `lib/utils/formatting.ts`.
+Reports convert canonical balances and postings at presentation time using their
+selected sign convention and account normal balance sides. Unless overridden,
+account-related reports use the root file's final convention, while transaction
+related reports use the convention captured at each transaction.
 
 ## Tests and changes
 

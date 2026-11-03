@@ -1,91 +1,89 @@
 {
-  "_tag": "Right",
-  "right": {
-    "directives": [
-      {
-        "type": "open",
-        "date": "2025-06-01T00:00:00.000Z",
-        "account": "Assets:Bar",
-        "currencies": [],
-        "meta": {
-          "currency-key": {
-            "type": "currency",
-            "value": "CHF"
-          }
-        },
-        "optionMap": {}
-      },
-      {
-        "type": "close",
-        "date": "2025-06-01T00:00:00.000Z",
-        "account": "Assets:Bar",
-        "meta": {
-          "date-key": {
-            "type": "date",
-            "value": "2025-06-02T00:00:00.000Z"
-          }
-        },
-        "optionMap": {}
-      },
-      {
-        "type": "balance",
-        "date": "2025-06-01T00:00:00.000Z",
-        "balances": [
-          {
-            "account": "Assets:Foo",
-            "amount": {
-              "amount": "0",
-              "currency": "CHF"
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "directives": [
+        {
+          "type": "open",
+          "date": "2025-06-01T00:00:00.000Z",
+          "meta": {
+            "currency-key": {
+              "type": "currency",
+              "value": "CHF"
             }
-          }
-        ],
-        "meta": {
-          "string-key": {
-            "type": "string",
-            "value": "string-value"
-          }
+          },
+          "account": "Assets:Bar",
+          "currencies": []
         },
-        "optionMap": {}
-      },
-      {
-        "type": "transaction",
-        "date": "2025-06-01T00:00:00.000Z",
-        "dateSpec": {
-          "date": "2025-06-01",
-          "time": null,
-          "timezone": null
-        },
-        "description": "Test",
-        "flag": "*",
-        "meta": {
-          "amount-key": {
-            "type": "amount",
-            "value": {
-              "amount": "1",
-              "currency": "EUR"
+        {
+          "type": "close",
+          "date": "2025-06-01T00:00:00.000Z",
+          "meta": {
+            "date-key": {
+              "type": "date",
+              "value": "2025-06-02T00:00:00.000Z"
             }
-          }
+          },
+          "account": "Assets:Bar"
         },
-        "postings": [
-          {
-            "account": "Assets:Foo",
-            "amount": {
-              "amount": "1",
-              "currency": "CHF"
-            },
-            "costSpec": null,
-            "priceSpec": null,
-            "flag": "*",
-            "meta": {
-              "number-key": {
-                "type": "number",
-                "value": 1234.5
+        {
+          "type": "balance",
+          "date": "2025-06-01T00:00:00.000Z",
+          "meta": {
+            "string-key": {
+              "type": "string",
+              "value": "string-value"
+            }
+          },
+          "balances": [
+            {
+              "account": "Assets:Foo",
+              "amount": {
+                "amount": "0",
+                "currency": "CHF"
               }
             }
-          }
-        ],
-        "optionMap": {}
-      }
-    ]
+          ]
+        },
+        {
+          "type": "transaction",
+          "date": "2025-06-01T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2025-06-01",
+            "time": null,
+            "timezone": null
+          },
+          "meta": {
+            "amount-key": {
+              "type": "amount",
+              "value": {
+                "amount": "1",
+                "currency": "EUR"
+              }
+            }
+          },
+          "description": "Test",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "CHF"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "meta": {
+                "number-key": {
+                  "type": "number",
+                  "value": 1234.5
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
   }
 }

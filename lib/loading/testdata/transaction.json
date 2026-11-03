@@ -1,461 +1,479 @@
 {
-  "_tag": "Right",
-  "right": {
-    "directives": [
-      {
-        "type": "transaction",
-        "date": "2025-04-01T00:00:00.000Z",
-        "dateSpec": {
-          "date": "2025-04-01",
-          "time": null,
-          "timezone": null
-        },
-        "optionMap": {},
-        "description": "No Postings",
-        "flag": "*",
-        "postings": []
-      },
-      {
-        "type": "transaction",
-        "date": "2025-04-02T00:00:00.000Z",
-        "dateSpec": {
-          "date": "2025-04-02",
-          "time": null,
-          "timezone": null
-        },
-        "optionMap": {},
-        "description": "Posting without amount",
-        "flag": "*",
-        "postings": [
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": null,
-            "costSpec": null,
-            "priceSpec": null
-          }
-        ]
-      },
-      {
-        "type": "transaction",
-        "date": "2025-04-03T00:00:00.000Z",
-        "dateSpec": {
-          "date": "2025-04-03",
-          "time": null,
-          "timezone": null
-        },
-        "optionMap": {},
-        "description": "Postings with amount",
-        "flag": "*",
-        "postings": [
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": {
-              "amount": "10",
-              "currency": "CHF"
-            },
-            "costSpec": null,
-            "priceSpec": null
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "directives": [
+        {
+          "type": "transaction",
+          "date": "2025-04-01T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2025-04-01",
+            "time": null,
+            "timezone": null
           },
-          {
-            "account": "Income:Foo",
-            "flag": "*",
-            "amount": {
-              "amount": "-10",
-              "currency": "CHF"
-            },
-            "costSpec": null,
-            "priceSpec": null
-          }
-        ]
-      },
-      {
-        "type": "transaction",
-        "date": "2025-04-04T00:00:00.000Z",
-        "dateSpec": {
-          "date": "2025-04-04",
-          "time": null,
-          "timezone": null
+          "description": "No Postings",
+          "flag": "*",
+          "postings": []
         },
-        "optionMap": {},
-        "description": "Postings with and without amount",
-        "flag": "*",
-        "postings": [
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": {
-              "amount": "-10",
-              "currency": "CHF"
-            },
-            "costSpec": null,
-            "priceSpec": null
+        {
+          "type": "transaction",
+          "date": "2025-04-02T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2025-04-02",
+            "time": null,
+            "timezone": null
           },
-          {
-            "account": "Assets:Bar",
-            "flag": "*",
-            "amount": null,
-            "costSpec": null,
-            "priceSpec": null
-          }
-        ]
-      },
-      {
-        "type": "transaction",
-        "date": "2025-04-05T00:00:00.000Z",
-        "dateSpec": {
-          "date": "2025-04-05",
-          "time": null,
-          "timezone": null
+          "description": "Posting without amount",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": null,
+              "costSpec": null,
+              "priceSpec": null
+            }
+          ]
         },
-        "optionMap": {},
-        "description": "Posting with total cost spec",
-        "flag": "*",
-        "postings": [
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": {
-              "amount": "10",
-              "currency": "CHF"
-            },
-            "costSpec": {
-              "kind": "total",
-              "amounts": [
-                {
-                  "amount": "10",
-                  "currency": "EUR"
-                }
-              ],
-              "currencies": [],
-              "dateSpecs": [],
-              "dates": [],
-              "tags": []
-            },
-            "priceSpec": null
+        {
+          "type": "transaction",
+          "date": "2025-04-03T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2025-04-03",
+            "time": null,
+            "timezone": null
           },
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": null,
-            "costSpec": null,
-            "priceSpec": null
-          }
-        ]
-      },
-      {
-        "type": "transaction",
-        "date": "2025-04-05T00:00:00.000Z",
-        "dateSpec": {
-          "date": "2025-04-05",
-          "time": null,
-          "timezone": null
-        },
-        "optionMap": {},
-        "description": "Posting with per-unit cost spec",
-        "flag": "*",
-        "postings": [
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": {
-              "amount": "10",
-              "currency": "CHF"
+          "description": "Postings with amount",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "CHF"
+              },
+              "costSpec": null,
+              "priceSpec": null
             },
-            "costSpec": {
-              "kind": "per-unit",
-              "amounts": [
-                {
+            {
+              "account": "Income:Foo",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "CHF"
+              },
+              "costSpec": null,
+              "priceSpec": null
+            }
+          ]
+        },
+        {
+          "type": "transaction",
+          "date": "2025-04-04T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2025-04-04",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Postings with and without amount",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "CHF"
+              },
+              "costSpec": null,
+              "priceSpec": null
+            },
+            {
+              "account": "Assets:Bar",
+              "flag": "*",
+              "amount": null,
+              "costSpec": null,
+              "priceSpec": null
+            }
+          ]
+        },
+        {
+          "type": "transaction",
+          "date": "2025-04-05T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2025-04-05",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Posting with total cost spec",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "CHF"
+              },
+              "costSpec": {
+                "kind": "total",
+                "amounts": [
+                  {
+                    "amount": "10",
+                    "currency": "EUR"
+                  }
+                ],
+                "currencies": [],
+                "dateSpecs": [],
+                "dates": [],
+                "tags": []
+              },
+              "priceSpec": null
+            },
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": null,
+              "costSpec": null,
+              "priceSpec": null
+            }
+          ]
+        },
+        {
+          "type": "transaction",
+          "date": "2025-04-05T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2025-04-05",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Posting with per-unit cost spec",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "CHF"
+              },
+              "costSpec": {
+                "kind": "per-unit",
+                "amounts": [
+                  {
+                    "amount": "1",
+                    "currency": "EUR"
+                  }
+                ],
+                "currencies": [],
+                "dateSpecs": [],
+                "dates": [],
+                "tags": []
+              },
+              "priceSpec": null
+            },
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": null,
+              "costSpec": null,
+              "priceSpec": null
+            }
+          ]
+        },
+        {
+          "type": "transaction",
+          "date": "2025-06-01T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2025-06-01",
+            "time": null,
+            "timezone": null
+          },
+          "description": "ExclamationMark Flag",
+          "flag": "!",
+          "postings": []
+        },
+        {
+          "type": "transaction",
+          "date": "2025-06-01T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2025-06-01",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Posting Flag",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Foo",
+              "flag": "!",
+              "amount": null,
+              "costSpec": null,
+              "priceSpec": null
+            }
+          ]
+        },
+        {
+          "type": "transaction",
+          "date": "2025-08-01T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2025-08-01",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Posting with cost spec filtering specs",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "CHF"
+              },
+              "costSpec": {
+                "kind": "per-unit",
+                "amounts": [],
+                "currencies": [
+                  "EUR"
+                ],
+                "dateSpecs": [
+                  {
+                    "date": "2025-08-01",
+                    "time": null,
+                    "timezone": null
+                  }
+                ],
+                "dates": [
+                  "2025-08-01T00:00:00.000Z"
+                ],
+                "tags": [
+                  "tag-1"
+                ]
+              },
+              "priceSpec": null
+            },
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": null,
+              "costSpec": null,
+              "priceSpec": null
+            }
+          ]
+        },
+        {
+          "type": "transaction",
+          "date": "2025-12-01T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2025-12-01",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Posting with cost spec with date and time",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "CHF"
+              },
+              "costSpec": {
+                "kind": "per-unit",
+                "amounts": [],
+                "currencies": [],
+                "dateSpecs": [
+                  {
+                    "date": "2025-12-01",
+                    "time": "01:02",
+                    "timezone": null
+                  }
+                ],
+                "dates": [
+                  "2025-12-01T01:02:00.000Z"
+                ],
+                "tags": []
+              },
+              "priceSpec": null
+            },
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": null,
+              "costSpec": null,
+              "priceSpec": null
+            }
+          ]
+        },
+        {
+          "type": "transaction",
+          "date": "2025-12-01T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2025-12-01",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Posting with cost spec with date time and timezone",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "CHF"
+              },
+              "costSpec": {
+                "kind": "per-unit",
+                "amounts": [],
+                "currencies": [],
+                "dateSpecs": [
+                  {
+                    "date": "2025-12-01",
+                    "time": "02:03",
+                    "timezone": "+01:00"
+                  }
+                ],
+                "dates": [
+                  "2025-12-01T01:03:00.000Z"
+                ],
+                "tags": []
+              },
+              "priceSpec": null
+            },
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": null,
+              "costSpec": null,
+              "priceSpec": null
+            }
+          ]
+        },
+        {
+          "type": "transaction",
+          "date": "2025-12-01T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2025-12-01",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Posting with per-unit price spec",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "CHF"
+              },
+              "costSpec": null,
+              "priceSpec": {
+                "kind": "per-unit",
+                "amount": {
                   "amount": "1",
                   "currency": "EUR"
                 }
-              ],
-              "currencies": [],
-              "dateSpecs": [],
-              "dates": [],
-              "tags": []
+              }
             },
-            "priceSpec": null
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": null,
+              "costSpec": null,
+              "priceSpec": null
+            }
+          ]
+        },
+        {
+          "type": "transaction",
+          "date": "2025-12-01T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2025-12-01",
+            "time": null,
+            "timezone": null
           },
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": null,
-            "costSpec": null,
-            "priceSpec": null
-          }
-        ]
-      },
-      {
-        "type": "transaction",
-        "date": "2025-06-01T00:00:00.000Z",
-        "dateSpec": {
-          "date": "2025-06-01",
-          "time": null,
-          "timezone": null
-        },
-        "optionMap": {},
-        "description": "ExclamationMark Flag",
-        "flag": "!",
-        "postings": []
-      },
-      {
-        "type": "transaction",
-        "date": "2025-06-01T00:00:00.000Z",
-        "dateSpec": {
-          "date": "2025-06-01",
-          "time": null,
-          "timezone": null
-        },
-        "optionMap": {},
-        "description": "Posting Flag",
-        "flag": "*",
-        "postings": [
-          {
-            "account": "Assets:Foo",
-            "flag": "!",
-            "amount": null,
-            "costSpec": null,
-            "priceSpec": null
-          }
-        ]
-      },
-      {
-        "type": "transaction",
-        "date": "2025-08-01T00:00:00.000Z",
-        "dateSpec": {
-          "date": "2025-08-01",
-          "time": null,
-          "timezone": null
-        },
-        "optionMap": {},
-        "description": "Posting with cost spec filtering specs",
-        "flag": "*",
-        "postings": [
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": {
-              "amount": "10",
-              "currency": "CHF"
-            },
-            "costSpec": {
-              "kind": "per-unit",
-              "amounts": [],
-              "currencies": ["EUR"],
-              "dateSpecs": [
-                {
-                  "date": "2025-08-01",
-                  "time": null,
-                  "timezone": null
-                }
-              ],
-              "dates": ["2025-08-01T00:00:00.000Z"],
-              "tags": ["tag-1"]
-            },
-            "priceSpec": null
-          },
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": null,
-            "costSpec": null,
-            "priceSpec": null
-          }
-        ]
-      },
-      {
-        "type": "transaction",
-        "date": "2025-12-01T00:00:00.000Z",
-        "dateSpec": {
-          "date": "2025-12-01",
-          "time": null,
-          "timezone": null
-        },
-        "optionMap": {},
-        "description": "Posting with cost spec with date and time",
-        "flag": "*",
-        "postings": [
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": {
-              "amount": "10",
-              "currency": "CHF"
-            },
-            "costSpec": {
-              "kind": "per-unit",
-              "amounts": [],
-              "currencies": [],
-              "dateSpecs": [
-                {
-                  "date": "2025-12-01",
-                  "time": "01:02",
-                  "timezone": null
-                }
-              ],
-              "dates": ["2025-12-01T01:02:00.000Z"],
-              "tags": []
-            },
-            "priceSpec": null
-          },
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": null,
-            "costSpec": null,
-            "priceSpec": null
-          }
-        ]
-      },
-      {
-        "type": "transaction",
-        "date": "2025-12-01T00:00:00.000Z",
-        "dateSpec": {
-          "date": "2025-12-01",
-          "time": null,
-          "timezone": null
-        },
-        "optionMap": {},
-        "description": "Posting with cost spec with date time and timezone",
-        "flag": "*",
-        "postings": [
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": {
-              "amount": "10",
-              "currency": "CHF"
-            },
-            "costSpec": {
-              "kind": "per-unit",
-              "amounts": [],
-              "currencies": [],
-              "dateSpecs": [
-                {
-                  "date": "2025-12-01",
-                  "time": "02:03",
-                  "timezone": "+01:00"
-                }
-              ],
-              "dates": ["2025-12-01T01:03:00.000Z"],
-              "tags": []
-            },
-            "priceSpec": null
-          },
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": null,
-            "costSpec": null,
-            "priceSpec": null
-          }
-        ]
-      },
-      {
-        "type": "transaction",
-        "date": "2025-12-01T00:00:00.000Z",
-        "dateSpec": {
-          "date": "2025-12-01",
-          "time": null,
-          "timezone": null
-        },
-        "optionMap": {},
-        "description": "Posting with per-unit price spec",
-        "flag": "*",
-        "postings": [
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": { "amount": "10", "currency": "CHF" },
-            "costSpec": null,
-            "priceSpec": {
+          "description": "Posting with total price spec",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
               "amount": {
-                "amount": "1",
-                "currency": "EUR"
+                "amount": "10",
+                "currency": "CHF"
               },
-              "kind": "per-unit"
-            }
-          },
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": null,
-            "costSpec": null,
-            "priceSpec": null
-          }
-        ]
-      },
-      {
-        "type": "transaction",
-        "date": "2025-12-01T00:00:00.000Z",
-        "dateSpec": {
-          "date": "2025-12-01",
-          "time": null,
-          "timezone": null
-        },
-        "optionMap": {},
-        "description": "Posting with total price spec",
-        "flag": "*",
-        "postings": [
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": { "amount": "10", "currency": "CHF" },
-            "costSpec": null,
-            "priceSpec": {
-              "amount": { "amount": "10", "currency": "EUR" },
-              "kind": "total"
-            }
-          },
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": null,
-            "costSpec": null,
-            "priceSpec": null
-          }
-        ]
-      },
-      {
-        "type": "transaction",
-        "date": "2025-12-01T00:00:00.000Z",
-        "dateSpec": {
-          "date": "2025-12-01",
-          "time": null,
-          "timezone": null
-        },
-        "optionMap": {},
-        "description": "Posting with cost spec and price spec",
-        "flag": "*",
-        "postings": [
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": { "amount": "10", "currency": "CHF" },
-            "costSpec": {
-              "amounts": [{ "amount": "1", "currency": "EUR" }],
-              "currencies": [],
-              "dateSpecs": [],
-              "dates": [],
-              "kind": "per-unit",
-              "tags": []
+              "costSpec": null,
+              "priceSpec": {
+                "kind": "total",
+                "amount": {
+                  "amount": "10",
+                  "currency": "EUR"
+                }
+              }
             },
-            "priceSpec": {
-              "amount": { "amount": "10", "currency": "USD" },
-              "kind": "total"
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": null,
+              "costSpec": null,
+              "priceSpec": null
             }
+          ]
+        },
+        {
+          "type": "transaction",
+          "date": "2025-12-01T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2025-12-01",
+            "time": null,
+            "timezone": null
           },
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": null,
-            "costSpec": null,
-            "priceSpec": null
-          }
-        ]
-      }
-    ]
+          "description": "Posting with cost spec and price spec",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "CHF"
+              },
+              "costSpec": {
+                "kind": "per-unit",
+                "amounts": [
+                  {
+                    "amount": "1",
+                    "currency": "EUR"
+                  }
+                ],
+                "currencies": [],
+                "dateSpecs": [],
+                "dates": [],
+                "tags": []
+              },
+              "priceSpec": {
+                "kind": "total",
+                "amount": {
+                  "amount": "10",
+                  "currency": "USD"
+                }
+              }
+            },
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": null,
+              "costSpec": null,
+              "priceSpec": null
+            }
+          ]
+        }
+      ]
+    }
   }
 }

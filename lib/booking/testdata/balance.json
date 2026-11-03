@@ -1,40 +1,52 @@
 {
-  "_tag": "Right",
-  "right": {
-    "transactions": [
-      {
-        "date": "2025-05-01T00:00:00.000Z",
-        "description": "Open",
-        "flag": "*",
-        "postings": [
-          {
-            "account": "Assets:Foo",
-            "flag": "*",
-            "amount": {
-              "amount": "1",
-              "currency": "USD"
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "transactions": [
+        {
+          "date": "2025-05-01T00:00:00.000Z",
+          "description": "Open",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "USD"
+              },
+              "cost": null
             },
-            "cost": null
-          },
-          {
-            "account": "Equity:Opening-Balances",
-            "flag": "*",
-            "amount": {
-              "amount": "-1",
-              "currency": "USD"
+            {
+              "account": "Equity:Opening-Balances",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Foo": {
+              "USD": [
+                {
+                  "amount": "1",
+                  "cost": null
+                }
+              ]
             },
-            "cost": null
-          }
-        ],
-        "inventoriesAfter": {
-          "Assets:Foo": {
-            "USD": [{ "amount": "1", "cost": null }]
-          },
-          "Equity:Opening-Balances": {
-            "USD": [{ "amount": "-1", "cost": null }]
+            "Equity:Opening-Balances": {
+              "USD": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ]
+            }
           }
         }
-      }
-    ]
+      ]
+    }
   }
 }

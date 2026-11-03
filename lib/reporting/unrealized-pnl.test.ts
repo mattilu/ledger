@@ -1,6 +1,6 @@
-import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
 
+import { SignConvention } from '../core/sign-convention.js';
 import { collectTests } from './internal/testing.js';
 import {
   UnrealizedPnlReport,
@@ -48,6 +48,24 @@ await describe('UnrealizedPnlReport', async () => {
         },
       },
       {
+        name: 'normal-balance-positive sign convention',
+        scenario: 'unrealized-pnl-normal-balance-positive',
+        options: {
+          formatOptions: {
+            signConvention: SignConvention.NormalBalancePositive,
+          },
+        },
+      },
+      {
+        name: 'net-worth-positive sign convention',
+        scenario: 'unrealized-pnl-net-worth-positive',
+        options: {
+          formatOptions: {
+            signConvention: SignConvention.NetWorthPositive,
+          },
+        },
+      },
+      {
         name: 'tree baseline',
         scenario: 'unrealized-pnl-tree-baseline',
         options: {
@@ -66,6 +84,28 @@ await describe('UnrealizedPnlReport', async () => {
         scenario: 'unrealized-pnl-tree-totals',
         options: {
           formatOptions: { tree: true, showTotals: true },
+        },
+      },
+      {
+        name: 'tree show totals, normal-balance-positive convention',
+        scenario: 'unrealized-pnl-tree-totals-normal-balance-positive',
+        options: {
+          formatOptions: {
+            tree: true,
+            showTotals: true,
+            signConvention: SignConvention.NormalBalancePositive,
+          },
+        },
+      },
+      {
+        name: 'tree show totals, net-worth-positive convention',
+        scenario: 'unrealized-pnl-tree-totals-net-worth-positive',
+        options: {
+          formatOptions: {
+            tree: true,
+            showTotals: true,
+            signConvention: SignConvention.NetWorthPositive,
+          },
         },
       },
       {
@@ -95,9 +135,11 @@ await describe('UnrealizedPnlReport', async () => {
       await describe(testCase.name, async () => {
         const tests = await collectTests(testCase.scenario);
         for (const t of tests) {
-          await it(t.testName, async () => {
+          await it(t.testName, async ctx => {
             const got = new UnrealizedPnlReport(testCase.options).run(t.ledger);
-            assert.equal(got.trim(), t.wantReport, t.wantPath);
+            ctx.assert.fileSnapshot(got.trim() + '\n', t.wantPath, {
+              serializers: [],
+            });
           });
         }
       });

@@ -6,8 +6,11 @@ import { makeHeap, popHeap } from '../../utils/heap.js';
 import { Cost } from '../cost.js';
 import { Inventory } from '../inventory.js';
 import { Position } from '../position.js';
-import { BookedPosting } from '../transaction.js';
-import { BookingMethod } from './booking-method.js';
+import {
+  BookingMethod,
+  BookResult,
+  PartialBookedPosting,
+} from './booking-method.js';
 
 type PositionWithCost = Position & { readonly cost: Cost };
 
@@ -24,8 +27,8 @@ class FifoBookingMethod implements BookingMethod {
     meta: Metadata,
     amount: Amount,
     inventory: Inventory,
-  ): E.Either<Error, [postings: BookedPosting[], newInventory: Inventory]> {
-    const postings: BookedPosting[] = [];
+  ): E.Either<Error, BookResult> {
+    const postings: PartialBookedPosting[] = [];
 
     const positions = inventory
       .getPositionsForCurrency(amount.currency)

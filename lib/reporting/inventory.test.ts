@@ -1,6 +1,6 @@
-import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
 
+import { SignConvention } from '../core/sign-convention.js';
 import { collectTests } from './internal/testing.js';
 import { InventoryReport, InventoryReportOptions } from './inventory.js';
 
@@ -35,6 +35,15 @@ await describe('InventoryReport', async () => {
         },
       },
       {
+        name: 'normal-balance-positive convention',
+        scenario: 'inventory-normal-balance-positive',
+        options: {
+          formatOptions: {
+            signConvention: SignConvention.NormalBalancePositive,
+          },
+        },
+      },
+      {
         name: 'format as tree',
         scenario: 'inventory-format-as-tree',
         options: {
@@ -56,10 +65,27 @@ await describe('InventoryReport', async () => {
         },
       },
       {
+        name: 'format as tree with totals including root',
+        scenario: 'inventory-format-as-tree-totals-include-root',
+        options: {
+          formatOptions: { tree: true, showTotals: true, showRootTotal: true },
+        },
+      },
+      {
         name: 'format as tree with max depth',
         scenario: 'inventory-format-as-tree-max-depth',
         options: {
           formatOptions: { tree: true, maxDepth: 1 },
+        },
+      },
+      {
+        name: 'format as tree, normal-balance-positive convention',
+        scenario: 'inventory-format-as-tree-normal-balance-positive',
+        options: {
+          formatOptions: {
+            tree: true,
+            signConvention: SignConvention.NormalBalancePositive,
+          },
         },
       },
     ];
@@ -68,9 +94,11 @@ await describe('InventoryReport', async () => {
       await describe(testCase.name, async () => {
         const tests = await collectTests(testCase.scenario);
         for (const t of tests) {
-          await it(t.testName, async () => {
+          await it(t.testName, async ctx => {
             const got = new InventoryReport(testCase.options).run(t.ledger);
-            assert.equal(got.trim(), t.wantReport, t.wantPath);
+            ctx.assert.fileSnapshot(got.trim() + '\n', t.wantPath, {
+              serializers: [],
+            });
           });
         }
       });

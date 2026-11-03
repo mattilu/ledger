@@ -1,0 +1,8 @@
+{
+  "want": {
+    "_tag": "Left",
+    "left": {
+      "error": "While processing 'balance' directive at lib/booking/testdata/sign-convention/invalid/balance-check-normal-balance-positive.ledger:7: Balance for Liabilities:Credit-Card does not match.\nExpected: 90 USD\nActual: 100 USD\nDelta: -10 USD"
+    }
+  }
+}

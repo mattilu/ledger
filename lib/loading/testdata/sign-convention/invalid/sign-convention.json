@@ -1,0 +1,8 @@
+{
+  "want": {
+    "_tag": "Left",
+    "left": {
+      "error": "Invalid sign-convention option 'unknown': expected one of 'legacy', 'beancount', 'normal-balance-positive', 'net-worth-positive' at lib/loading/testdata/sign-convention/invalid/sign-convention.ledger:1"
+    }
+  }
+}

@@ -6,7 +6,14 @@ import { glob, readFile } from 'fs/promises';
 import { Map as ImmutableMap } from 'immutable';
 import { resolve } from 'path';
 
+import { parseNormalBalanceSide } from '../core/account.js';
 import { Amount } from '../core/amount.js';
+import {
+  CanonicalAmountConverter,
+  DefaultSignConvention,
+  parseSignConvention,
+  SignConvention,
+} from '../core/sign-convention.js';
 import { parse } from '../parsing/parser.js';
 import { SourcePosition } from '../parsing/source-position.js';
 import { AmountSpec } from '../parsing/spec/amount.js';
@@ -15,16 +22,62 @@ import { DirectiveCommonSpec } from '../parsing/spec/directive.js';
 import { CostSpec } from '../parsing/spec/directives/transaction.js';
 import { Expression } from '../parsing/spec/expression.js';
 import { MetadataSpec } from '../parsing/spec/metadata.js';
+import { takeWhile, tee, zip } from '../utils/iter.js';
 import { Directive } from './directive.js';
+import { BalanceDirective, BalanceEntry } from './directives/balance.js';
+import { CloseDirective } from './directives/close.js';
 import { CurrencyDirective } from './directives/currency.js';
+import { OpenDirective } from './directives/open.js';
 import {
   CostSpec as EvaluatedCostSpec,
   Posting,
+  TransactionDirective,
 } from './directives/transaction.js';
 import { LoadError } from './error.js';
-import { Ledger } from './ledger.js';
+import { AccountMap, Ledger } from './ledger.js';
 import { Metadata, MetadataValue } from './metadata.js';
 import { makeSourceContext, SourceContext } from './source-context.js';
+
+type PartialOpenDirective = Omit<OpenDirective, 'accountMap'>;
+type PartialCloseDirective = Omit<CloseDirective, 'accountMap'>;
+
+type PartialBalanceEntry = Omit<BalanceEntry, 'normalBalanceSide'>;
+type PartialBalanceDirective = Omit<BalanceDirective, 'balances'> & {
+  readonly balances: readonly PartialBalanceEntry[];
+};
+
+type PartialPosting = Omit<Posting, 'normalBalanceSide'>;
+type PartialTransactionDirective = Omit<TransactionDirective, 'postings'> & {
+  readonly postings: readonly PartialPosting[];
+};
+
+type PartialDirective =
+  | Exclude<
+      Directive,
+      OpenDirective | CloseDirective | BalanceDirective | TransactionDirective
+    >
+  | PartialOpenDirective
+  | PartialCloseDirective
+  | PartialBalanceDirective
+  | PartialTransactionDirective;
+
+export type LoadOptions = {
+  /**
+   * If specified, instructs `load` to only process directives until this
+   * function yields `false` or completes.
+   *
+   * The resulting directives will be the same as if the filtering was applied
+   * after the whole file is loaded, but `accountMap` will reflect the state
+   * past the last taken directive, which can be different.
+   *
+   * This uses iterables instead of a predicate, to allow callers to look ahead
+   * before making a decision, without forcing the whole evaluation.
+   *
+   * @param directives An iterable of directives to test, date-ordered.
+   * @returns An iterable of booleans.
+   */
+  readonly takeWhile?: (directives: Iterable<Directive>) => Iterable<boolean>;
+};
 
 /**
  * Loads a ledger from a file.
@@ -34,28 +87,28 @@ import { makeSourceContext, SourceContext } from './source-context.js';
  */
 export async function load(
   filePath: string,
+  options?: LoadOptions,
 ): Promise<E.Either<LoadError, Ledger>> {
-  const directives: Directive[] = [];
+  const directives: PartialDirective[] = [];
   const currencyMap = new Map<string, CurrencyDirective>();
   const context: LoadContext = {
     stackTrace: [],
     loadedMap: new Map(),
     defaultTimezone: 'Z',
+    signConvention: DefaultSignConvention,
     optionMap: ImmutableMap(),
   };
 
   return F.pipe(
     await doLoad(filePath, directives, currencyMap, context),
-    E.tap(
-      F.flow(
-        () => directives.sort((a, b) => a.date.getTime() - b.date.getTime()),
-        E.right,
-      ),
-    ),
+    E.bindTo('ctx'),
+    E.bind('normalized', () => normalizeDirectives(directives, options)),
     E.map(
-      (): Ledger => ({
-        directives,
+      ({ ctx, normalized }): Ledger => ({
+        directives: normalized.directives,
         currencyMap: ImmutableMap(currencyMap),
+        accountMap: normalized.accountMap,
+        signConvention: ctx.signConvention,
       }),
     ),
   );
@@ -69,6 +122,8 @@ interface LoadContext {
   readonly loadedMap: Map<string, readonly SourceContext[]>;
   // Current default timezone.
   readonly defaultTimezone: string;
+  // Current sign convention.
+  readonly signConvention: SignConvention;
   // Current options.
   readonly optionMap: ImmutableMap<string, string>;
 }
@@ -79,14 +134,14 @@ interface LoadContext {
  * @param filePath Path of the file to load.
  * @param directives Output array to collect directives into.
  * @param ctx Current context for the load
- * @returns Either a LoadError, or void.
+ * @returns Either a LoadError, or the final state of LoadContext.
  */
 async function doLoad(
   filePath: string,
-  directives: Directive[],
+  directives: PartialDirective[],
   currencyMap: Map<string, CurrencyDirective>,
   ctx: LoadContext,
-): Promise<E.Either<LoadError, unknown>> {
+): Promise<E.Either<LoadError, LoadContext>> {
   ctx.loadedMap.set(filePath, ctx.stackTrace);
 
   const parsed = F.pipe(
@@ -192,6 +247,7 @@ async function doLoad(
                     ? null
                     : evaluateExpression(balance.approx),
               })),
+              signConvention: ctx.signConvention,
               srcCtx: makeSourceContext(filePath, directive.srcPos),
               optionMap: ctx.optionMap,
             });
@@ -290,13 +346,40 @@ async function doLoad(
           E.Do,
           E.bind('meta', () => makeMeta(directive)),
           E.bind('date', () => makeDate(directive)),
-          E.map(({ date, meta }) => {
+          E.bind('normalBalanceSide', ({ meta }) => {
+            const normalBalance = meta.get('normal-balance');
+            if (normalBalance === undefined) {
+              return E.of(undefined);
+            }
+            if (normalBalance.type !== 'string') {
+              return E.left(
+                new LoadError(
+                  'Invalid normal-balance metadata type',
+                  makeSourceContext(filePath, directive.srcPos),
+                  ctx.stackTrace,
+                ),
+              );
+            }
+            return F.pipe(
+              parseNormalBalanceSide(normalBalance.value),
+              E.mapLeft(
+                err =>
+                  new LoadError(
+                    `Invalid normal-balance value '${normalBalance.value}': ${err}`,
+                    makeSourceContext(filePath, directive.srcPos),
+                    ctx.stackTrace,
+                  ),
+              ),
+            );
+          }),
+          E.map(({ date, meta, normalBalanceSide }) => {
             directives.push({
               type: 'open',
               date: date,
               meta: meta,
               account: directive.account,
               currencies: directive.currencies,
+              normalBalanceSide: normalBalanceSide,
               srcCtx: makeSourceContext(filePath, directive.srcPos),
               optionMap: ctx.optionMap,
             });
@@ -304,7 +387,26 @@ async function doLoad(
         );
         break;
       }
-      case 'option':
+      case 'option': {
+        switch (directive.optionName) {
+          case 'default-timezone':
+            ctx = { ...ctx, defaultTimezone: directive.optionValue };
+            break;
+          case 'sign-convention': {
+            const convention = parseSignConvention(directive.optionValue);
+            if (E.isLeft(convention)) {
+              return E.left(
+                new LoadError(
+                  `Invalid sign-convention option '${directive.optionValue}': ${convention.left}`,
+                  makeSourceContext(filePath, directive.srcPos),
+                  ctx.stackTrace,
+                ),
+              );
+            }
+            ctx = { ...ctx, signConvention: convention.right };
+            break;
+          }
+        }
         ctx = {
           ...ctx,
           optionMap: ctx.optionMap.set(
@@ -312,11 +414,9 @@ async function doLoad(
             directive.optionValue,
           ),
         };
-        if (directive.optionName === 'default-timezone') {
-          ctx = { ...ctx, defaultTimezone: directive.optionValue };
-        }
         result = E.of(undefined);
         break;
+      }
       case 'price': {
         result = F.pipe(
           E.Do,
@@ -356,7 +456,7 @@ async function doLoad(
                       : E.right(null),
                   ),
                   E.map(
-                    ({ meta, costSpec }): Posting => ({
+                    ({ meta, costSpec }): PartialPosting => ({
                       account: posting.account,
                       flag: posting.flag ?? directive.flag,
                       amount: posting.amount
@@ -385,6 +485,7 @@ async function doLoad(
               description: directive.description,
               flag: directive.flag,
               postings: postings,
+              signConvention: ctx.signConvention,
               srcCtx: makeSourceContext(filePath, directive.srcPos),
               optionMap: ctx.optionMap,
             });
@@ -409,7 +510,119 @@ async function doLoad(
     }
   }
 
-  return E.right(undefined);
+  return E.right(ctx);
+}
+
+type NormalizeResult = {
+  readonly directives: readonly Directive[];
+  readonly accountMap: AccountMap;
+};
+
+function normalizeDirectives(
+  directives: PartialDirective[],
+  options?: LoadOptions,
+): E.Either<LoadError, NormalizeResult> {
+  directives.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+  function* generator(): Generator<[Directive, AccountMap], void, unknown> {
+    let accountMap: AccountMap = ImmutableMap();
+    const converter: CanonicalAmountConverter = new CanonicalAmountConverter({
+      get(account) {
+        return accountMap.get(account)?.open?.normalBalanceSide;
+      },
+    });
+
+    for (const directive of directives) {
+      switch (directive.type) {
+        case 'open': {
+          // Note, we intentionally don't keep a previous `close`
+          accountMap = accountMap.set(directive.account, {
+            open: directive,
+          });
+          converter.clearCache();
+          yield [{ ...directive, accountMap }, accountMap];
+          break;
+        }
+        case 'close':
+          accountMap = accountMap.update(directive.account, (state = {}) => ({
+            ...state,
+            close: directive,
+          }));
+          yield [{ ...directive, accountMap }, accountMap];
+          break;
+        case 'balance':
+          yield [
+            {
+              ...directive,
+              balances: directive.balances.map(balance => ({
+                ...balance,
+                amount: converter.convert(
+                  balance.amount,
+                  directive.signConvention,
+                  balance.account,
+                ),
+                normalBalanceSide: converter.getNormalBalanceSide(
+                  balance.account,
+                ),
+              })),
+            },
+            accountMap,
+          ];
+          break;
+        case 'transaction': {
+          yield [
+            {
+              ...directive,
+              postings: directive.postings.map(posting => ({
+                ...posting,
+                amount:
+                  posting.amount === null
+                    ? null
+                    : converter.convert(
+                        posting.amount,
+                        directive.signConvention,
+                        posting.account,
+                      ),
+                normalBalanceSide: converter.getNormalBalanceSide(
+                  posting.account,
+                ),
+              })),
+            },
+            accountMap,
+          ];
+          break;
+        }
+        default:
+          yield [directive, accountMap];
+          break;
+      }
+    }
+  }
+
+  function collect(
+    values: Iterable<[Directive, AccountMap]>,
+  ): E.Either<LoadError, NormalizeResult> {
+    let accountMap: AccountMap = ImmutableMap();
+    const directives: Directive[] = [];
+    for (const [directive, accMap] of values) {
+      directives.push(directive);
+      accountMap = accMap;
+    }
+    return E.right({ directives, accountMap });
+  }
+
+  if (!options?.takeWhile) {
+    return collect(generator());
+  }
+
+  // We need to tee generator to allow it being consumed twice.
+  const [gen, genForFilter] = tee(generator());
+  return collect(
+    takeWhile(
+      zip(gen, options.takeWhile(genForFilter.map(([directive]) => directive))),
+      ([, keep]) => keep,
+    ).map(([directive]) => directive),
+  );
 }
 
 async function read(filePath: string): Promise<E.Either<Error, string>> {

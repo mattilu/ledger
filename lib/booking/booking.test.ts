@@ -12,6 +12,11 @@ import { Cost } from './cost.js';
 import { Inventory } from './inventory.js';
 import { BookedLedger } from './ledger.js';
 
+type TestOptions = {
+  readonly compareAccountMaps?: boolean;
+  readonly compareSignConventions?: boolean;
+};
+
 await describe('book', async () => {
   const tests = [];
   const dirname = 'lib/booking/testdata/';
@@ -27,8 +32,10 @@ await describe('book', async () => {
   assert(tests.length > 0);
 
   for (const t of tests) {
-    await test(t.testName, async () => {
-      const wantContent = await readFile(t.wantPath, { encoding: 'utf-8' });
+    await test(t.testName, async ctx => {
+      const { options } = JSON.parse(
+        await readFile(t.wantPath, { encoding: 'utf-8' }),
+      );
       const ledger = await load(t.srcPath);
       assert(E.isRight(ledger));
 
@@ -40,23 +47,44 @@ await describe('book', async () => {
               `While processing '${directive.type}' directive at ` +
               `${directive.srcCtx.filePath}:${directive.srcCtx.row}: ${message}`,
           }),
-          res => canonicalize(cleanup(res)),
+          res => canonicalize(cleanup(res, options)),
         ),
       );
 
-      assert.deepEqual(got, JSON.parse(wantContent), t.wantPath);
+      ctx.assert.fileSnapshot({ options, want: got }, t.wantPath, {
+        serializers: [x => JSON.stringify(x, null, 2) + '\n'],
+      });
     });
   }
 });
 
-function cleanup(ledger: BookedLedger) {
+function cleanup(ledger: BookedLedger, options?: TestOptions) {
+  function cleanupMeta(meta: Metadata) {
+    if (meta.isEmpty()) {
+      return undefined;
+    }
+    return meta.map(value => ({
+      type: value.type,
+      value: value.type === 'number' ? value.value.toNumber() : value.value,
+    }));
+  }
+
   return {
     transactions: ledger.transactions.map(x => ({
       ...x,
       meta: cleanupMeta(x.meta),
-      postings: x.postings.map(p => ({ ...p, meta: cleanupMeta(p.meta) })),
+      postings: x.postings.map(p => ({
+        ...p,
+        meta: cleanupMeta(p.meta),
+        normalBalanceSide: options?.compareSignConventions
+          ? p.normalBalanceSide
+          : undefined,
+      })),
       inventoriesBefore: undefined,
       inventoriesAfter: x.inventoriesAfter.map(makeInventoryMap),
+      signConvention: options?.compareSignConventions
+        ? x.signConvention
+        : undefined,
       srcCtx: undefined,
     })),
     prices:
@@ -74,17 +102,8 @@ function cleanup(ledger: BookedLedger) {
           meta: cleanupMeta(c.meta),
           srcCtx: undefined,
         })),
+    accountMap: options?.compareAccountMaps ? ledger.accountMap : undefined,
   };
-}
-
-function cleanupMeta(meta: Metadata) {
-  if (meta.isEmpty()) {
-    return undefined;
-  }
-  return meta.map(value => ({
-    type: value.type,
-    value: value.type === 'number' ? value.value.toNumber() : value.value,
-  }));
 }
 
 function canonicalize<T>(x: T): T {

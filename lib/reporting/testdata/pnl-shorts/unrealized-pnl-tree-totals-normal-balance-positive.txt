@@ -1,0 +1,10 @@
+╿                   +50 CHF / -5 CHF/VT ; Position: -10 VT {{ -1550 CHF }} { 155 CHF } Price: 150 CHF Value: -1500 CHF
+│                   +150 CHF / -15 CHF/VT ; Position: -10 VT {{ -1650 CHF }} { 165 CHF } Price: 150 CHF Value: -1500 CHF
+└─ Assets           +50 CHF / -5 CHF/VT ; Position: -10 VT {{ -1550 CHF }} { 155 CHF } Price: 150 CHF Value: -1500 CHF
+   │                +150 CHF / -15 CHF/VT ; Position: -10 VT {{ -1650 CHF }} { 165 CHF } Price: 150 CHF Value: -1500 CHF
+   └─ Brokerage     +50 CHF / -5 CHF/VT ; Position: -10 VT {{ -1550 CHF }} { 155 CHF } Price: 150 CHF Value: -1500 CHF
+      │             +150 CHF / -15 CHF/VT ; Position: -10 VT {{ -1650 CHF }} { 165 CHF } Price: 150 CHF Value: -1500 CHF
+      └─ Foo        +50 CHF / -5 CHF/VT ; Position: -10 VT {{ -1550 CHF }} { 155 CHF } Price: 150 CHF Value: -1500 CHF
+         │          +150 CHF / -15 CHF/VT ; Position: -10 VT {{ -1650 CHF }} { 165 CHF } Price: 150 CHF Value: -1500 CHF
+         └─ Shorts  +50 CHF / -5 CHF/VT ; Position: 10 VT {{ -1550 CHF }} { 155 CHF } Price: 150 CHF Value: -1500 CHF
+            └       +150 CHF / -15 CHF/VT ; Position: 10 VT {{ -1650 CHF }} { 165 CHF } Price: 150 CHF Value: -1500 CHF

@@ -1,6 +1,8 @@
 {
-  "_tag": "Left",
-  "left": {
-    "error": "While processing 'transaction' directive at lib/booking/testdata/transaction-undeclared-account-strict.ledger:3: Account Assets:Foo has not been opened"
+  "want": {
+    "_tag": "Left",
+    "left": {
+      "error": "While processing 'transaction' directive at lib/booking/testdata/transaction-undeclared-account-strict.ledger:3: Account Assets:Foo has not been opened"
+    }
   }
 }

@@ -9,6 +9,7 @@ import { BookedLedger } from '../lib/booking/ledger.js';
 import { Ledger } from '../lib/loading/ledger.js';
 import { load } from '../lib/loading/loader.js';
 import { SourceContext } from '../lib/loading/source-context.js';
+import { enumerate } from '../lib/utils/iter.js';
 import { CommandError } from './error.js';
 
 export const debug = command({
@@ -40,9 +41,11 @@ export const debug = command({
   }): Promise<E.Either<CommandError, void>> => {
     file = file ?? inputFile;
     return F.pipe(
-      await load(inputFile),
+      await load(inputFile, {
+        takeWhile: directives => takeUntilFound(file, line, directives),
+      }),
       E.mapLeft(CommandError.fromLoadError),
-      E.flatMap(debugLoadResultAndFilter(file, line)),
+      E.flatMap(debugLoadResult(file, line)),
       E.flatMap(F.flow(book, E.mapLeft(CommandError.fromBookingError))),
       E.tap(debugBookResult(file, line)),
       E.asUnit,
@@ -50,10 +53,10 @@ export const debug = command({
   },
 });
 
-const debugLoadResultAndFilter =
+const debugLoadResult =
   (file: string, line: number) =>
   (ledger: Ledger): E.Either<CommandError, Ledger> => {
-    const [directive, index] = find(ledger.directives, file, line);
+    const directive = find(ledger.directives, file, line);
 
     if (!directive) {
       return E.left(new CommandError(`No directive found at ${file}:${line}`));
@@ -64,15 +67,12 @@ const debugLoadResultAndFilter =
       inspect(directive, { depth: null, colors: true }),
     );
 
-    return E.right({
-      directives: ledger.directives.slice(0, index + 1),
-      currencyMap: ledger.currencyMap,
-    });
+    return E.right(ledger);
   };
 
 const debugBookResult =
   (file: string, line: number) => (ledger: BookedLedger) => {
-    const [transaction] = find(ledger.transactions, file, line);
+    const transaction = find(ledger.transactions, file, line);
 
     if (!transaction) {
       return E.left(
@@ -116,28 +116,48 @@ const debugBookResult =
     return E.right(undefined);
   };
 
-function find<T extends { srcCtx: SourceContext }>(
-  items: readonly T[],
+function* takeUntilFound<T extends { srcCtx: SourceContext }>(
   file: string,
   line: number,
-): [T | undefined, number] {
-  let found: T | undefined;
+  directives: Iterable<T>,
+): Generator<boolean, void, unknown> {
+  let foundRow: number | undefined;
   let foundIndex = -1;
+  let pos = -1;
 
-  for (const [i, item] of items.entries()) {
+  // foundIndex can only grow, so whenever it does, yield `true` for all the
+  // previous items to let their processing continue.
+  function* advance() {
+    for (; pos < foundIndex; ++pos) {
+      yield true;
+    }
+  }
+
+  for (const [i, item] of enumerate(directives)) {
     if (item.srcCtx.filePath !== file) {
       continue;
     }
     if (item.srcCtx.row === line) {
-      return [item, i];
+      foundIndex = i;
+      break;
     }
     if (item.srcCtx.row < line) {
-      if (!found || found.srcCtx.row < item.srcCtx.row) {
-        found = item;
+      if (foundRow === undefined || foundRow < item.srcCtx.row) {
+        foundRow = item.srcCtx.row;
         foundIndex = i;
+        yield* advance();
       }
     }
   }
 
-  return [found, foundIndex];
+  yield* advance();
+}
+
+function find<T extends { srcCtx: SourceContext }>(
+  items: readonly T[],
+  file: string,
+  line: number,
+): T | undefined {
+  const index = takeUntilFound(file, line, items).reduce(i => i + 1, -1);
+  return items.at(index);
 }

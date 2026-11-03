@@ -13,6 +13,13 @@ When a file is loaded, it starts with the current option state. An option set
 inside that loaded file affects directives in that file and files it loads, but
 does not flow back to the file that included it.
 
+`sign-convention` changes the signs used for subsequent transaction postings and
+balance assertions. Changing it does not alter already-loaded directives. The
+account-bound report default is the final `sign-convention` value in the root
+file; a change made only inside an included file does not change that default.
+See [Ledger-file options](../options.md#sign-convention) for the supported
+values and account normal-side metadata.
+
 ## Practical guidance
 
 - Put file-wide options near the start of the main file, before the directives

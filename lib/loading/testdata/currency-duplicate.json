@@ -1,6 +1,8 @@
 {
-  "_tag": "Left",
-  "left": {
-    "error": "Currency EUR already defined (at lib/loading/testdata/currency-duplicate.ledger:1) at lib/loading/testdata/currency-duplicate.ledger:3"
+  "want": {
+    "_tag": "Left",
+    "left": {
+      "error": "Currency EUR already defined (at lib/loading/testdata/currency-duplicate.ledger:1) at lib/loading/testdata/currency-duplicate.ledger:3"
+    }
   }
 }

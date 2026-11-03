@@ -1,36 +1,36 @@
 {
-  "_tag": "Right",
-  "right": {
-    "directives": [
-      {
-        "type": "balance",
-        "date": "2025-05-01T00:00:00.000Z",
-        "optionMap": {},
-        "balances": [
-          {
-            "account": "Assets:Foo",
-            "amount": {
-              "amount": "1",
-              "currency": "CHF"
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "directives": [
+        {
+          "type": "balance",
+          "date": "2025-05-01T00:00:00.000Z",
+          "balances": [
+            {
+              "account": "Assets:Foo",
+              "amount": {
+                "amount": "1",
+                "currency": "CHF"
+              }
             }
-          }
-        ]
-      },
-      {
-        "type": "balance",
-        "date": "2025-06-01T00:00:00.000Z",
-        "optionMap": {},
-        "balances": [
-          {
-            "account": "Assets:Foo",
-            "amount": {
-              "amount": "1",
-              "currency": "CHF"
-            },
-            "approx": 0.005
-          }
-        ]
-      }
-    ]
+          ]
+        },
+        {
+          "type": "balance",
+          "date": "2025-06-01T00:00:00.000Z",
+          "balances": [
+            {
+              "account": "Assets:Foo",
+              "amount": {
+                "amount": "1",
+                "currency": "CHF"
+              },
+              "approx": 0.005
+            }
+          ]
+        }
+      ]
+    }
   }
 }

@@ -1,0 +1,20 @@
+╿                  +100 CHF / +10 CHF/QQQ ; Position: 10 QQQ {{ 4500 CHF }} { 450 CHF } Price: 460 CHF Value: 4600 CHF
+│                  +150 EUR / +0.03 EUR/USD ; Position: 5000 USD {{ 4250 EUR }} { 0.85 EUR } Price: 0.88 EUR Value: 4400 EUR
+│                  -50 CHF / -5 CHF/VT ; Position: 10 VT {{ 1050 CHF }} { 105 CHF } Price: 100 CHF Value: 1000 CHF
+│                  -100 CHF / -10 CHF/VT ; Position: 10 VT {{ 1100 CHF }} { 110 CHF } Price: 100 CHF Value: 1000 CHF
+└─ Assets          +100 CHF / +10 CHF/QQQ ; Position: 10 QQQ {{ 4500 CHF }} { 450 CHF } Price: 460 CHF Value: 4600 CHF
+   │               +150 EUR / +0.03 EUR/USD ; Position: 5000 USD {{ 4250 EUR }} { 0.85 EUR } Price: 0.88 EUR Value: 4400 EUR
+   │               -50 CHF / -5 CHF/VT ; Position: 10 VT {{ 1050 CHF }} { 105 CHF } Price: 100 CHF Value: 1000 CHF
+   │               -100 CHF / -10 CHF/VT ; Position: 10 VT {{ 1100 CHF }} { 110 CHF } Price: 100 CHF Value: 1000 CHF
+   └─ Brokerage    +100 CHF / +10 CHF/QQQ ; Position: 10 QQQ {{ 4500 CHF }} { 450 CHF } Price: 460 CHF Value: 4600 CHF
+      │            +150 EUR / +0.03 EUR/USD ; Position: 5000 USD {{ 4250 EUR }} { 0.85 EUR } Price: 0.88 EUR Value: 4400 EUR
+      │            -50 CHF / -5 CHF/VT ; Position: 10 VT {{ 1050 CHF }} { 105 CHF } Price: 100 CHF Value: 1000 CHF
+      │            -100 CHF / -10 CHF/VT ; Position: 10 VT {{ 1100 CHF }} { 110 CHF } Price: 100 CHF Value: 1000 CHF
+      ├─ Bar       +150 EUR / +0.03 EUR/USD ; Position: 5000 USD {{ 4250 EUR }} { 0.85 EUR } Price: 0.88 EUR Value: 4400 EUR
+      │  └─ Cash   +150 EUR / +0.03 EUR/USD ; Position: 5000 USD {{ 4250 EUR }} { 0.85 EUR } Price: 0.88 EUR Value: 4400 EUR
+      └─ Foo       +100 CHF / +10 CHF/QQQ ; Position: 10 QQQ {{ 4500 CHF }} { 450 CHF } Price: 460 CHF Value: 4600 CHF
+         │         -50 CHF / -5 CHF/VT ; Position: 10 VT {{ 1050 CHF }} { 105 CHF } Price: 100 CHF Value: 1000 CHF
+         │         -100 CHF / -10 CHF/VT ; Position: 10 VT {{ 1100 CHF }} { 110 CHF } Price: 100 CHF Value: 1000 CHF
+         └─ Stock  +100 CHF / +10 CHF/QQQ ; Position: 10 QQQ {{ 4500 CHF }} { 450 CHF } Price: 460 CHF Value: 4600 CHF
+            │      -50 CHF / -5 CHF/VT ; Position: 10 VT {{ 1050 CHF }} { 105 CHF } Price: 100 CHF Value: 1000 CHF
+            └      -100 CHF / -10 CHF/VT ; Position: 10 VT {{ 1100 CHF }} { 110 CHF } Price: 100 CHF Value: 1000 CHF

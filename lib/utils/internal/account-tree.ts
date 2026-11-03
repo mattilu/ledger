@@ -102,7 +102,7 @@ function maxWidth<T>(node: Node<T>, depth = 0): number {
  */
 export function formatTree<T>(
   root: Node<T>,
-  format: (node: Node<T>, depth: number) => string[],
+  format: (node: Node<T>, depth: number, account: string) => string[],
 ): string {
   const lines: string[] = [];
   const padding = maxWidth(root) + 2;
@@ -113,9 +113,10 @@ export function formatTree<T>(
     nodePrefix: string,
     childNodePrefix: string,
     depth: number,
+    account: string,
   ) {
     for (const [isFirst, isLast, str] of enumerate(
-      ifEmpty(format(node, depth), ['']),
+      ifEmpty(format(node, depth, account), ['']),
     )) {
       let pfx: string;
       if (isFirst) {
@@ -139,11 +140,12 @@ export function formatTree<T>(
         nextNodePrefix,
         nextChildNodePrefix,
         depth + 1,
+        account ? `${account}:${childNode.name}` : childNode.name,
       );
     }
   }
 
-  run(root, '', '╿', '', 0);
+  run(root, '', '╿', '', 0, '');
 
   return lines.join('\n');
 }

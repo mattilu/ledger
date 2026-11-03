@@ -12,13 +12,17 @@ npm run -s main -- report transactions main.ledger \
 ```
 
 `--date-from` includes transactions on the given date. Shared `--date` limits
-the Ledger directives processed through that date, inclusive.
+the Ledger directives processed through that date, inclusive. By default, each
+transaction uses the `sign-convention` active at its position in the Ledger
+file. `--sign-convention` overrides that choice for all displayed transactions
+and running balances.
 
 ## Options
 
 | Option                    | Short | Behavior                                                                                                                 |
 | ------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------ |
 | `--date DATE`             | `-D`  | Process Ledger directives through `DATE`, inclusive.                                                                     |
+| `--sign-convention NAME`  | —     | Override the sign convention used to display postings and running balances.                                              |
 | `--date-from DATE`        | `-d`  | Include transactions on or after this date.                                                                              |
 | `--account REGEX`         | `-a`  | Select matching postings using a case-insensitive regular expression. Repeat to add alternatives.                        |
 | `--exclude-account REGEX` | `-A`  | Exclude matching postings using a case-insensitive regular expression. Repeat to add alternatives.                       |
@@ -40,6 +44,10 @@ Running balance modes:
 - `full`: display the positions in the account after each posting.
 - `aggregate`: display one summed balance per account and currency after each
   posting.
+
+Amounts are presented according to each posting account's normal side; this
+means displayed postings in a transaction need not sum to zero, even though the
+booked canonical amounts do.
 
 ## Example
 

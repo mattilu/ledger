@@ -1,13 +1,14 @@
 {
-  "_tag": "Right",
-  "right": {
-    "directives": [
-      {
-        "type": "close",
-        "date": "2025-05-01T00:00:00.000Z",
-        "optionMap": {},
-        "account": "Assets:Foo"
-      }
-    ]
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "directives": [
+        {
+          "type": "close",
+          "date": "2025-05-01T00:00:00.000Z",
+          "account": "Assets:Foo"
+        }
+      ]
+    }
   }
 }

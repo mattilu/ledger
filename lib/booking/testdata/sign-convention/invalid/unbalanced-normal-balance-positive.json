@@ -1,0 +1,8 @@
+{
+  "want": {
+    "_tag": "Left",
+    "left": {
+      "error": "While processing 'transaction' directive at lib/booking/testdata/sign-convention/invalid/unbalanced-normal-balance-positive.ledger:3: Transaction does not balance. Residual:\n-1 CHF"
+    }
+  }
+}

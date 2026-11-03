@@ -3,6 +3,7 @@ import { Map } from 'immutable';
 import { Inventory } from '../booking/inventory.js';
 import { BookedLedger } from '../booking/ledger.js';
 import { Position } from '../booking/position.js';
+import { CanonicalAmountConverter } from '../core/sign-convention.js';
 import { FormatInventoriesOptions, Formatter } from '../utils/formatting.js';
 import { makeRegexp } from './internal/regexp-utils.js';
 import { Report } from './report.js';
@@ -26,7 +27,7 @@ export interface InventoryReportOptions {
   /**
    * Options for formatting of the inventory.
    */
-  readonly formatOptions?: FormatInventoriesOptions;
+  readonly formatOptions?: Omit<FormatInventoriesOptions, 'converter'>;
 }
 
 /**
@@ -36,13 +37,11 @@ export class InventoryReport implements Report {
   private readonly accountRegex: RegExp | null;
   private readonly excludeAccountRegex: RegExp | null;
   private readonly currenciesRegex: RegExp | null;
-  private readonly formatOptions?: FormatInventoriesOptions;
 
-  constructor(options: InventoryReportOptions) {
+  constructor(private readonly options: InventoryReportOptions) {
     this.accountRegex = makeRegexp(options.accounts ?? []);
     this.excludeAccountRegex = makeRegexp(options.excludeAccounts ?? []);
     this.currenciesRegex = makeRegexp(options.currencies ?? []);
-    this.formatOptions = options.formatOptions;
   }
 
   run(ledger: BookedLedger): string {
@@ -70,7 +69,16 @@ export class InventoryReport implements Report {
     }
 
     const formatter = new Formatter({ currencyMap: ledger.currencyMap });
-    return formatter.formatInventories(Map(inventories), this.formatOptions);
+    return formatter.formatInventories(Map(inventories), {
+      ...this.options.formatOptions,
+      signConvention:
+        this.options.formatOptions?.signConvention ?? ledger.signConvention,
+      converter: new CanonicalAmountConverter({
+        get(account) {
+          return ledger.accountMap.get(account)?.open?.normalBalanceSide;
+        },
+      }),
+    });
   }
 }
 

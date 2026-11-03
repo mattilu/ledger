@@ -1,6 +1,8 @@
 {
-  "_tag": "Left",
-  "left": {
-    "error": "While processing 'balance' directive at lib/booking/testdata/balance-fail.ledger:1: Balance for Assets:Foo does not match.\nExpected: 1 USD\nActual: 0 USD\nDelta: 1 USD"
+  "want": {
+    "_tag": "Left",
+    "left": {
+      "error": "While processing 'balance' directive at lib/booking/testdata/balance-fail.ledger:1: Balance for Assets:Foo does not match.\nExpected: 1 USD\nActual: 0 USD\nDelta: 1 USD"
+    }
   }
 }

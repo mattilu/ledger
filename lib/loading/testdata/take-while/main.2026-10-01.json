@@ -1,0 +1,36 @@
+{
+  "options": {
+    "compareAccountMap": true,
+    "maxDate": "2026-10-01"
+  },
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "directives": [
+        {
+          "type": "open",
+          "date": "2026-10-01T00:00:00.000Z",
+          "account": "Assets:Foo",
+          "currencies": []
+        }
+      ],
+      "accountMap": {
+        "Assets:Foo": {
+          "open": {
+            "type": "open",
+            "date": "2026-10-01T00:00:00.000Z",
+            "meta": {},
+            "account": "Assets:Foo",
+            "currencies": [],
+            "srcCtx": {
+              "row": 1,
+              "col": 1,
+              "filePath": "lib/loading/testdata/take-while/main.ledger"
+            },
+            "optionMap": {}
+          }
+        }
+      }
+    }
+  }
+}

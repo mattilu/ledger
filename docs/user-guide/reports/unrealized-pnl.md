@@ -11,13 +11,16 @@ npm run -s main -- report unrealized-pnl main.ledger
 ```
 
 The report can use indirect currency conversions when finding prices. It reports
-per-position values by default.
+per-position values by default. Position quantities use the final
+`sign-convention` value in the root Ledger file, or `legacy` if none is set. Use
+`--sign-convention` to override it.
 
 ## Options
 
 | Option                    | Short | Behavior                                                                                                                           |
 | ------------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `--date DATE`             | `-D`  | Process Ledger directives through `DATE`, inclusive.                                                                               |
+| `--sign-convention NAME`  | —     | Override the sign convention used to display amounts.                                                                              |
 | `--account REGEX`         | `-a`  | Include accounts matching this case-insensitive regular expression. Repeat to add alternatives.                                    |
 | `--exclude-account REGEX` | `-A`  | Exclude accounts matching this case-insensitive regular expression. Repeat to add alternatives.                                    |
 | `--currency REGEX`        | `-c`  | Include positions whose commodity or cost currency matches this case-insensitive regular expression. Repeat to add alternatives.   |

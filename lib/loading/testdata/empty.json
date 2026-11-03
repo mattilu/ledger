@@ -1,6 +1,8 @@
 {
-  "_tag": "Right",
-  "right": {
-    "directives": []
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "directives": []
+    }
   }
 }

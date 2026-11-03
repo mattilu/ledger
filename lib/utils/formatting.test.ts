@@ -8,7 +8,16 @@ import { Cost } from '../booking/cost.js';
 import { Inventory, InventoryMap } from '../booking/inventory.js';
 import { Position } from '../booking/position.js';
 import { Transaction } from '../booking/transaction.js';
+import {
+  AccountType,
+  getAccountTypeUnchecked,
+  NormalBalanceSide,
+} from '../core/account.js';
 import { Amount } from '../core/amount.js';
+import {
+  CanonicalAmountConverter,
+  SignConvention,
+} from '../core/sign-convention.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
 import {
   FormatAccountsOptions,
@@ -212,6 +221,7 @@ await describe('Formatter', async () => {
           description: 'Test',
           flag: '*',
           postings: [],
+          signConvention: SignConvention.Legacy,
         },
         want: '2025-06-01 * "Test"',
       },
@@ -228,6 +238,7 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
             {
               account: 'Assets:Test',
@@ -235,8 +246,10 @@ await describe('Formatter', async () => {
               cost: cost([amount(1, 'USD')], '2025-06-01'),
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
           ],
+          signConvention: SignConvention.Legacy,
         },
         want: `\
 2025-06-01 * "Test"
@@ -256,6 +269,7 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '!',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
             {
               account: 'Assets:Bar',
@@ -263,8 +277,10 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
           ],
+          signConvention: SignConvention.Legacy,
         },
         want: `\
 2025-06-01 ! "Test"
@@ -284,6 +300,7 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
             {
               account: 'Assets:Test:Bar',
@@ -291,9 +308,11 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
           ],
           inventoriesBefore: Map(),
+          signConvention: SignConvention.Legacy,
         },
         options: { formatBalance: FormatBalanceMode.Full },
         want: `\
@@ -316,6 +335,7 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
             {
               account: 'Assets:Test',
@@ -323,9 +343,11 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
           ],
           inventoriesBefore: Map(),
+          signConvention: SignConvention.Legacy,
         },
         options: { formatBalance: FormatBalanceMode.Full },
         want: `\
@@ -348,6 +370,7 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
             {
               account: 'Assets:Test',
@@ -355,9 +378,11 @@ await describe('Formatter', async () => {
               cost: cost([amount(2, 'USD')], '2025-11-01'),
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
           ],
           inventoriesBefore: Map(),
+          signConvention: SignConvention.Legacy,
         },
         options: { formatBalance: FormatBalanceMode.Full },
         want: `\
@@ -381,6 +406,7 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
             {
               account: 'Assets:Test',
@@ -388,9 +414,11 @@ await describe('Formatter', async () => {
               cost: cost([amount(2, 'USD')], '2025-11-01'),
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
           ],
           inventoriesBefore: Map(),
+          signConvention: SignConvention.Legacy,
         },
         options: { formatBalance: FormatBalanceMode.Aggregate },
         want: `\
@@ -413,17 +441,94 @@ await describe('Formatter', async () => {
               cost: null,
               flag: '*',
               meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
             },
           ],
           inventoriesBefore: Map([
             ['Assets:Test', Inventory.Empty.addAmount(amount(1, 'CHF'))],
           ]),
+          signConvention: SignConvention.Legacy,
         },
         options: { formatBalance: FormatBalanceMode.Full },
         want: `\
 2025-11-01 * "Test"
   Assets:Test 1.00 CHF
   ; 2.00 CHF`,
+      },
+      {
+        name: 'entry sign convention',
+        transaction: {
+          date: new Date('2025-06-01'),
+          description: 'Salary',
+          flag: '*',
+          postings: [
+            {
+              account: 'Assets:Bank',
+              amount: amount(100, 'USD'),
+              cost: null,
+              flag: '*',
+              meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
+            },
+            {
+              account: 'Income:Salary',
+              amount: amount(-100, 'USD'),
+              cost: null,
+              flag: '*',
+              meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Credit,
+            },
+          ],
+          inventoriesBefore: Map(),
+          signConvention: SignConvention.NormalBalancePositive,
+        },
+        options: {
+          formatBalance: FormatBalanceMode.Full,
+        },
+        want: `\
+2025-06-01 * "Salary"
+  Assets:Bank 100 USD
+  ; 100 USD
+  Income:Salary 100 USD
+  ; 100 USD`,
+      },
+      {
+        name: 'sign convention option overrides overrides transaction option',
+        transaction: {
+          date: new Date('2025-06-01'),
+          description: 'Salary',
+          flag: '*',
+          postings: [
+            {
+              account: 'Assets:Bank',
+              amount: amount(100, 'USD'),
+              cost: null,
+              flag: '*',
+              meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Debit,
+            },
+            {
+              account: 'Income:Salary',
+              amount: amount(-100, 'USD'),
+              cost: null,
+              flag: '*',
+              meta: Map(),
+              normalBalanceSide: NormalBalanceSide.Credit,
+            },
+          ],
+          inventoriesBefore: Map(),
+          signConvention: SignConvention.Legacy,
+        },
+        options: {
+          signConvention: SignConvention.NormalBalancePositive,
+          formatBalance: FormatBalanceMode.Full,
+        },
+        want: `\
+2025-06-01 * "Salary"
+  Assets:Bank 100 USD
+  ; 100 USD
+  Income:Salary 100 USD
+  ; 100 USD`,
       },
     ];
 
@@ -472,11 +577,15 @@ await describe('Formatter', async () => {
       const value = values.reduce((a, b) => a + b, 0);
       return value === 0 ? [] : [value.toString()];
     };
+    const formatAccountAware = (values: number[], account: string) =>
+      getAccountTypeUnchecked(account) === AccountType.Liabilities
+        ? formatAsSum(values.map(x => -x))
+        : formatAsSum(values);
 
     const tests: Array<{
       name: string;
       accountMap: Map<string, number[]>;
-      format?: (xs: number[]) => string[];
+      format?: (xs: number[], account: string) => string[];
       options?: FormatAccountsOptions<number[]>;
       want: string;
     }> = [
@@ -513,6 +622,16 @@ Assets:Test:Bar 2
 Assets:Test:Baz 3
 Assets:Test:Foo 1
 Liabilities:Test:Qux 4`,
+      },
+      {
+        name: 'multiple accounts, account aware',
+        accountMap: accountMaps.multipleAccounts,
+        format: formatAccountAware,
+        want: `\
+Assets:Test:Bar 2
+Assets:Test:Baz 3
+Assets:Test:Foo 1
+Liabilities:Test:Qux -4`,
       },
       {
         name: 'multiple entries, format each',
@@ -597,6 +716,22 @@ Assets:Test 6`,
 └─ Liabilities
    └─ Test
       └─ Qux    4`,
+      },
+      {
+        name: 'multiple accounts as tree, account aware',
+        accountMap: accountMaps.multipleAccounts,
+        format: formatAccountAware,
+        options: formatTreeOptions(),
+        want: `\
+╿
+├─ Assets
+│  └─ Test
+│     ├─ Bar    2
+│     ├─ Baz    3
+│     └─ Foo    1
+└─ Liabilities
+   └─ Test
+      └─ Qux    -4`,
       },
       {
         name: 'multiple accounts as tree, max depth, format each',
@@ -750,7 +885,7 @@ Assets:Test 6`,
         ['Assets:Test:Foo', Inventory.Empty.addAmount(amount(1, 'CHF'))],
         ['Assets:Test:Bar', Inventory.Empty.addAmount(amount(1, 'EUR'))],
         ['Assets:Test:Baz', Inventory.Empty.addAmount(amount(1, 'JPY'))],
-        ['Liabilities:Test:Qux', Inventory.Empty.addAmount(amount(1, 'USD'))],
+        ['Liabilities:Test:Qux', Inventory.Empty.addAmount(amount(-1, 'USD'))],
       ]),
       multiplePositions: Map([
         [
@@ -821,6 +956,31 @@ Assets:Test 6`,
 Assets:Test:Bar 1 EUR
 Assets:Test:Baz 1 JPY
 Assets:Test:Foo 1.00 CHF
+Liabilities:Test:Qux -1 USD`,
+      },
+      {
+        name: 'multiple accounts, sign convention',
+        inventories: inventories.multipleAccounts,
+        options: { signConvention: SignConvention.NormalBalancePositive },
+        want: `\
+Assets:Test:Bar 1 EUR
+Assets:Test:Baz 1 JPY
+Assets:Test:Foo 1.00 CHF
+Liabilities:Test:Qux 1 USD`,
+      },
+      {
+        name: 'multiple accounts, sign convention, normal-balance side override',
+        inventories: inventories.multipleAccounts,
+        options: {
+          signConvention: SignConvention.NormalBalancePositive,
+          converter: new CanonicalAmountConverter(
+            Map([['Assets:Test:Foo', NormalBalanceSide.Credit]]),
+          ),
+        },
+        want: `\
+Assets:Test:Bar 1 EUR
+Assets:Test:Baz 1 JPY
+Assets:Test:Foo -1.00 CHF
 Liabilities:Test:Qux 1 USD`,
       },
       {
@@ -910,7 +1070,7 @@ Assets:Test:Trading 2 VT`,
 │     └─ Foo    1.00 CHF
 └─ Liabilities
    └─ Test
-      └─ Qux    1 USD`,
+      └─ Qux    -1 USD`,
       },
       {
         name: 'multiple accounts as tree, max depth',
@@ -923,17 +1083,59 @@ Assets:Test:Trading 2 VT`,
 │     │         1 EUR
 │     └         1 JPY
 └─ Liabilities
-   └─ Test      1 USD`,
+   └─ Test      -1 USD`,
       },
       {
         name: 'multiple accounts as tree, show totals',
         inventories: inventories.multipleAccounts,
         options: { tree: true, showTotals: true },
         want: `\
+╿
+├─ Assets       1.00 CHF
+│  │            1 EUR
+│  │            1 JPY
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     │         1 JPY
+│     ├─ Bar    1 EUR
+│     ├─ Baz    1 JPY
+│     └─ Foo    1.00 CHF
+└─ Liabilities  -1 USD
+   └─ Test      -1 USD
+      └─ Qux    -1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, show totals including root',
+        inventories: inventories.multipleAccounts,
+        options: { tree: true, showTotals: true, showRootTotal: true },
+        want: `\
 ╿               1.00 CHF
 │               1 EUR
 │               1 JPY
-│               1 USD
+│               -1 USD
+├─ Assets       1.00 CHF
+│  │            1 EUR
+│  │            1 JPY
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     │         1 JPY
+│     ├─ Bar    1 EUR
+│     ├─ Baz    1 JPY
+│     └─ Foo    1.00 CHF
+└─ Liabilities  -1 USD
+   └─ Test      -1 USD
+      └─ Qux    -1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, show totals, sign convention',
+        inventories: inventories.multipleAccounts,
+        options: {
+          tree: true,
+          showTotals: true,
+          signConvention: SignConvention.NormalBalancePositive,
+        },
+        want: `\
+╿
 ├─ Assets       1.00 CHF
 │  │            1 EUR
 │  │            1 JPY
@@ -948,14 +1150,114 @@ Assets:Test:Trading 2 VT`,
       └─ Qux    1 USD`,
       },
       {
-        name: 'multiple accounts as tree, max depth, show totals',
+        name: 'multiple accounts as tree, show totals including root, sign convention',
         inventories: inventories.multipleAccounts,
-        options: { tree: true, maxDepth: 2, showTotals: true },
+        options: {
+          tree: true,
+          showTotals: true,
+          showRootTotal: true,
+          signConvention: SignConvention.NormalBalancePositive,
+        },
         want: `\
 ╿               1.00 CHF
 │               1 EUR
 │               1 JPY
-│               1 USD
+│               -1 USD
+├─ Assets       1.00 CHF
+│  │            1 EUR
+│  │            1 JPY
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     │         1 JPY
+│     ├─ Bar    1 EUR
+│     ├─ Baz    1 JPY
+│     └─ Foo    1.00 CHF
+└─ Liabilities  1 USD
+   └─ Test      1 USD
+      └─ Qux    1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, show totals, sign convention, normal-balance side override',
+        inventories: inventories.multipleAccounts,
+        options: {
+          tree: true,
+          showTotals: true,
+          signConvention: SignConvention.NormalBalancePositive,
+          converter: new CanonicalAmountConverter(
+            Map([['Assets:Test:Foo', NormalBalanceSide.Credit]]),
+          ),
+        },
+        want: `\
+╿
+├─ Assets       1.00 CHF
+│  │            1 EUR
+│  │            1 JPY
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     │         1 JPY
+│     ├─ Bar    1 EUR
+│     ├─ Baz    1 JPY
+│     └─ Foo    -1.00 CHF
+└─ Liabilities  1 USD
+   └─ Test      1 USD
+      └─ Qux    1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, show totals including root, sign convention, normal-balance side override',
+        inventories: inventories.multipleAccounts,
+        options: {
+          tree: true,
+          showTotals: true,
+          showRootTotal: true,
+          signConvention: SignConvention.NormalBalancePositive,
+          converter: new CanonicalAmountConverter(
+            Map([['Assets:Test:Foo', NormalBalanceSide.Credit]]),
+          ),
+        },
+        want: `\
+╿               1.00 CHF
+│               1 EUR
+│               1 JPY
+│               -1 USD
+├─ Assets       1.00 CHF
+│  │            1 EUR
+│  │            1 JPY
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     │         1 JPY
+│     ├─ Bar    1 EUR
+│     ├─ Baz    1 JPY
+│     └─ Foo    -1.00 CHF
+└─ Liabilities  1 USD
+   └─ Test      1 USD
+      └─ Qux    1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, max depth, show totals',
+        inventories: inventories.multipleAccounts,
+        options: { tree: true, maxDepth: 2, showTotals: true },
+        want: `\
+╿
+├─ Assets       1.00 CHF
+│  │            1 EUR
+│  │            1 JPY
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     └         1 JPY
+└─ Liabilities  -1 USD
+   └─ Test      -1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, max depth, show totals, sign convention',
+        inventories: inventories.multipleAccounts,
+        options: {
+          tree: true,
+          maxDepth: 2,
+          showTotals: true,
+          signConvention: SignConvention.NormalBalancePositive,
+        },
+        want: `\
+╿
 ├─ Assets       1.00 CHF
 │  │            1 EUR
 │  │            1 JPY
@@ -964,6 +1266,86 @@ Assets:Test:Trading 2 VT`,
 │     └         1 JPY
 └─ Liabilities  1 USD
    └─ Test      1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, max depth, show totals including root, sign convention',
+        inventories: inventories.multipleAccounts,
+        options: {
+          tree: true,
+          maxDepth: 2,
+          showTotals: true,
+          showRootTotal: true,
+          signConvention: SignConvention.NormalBalancePositive,
+        },
+        want: `\
+╿               1.00 CHF
+│               1 EUR
+│               1 JPY
+│               -1 USD
+├─ Assets       1.00 CHF
+│  │            1 EUR
+│  │            1 JPY
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     └         1 JPY
+└─ Liabilities  1 USD
+   └─ Test      1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, max depth, show totals, sign convention, normal-balance side override',
+        inventories: inventories.multipleAccounts,
+        options: {
+          tree: true,
+          maxDepth: 2,
+          showTotals: true,
+          signConvention: SignConvention.NormalBalancePositive,
+          converter: new CanonicalAmountConverter(
+            Map([
+              ['Assets:Test:Foo', NormalBalanceSide.Credit],
+              ['Liabilities:Test', NormalBalanceSide.Debit],
+            ]),
+          ),
+        },
+        want: `\
+╿
+├─ Assets       1.00 CHF
+│  │            1 EUR
+│  │            1 JPY
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     └         1 JPY
+└─ Liabilities  1 USD
+   └─ Test      -1 USD`,
+      },
+      {
+        name: 'multiple accounts as tree, max depth, show totals including root, sign convention, normal-balance side override',
+        inventories: inventories.multipleAccounts,
+        options: {
+          tree: true,
+          maxDepth: 2,
+          showTotals: true,
+          showRootTotal: true,
+          signConvention: SignConvention.NormalBalancePositive,
+          converter: new CanonicalAmountConverter(
+            Map([
+              ['Assets:Test:Foo', NormalBalanceSide.Credit],
+              ['Liabilities:Test', NormalBalanceSide.Debit],
+            ]),
+          ),
+        },
+        want: `\
+╿               1.00 CHF
+│               1 EUR
+│               1 JPY
+│               -1 USD
+├─ Assets       1.00 CHF
+│  │            1 EUR
+│  │            1 JPY
+│  └─ Test      1.00 CHF
+│     │         1 EUR
+│     └         1 JPY
+└─ Liabilities  1 USD
+   └─ Test      -1 USD`,
       },
       {
         name: 'multiple positions as tree',
@@ -1004,9 +1386,7 @@ Assets:Test:Trading 2 VT`,
         inventories: inventories.costs,
         options: { tree: true, showTotals: true },
         want: `\
-╿                 1 QQQ { 500.00 CHF, 2025-11-01 }
-│                 1 VT { 150.00 CHF, 2025-11-01 }
-│                 1 VT { 140.00 CHF, 2025-11-02 }
+╿
 └─ Assets         1 QQQ { 500.00 CHF, 2025-11-01 }
    │              1 VT { 150.00 CHF, 2025-11-01 }
    │              1 VT { 140.00 CHF, 2025-11-02 }
@@ -1033,8 +1413,7 @@ Assets:Test:Trading 2 VT`,
         inventories: inventories.costs,
         options: { tree: true, showCost: false, showTotals: true },
         want: `\
-╿                 1 QQQ
-│                 2 VT
+╿
 └─ Assets         1 QQQ
    │              2 VT
    └─ Test        1 QQQ

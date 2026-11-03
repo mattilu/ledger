@@ -4,6 +4,7 @@ import {
   flag,
   multioption,
   number,
+  oneOf,
   option,
   optional,
   positional,
@@ -15,14 +16,14 @@ import { ArgParser, ParsingInto } from 'cmd-ts/dist/cjs/argparser.js';
 import { either as E, function as F } from 'fp-ts';
 
 import { book } from '../lib/booking/booking.js';
-import { Ledger } from '../lib/loading/ledger.js';
+import { SignConvention } from '../lib/core/sign-convention.js';
+import { Directive } from '../lib/loading/directive.js';
 import { load } from '../lib/loading/loader.js';
 import { CashFlowReport } from '../lib/reporting/cash-flow.js';
 import { InventoryReport } from '../lib/reporting/inventory.js';
 import { Report } from '../lib/reporting/report.js';
 import { TransactionsReport } from '../lib/reporting/transactions.js';
 import { UnrealizedPnlReport } from '../lib/reporting/unrealized-pnl.js';
-import { partitionLo } from '../lib/utils/bounds.js';
 import {
   FormatBalanceMode,
   FormatInventoriesOptions,
@@ -60,6 +61,11 @@ const commonArgs = {
     type: array(string),
     description: 'Regex to match currencies to include; can be repeated',
   }),
+  signConvention: option({
+    long: 'sign-convention',
+    type: optional(oneOf(Object.values(SignConvention))),
+    description: `Sign convention to use for the report.`,
+  }),
 };
 
 const formatInventoryArgs = {
@@ -79,6 +85,13 @@ const formatInventoryArgs = {
     description:
       'Show totals of descendant accounts on each parent. Only effective with `--tree`',
   }),
+  showRootTotal: flag({
+    long: 'root-total',
+    short: 'R',
+    description:
+      'Show the aggregate root total. Only effective with `--tree` and `--totals`',
+    defaultValue: () => false,
+  }),
   maxDepth: option({
     long: 'max-depth',
     short: 'M',
@@ -92,13 +105,17 @@ function makeInventoryFormatOptions(options: {
   hideCost: boolean;
   tree: boolean;
   showTotals: boolean;
+  showRootTotal?: boolean;
   maxDepth?: number;
-}): FormatInventoriesOptions {
+  signConvention?: SignConvention;
+}): Omit<FormatInventoriesOptions, 'converter'> {
   return {
     showCost: !options.hideCost,
     tree: options.tree,
     showTotals: options.showTotals,
+    showRootTotal: options.showRootTotal,
     maxDepth: options.maxDepth,
+    signConvention: options.signConvention,
   };
 }
 
@@ -204,7 +221,7 @@ const unrealizedPnl = command({
   name: 'unrealized-pnl',
   args: {
     ...commonArgs,
-    ...formatInventoryArgs,
+    ...(({ showRootTotal: _, ...rest }) => rest)(formatInventoryArgs),
     aggregate: flag({
       long: 'aggregate',
       description: 'Whether to display aggregate PnL instead of per-position',
@@ -235,24 +252,26 @@ async function runReport(
   { inputFile, date }: Output<typeof commonArgs>,
 ): Promise<E.Either<CommandError, void>> {
   return F.pipe(
-    await load(inputFile),
+    await load(inputFile, {
+      takeWhile: date ? dateFilter(date) : undefined,
+    }),
     E.mapLeft(CommandError.fromLoadError),
-    E.map(date ? dropAfter(date) : F.identity),
     E.flatMap(F.flow(book, E.mapLeft(CommandError.fromBookingError))),
     E.tap(F.flow(l => report.run(l), console.log, E.right)),
     E.asUnit,
   );
 }
 
-const dropAfter =
-  (date: Date) =>
-  (ledger: Ledger): Ledger => ({
-    directives: partitionLo(
-      ledger.directives,
-      t => t.date.getTime() <= date.getTime(),
-    ),
-    currencyMap: ledger.currencyMap,
-  });
+const dateFilter = (date: Date) => {
+  return function* (directives: Iterable<Directive>) {
+    for (const directive of directives) {
+      if (directive.date.getTime() > date.getTime()) {
+        return;
+      }
+      yield true;
+    }
+  };
+};
 
 export const report = subcommands({
   name: 'report',

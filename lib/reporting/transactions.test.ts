@@ -1,6 +1,6 @@
-import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
 
+import { SignConvention } from '../core/sign-convention.js';
 import { FormatBalanceMode } from '../utils/formatting.js';
 import { collectTests } from './internal/testing.js';
 import {
@@ -66,15 +66,32 @@ await describe('InventoryReport', async () => {
         scenario: 'transactions-balance-aggregated',
         options: { formatBalance: FormatBalanceMode.Aggregate },
       },
+      {
+        name: 'normal-balance-positive convention',
+        scenario: 'transactions-normal-balance-positive',
+        options: {
+          signConvention: SignConvention.NormalBalancePositive,
+        },
+      },
+      {
+        name: 'normal-balance-positive convention, full balance',
+        scenario: 'transactions-normal-balance-positive-full-balance',
+        options: {
+          signConvention: SignConvention.NormalBalancePositive,
+          formatBalance: FormatBalanceMode.Full,
+        },
+      },
     ];
 
     for (const testCase of testCases) {
       await describe(testCase.name, async () => {
         const tests = await collectTests(testCase.scenario);
         for (const t of tests) {
-          await it(t.testName, async () => {
+          await it(t.testName, async ctx => {
             const got = new TransactionsReport(testCase.options).run(t.ledger);
-            assert.equal(got.trim(), t.wantReport, t.wantPath);
+            ctx.assert.fileSnapshot(got.trim() + '\n', t.wantPath, {
+              serializers: [],
+            });
           });
         }
       });

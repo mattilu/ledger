@@ -1,52 +1,64 @@
 {
-  "_tag": "Right",
-  "right": {
-    "transactions": [
-      {
-        "description": "Test",
-        "date": "2025-06-01T00:00:00.000Z",
-        "flag": "*",
-        "meta": {
-          "test": {
-            "type": "string",
-            "value": "transaction-metadata"
-          }
-        },
-        "postings": [
-          {
-            "account": "Assets:Foo",
-            "amount": {
-              "amount": "1",
-              "currency": "CHF"
-            },
-            "cost": null,
-            "flag": "*",
-            "meta": {
-              "test": {
-                "type": "string",
-                "value": "posting-metadata"
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "transactions": [
+        {
+          "date": "2025-06-01T00:00:00.000Z",
+          "description": "Test",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Foo",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "CHF"
+              },
+              "cost": null,
+              "meta": {
+                "test": {
+                  "type": "string",
+                  "value": "posting-metadata"
+                }
               }
+            },
+            {
+              "account": "Assets:Bar",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "CHF"
+              },
+              "cost": null
+            }
+          ],
+          "meta": {
+            "test": {
+              "type": "string",
+              "value": "transaction-metadata"
             }
           },
-          {
-            "account": "Assets:Bar",
-            "amount": {
-              "amount": "-1",
-              "currency": "CHF"
+          "inventoriesAfter": {
+            "Assets:Foo": {
+              "CHF": [
+                {
+                  "amount": "1",
+                  "cost": null
+                }
+              ]
             },
-            "cost": null,
-            "flag": "*"
-          }
-        ],
-        "inventoriesAfter": {
-          "Assets:Bar": {
-            "CHF": [{ "amount": "-1", "cost": null }]
-          },
-          "Assets:Foo": {
-            "CHF": [{ "amount": "1", "cost": null }]
+            "Assets:Bar": {
+              "CHF": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ]
+            }
           }
         }
-      }
-    ]
+      ]
+    }
   }
 }

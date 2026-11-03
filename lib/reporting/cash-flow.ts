@@ -4,6 +4,7 @@ import { Inventory, InventoryMap } from '../booking/inventory.js';
 import { BookedLedger } from '../booking/ledger.js';
 import { Position } from '../booking/position.js';
 import { BookedPosting } from '../booking/transaction.js';
+import { CanonicalAmountConverter } from '../core/sign-convention.js';
 import { partitionHi } from '../utils/bounds.js';
 import { FormatInventoriesOptions, Formatter } from '../utils/formatting.js';
 import { makeRegexp } from './internal/regexp-utils.js';
@@ -39,7 +40,7 @@ export interface CashFlowReportOptions {
   /**
    * Options for formatting of the inventory.
    */
-  readonly formatOptions?: FormatInventoriesOptions;
+  readonly formatOptions?: Omit<FormatInventoriesOptions, 'converter'>;
 }
 
 export class CashFlowReport implements Report {
@@ -117,20 +118,23 @@ export class CashFlowReport implements Report {
     }
 
     const formatter = new Formatter({ currencyMap: ledger.currencyMap });
+    const formatOptions: FormatInventoriesOptions = {
+      ...this.options.formatOptions,
+      signConvention:
+        this.options.formatOptions?.signConvention ?? ledger.signConvention,
+      converter: new CanonicalAmountConverter({
+        get(account) {
+          return ledger.accountMap.get(account)?.open?.normalBalanceSide;
+        },
+      }),
+    };
 
     report.push('Cash flows:\n');
-    report.push(
-      formatter.formatInventories(inventoriesTo, this.options.formatOptions),
-    );
+    report.push(formatter.formatInventories(inventoriesTo, formatOptions));
 
     if (this.options.showFromAccounts) {
       report.push('\nFrom accounts:\n');
-      report.push(
-        formatter.formatInventories(
-          inventoriesFrom,
-          this.options.formatOptions,
-        ),
-      );
+      report.push(formatter.formatInventories(inventoriesFrom, formatOptions));
     }
 
     return report.join('\n');

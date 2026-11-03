@@ -1,14 +1,16 @@
 {
-  "_tag": "Right",
-  "right": {
-    "transactions": [
-      {
-        "date": "2025-05-01T00:00:00.000Z",
-        "description": "Test",
-        "flag": "*",
-        "postings": [],
-        "inventoriesAfter": {}
-      }
-    ]
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "transactions": [
+        {
+          "date": "2025-05-01T00:00:00.000Z",
+          "description": "Test",
+          "flag": "*",
+          "postings": [],
+          "inventoriesAfter": {}
+        }
+      ]
+    }
   }
 }

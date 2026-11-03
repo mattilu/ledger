@@ -8,17 +8,49 @@ report (see [Commands](./commands.md)).
 
 ## Double-entry and balancing
 
+In double-entry accounting, each journal entry line is either a "debit" (posted
+to the left side of a ledger account) or a "credit" (posted to the right side).
+An account's _normal balance side_ is the side that increases the account value
+when a (positive) line item is posted to it.
+
+Example:
+
+| Date       | Description      | Account            | Debit    | Credit   | Balance  |
+| ---------- | ---------------- | ------------------ | -------- | -------- | -------- |
+| 2026-01-01 | Receive salary   | Income:Salary      |          | 2000 USD | 2000 USD |
+|            |                  | Assets:Bank        | 2000 USD |          | 2000 USD |
+|            |                  |                    |          |          |          |
+| 2026-01-02 | Grocery shopping | Expenses:Groceries | 200 USD  |          | 200 USD  |
+|            |                  | Assets:Bank        |          | 200 USD  | 1800 USD |
+
+In Ledger, journal entry lines (or postings, in ledger's terms) don't explicitly
+use two columns. Instead, the default convention is for positive amounts to be
+interpreted as debits and negative amounts as credits.
+
+The example transactions above would be written in Ledger syntax as:
+
+```text
+2026-01-01 * "Receive salary"
+  Income:Salary     -1,000 USD
+  Assets:Bank        1,000 USD
+
+2026-01-02 * "Grocery shopping"
+  Expenses:Groceries   200 USD
+  Assets:Bank         -200 USD
+```
+
 Every transaction must balance independently for each currency. Ledger adds each
 posting to a running multi-currency balance. A posting without an amount is
 assigned the amount needed to bring that balance to zero. If the final balance
 is non-zero, booking fails.
 
-Positive amounts increase the balance in the account; negative amounts decrease
-it. In this signed-amount model the accounting equation is
-`Assets + Liabilities + Equity + Income + Expenses + Trading = 0`, separately
-for each currency. From this formulation, it follows that liabilities, equity
-and income generally have negative sign, while assets and expenses are positive
-(see below for trading accounts).
+In this signed-amount model the accounting equation is:
+
+$$ Assets + Liabilities + Equity + Income + Expenses + Trading = 0 $$
+
+separately for each currency. From this formulation, it follows that
+liabilities, equity and income generally have negative sign, while assets and
+expenses are positive (see below for trading accounts).
 
 For example, a positive posting to the `Assets:Bank` account when receiving your
 salary would be balanced by a negative posting to the `Income:Salary` account.
@@ -34,8 +66,58 @@ account.
 | `Income`      | Negative    | You incurred a loss      | You earned something     |
 | `Expenses`    | Positive    | You spent something      | You received a refund    |
 
-The sign convention follows Beancount, which originally inspired Ledger; it may
-be surprising, and Ledger does not currently provide a setting to change it.
+This sign convention follow Beancount, which originally inspired Ledger.
+
+### Alternative sign conventions
+
+Ledger also supports alternative sign conventions, which you can select with the
+`sign-convention` option.
+
+With the `normal-balance-positive` option, positive amounts represent debits on
+debit-normal accounts (`Assets`, `Expenses`) and credits on credit-normal
+accounts (`Liabilities`, `Equity`, `Income`), i.e. all amounts would generally
+be positive.
+
+With this convention, the same example would be written as:
+
+```text
+option "sign-convention" "normal-balance-positive"
+
+2026-01-01 * "Receive salary"
+  Income:Salary      1,000 USD
+  Assets:Bank        1,000 USD
+
+2026-01-02 * "Grocery shopping"
+  Expenses:Groceries   200 USD
+  Assets:Bank         -200 USD
+```
+
+With the `net-worth-positive` option, positive amounts represent values that
+increase the net worth, while negative amounts would decrease it (postings to
+`Expenses` and `Liabilities` accounts would generally be negative).
+
+With this convention, the same example would be written as:
+
+```text
+option "sign-convention" "net-worth-positive"
+
+2026-01-01 * "Receive salary"
+  Income:Salary      1,000 USD
+  Assets:Bank        1,000 USD
+
+2026-01-02 * "Grocery shopping"
+  Expenses:Groceries  -200 USD
+  Assets:Bank         -200 USD
+```
+
+See [Ledger-file options](./options.md#sign-convention) for the full sign
+mapping.
+
+An `open` directive can set `normal-balance: "debit"` or
+`normal-balance: "credit"` to override the normal-balance side implied by its
+account family. This supports contra accounts such as `Expenses:Rebates` or
+`Income:Capital-Losses` accounts. The closest ancestor's setting is inherited
+when an account has no explicit setting.
 
 ## Accounts and dates
 
@@ -166,8 +248,10 @@ populate the price database.
 
 A `balance` directive compares the current account balance with its asserted
 amount. Assertions do not add or remove postings; a failed assertion stops
-booking. An optional tolerance can be specified with `~` to allows a difference
-up to the absolute tolerance.
+booking. Its amount is interpreted using the active `sign-convention` and
+account normal-balance side. A failure displays expected, actual, and delta
+values in that convention. An optional tolerance can be specified with `~` to
+allow a difference up to the absolute tolerance.
 
 ```text
 2026-01-01 balance

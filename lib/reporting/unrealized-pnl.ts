@@ -5,7 +5,13 @@ import { Map, Seq } from 'immutable';
 import { Inventory } from '../booking/inventory.js';
 import { BookedLedger } from '../booking/ledger.js';
 import { Position } from '../booking/position.js';
+import { AccountType, NormalBalanceSide } from '../core/account.js';
 import { Amount } from '../core/amount.js';
+import {
+  CanonicalAmountConverter,
+  fromToCanonicalAmount,
+  SignConvention,
+} from '../core/sign-convention.js';
 import { Formatter } from '../utils/formatting.js';
 import {
   CurrencyPair,
@@ -53,6 +59,9 @@ export interface UnrealizedPnlReportOptions {
      * Only effective when `tree` is true.
      */
     readonly maxDepth?: number;
+
+    /** Overrides the root file's final sign convention for this report. */
+    readonly signConvention?: SignConvention;
   };
 }
 
@@ -73,13 +82,11 @@ export class UnrealizedPnlReport implements Report {
   private readonly accountRegex: RegExp | null;
   private readonly excludeAccountRegex: RegExp | null;
   private readonly currenciesRegex: RegExp | null;
-  private readonly formatOptions;
 
-  constructor(options: UnrealizedPnlReportOptions) {
+  constructor(private readonly options: UnrealizedPnlReportOptions) {
     this.accountRegex = makeRegexp(options.accounts ?? []);
     this.excludeAccountRegex = makeRegexp(options.excludeAccounts ?? []);
     this.currenciesRegex = makeRegexp(options.currencies ?? []);
-    this.formatOptions = options.formatOptions;
   }
 
   run(ledger: BookedLedger): string {
@@ -142,33 +149,54 @@ export class UnrealizedPnlReport implements Report {
     );
 
     const formatter = new Formatter({ currencyMap: ledger.currencyMap });
+    const signConvention =
+      this.options.formatOptions?.signConvention ?? ledger.signConvention;
     const formatWithSign = (amount: Amount) => {
       const formatted = formatter.formatAmount(amount);
       return amount.isPos() ? `+${formatted}` : formatted;
     };
+    const converter = new CanonicalAmountConverter({
+      get(account) {
+        return ledger.accountMap.get(account)?.open?.normalBalanceSide;
+      },
+    });
 
     return formatter.formatAccounts(
       Map(pnl),
-      entries =>
-        Seq(this.formatOptions?.aggregate ? aggregatePnl(entries) : entries)
+      (entries, account) =>
+        Seq(
+          this.options.formatOptions?.aggregate
+            ? aggregatePnl(entries)
+            : entries,
+        )
           .sortBy(x => Seq([x.position.currency, x.position.amount.toNumber()]))
-          .map(
-            entry =>
+          .map(entry => {
+            const position =
+              account === ''
+                ? fromToCanonicalAmount(
+                    entry.position,
+                    signConvention,
+                    AccountType.Assets,
+                    NormalBalanceSide.Debit,
+                  )
+                : converter.convert(entry.position, signConvention, account);
+            return (
               `${formatWithSign(entry.totalPnl)}` +
-              ` / ${formatWithSign(entry.perUnitPnl)}/${entry.position.currency}` +
-              ` ; Position: ${formatter.formatAmount(entry.position)}` +
+              ` / ${formatWithSign(entry.perUnitPnl)}/${position.currency}` +
+              ` ; Position: ${formatter.formatAmount(position)}` +
               ` {{ ${formatter.formatAmount(entry.totalCost)} }}` +
               ` { ${formatter.formatAmount(entry.perUnitCost)} }` +
               ` Price: ${formatter.formatAmount(entry.currentPrice)}` +
-              ` Value: ${formatter.formatAmount(entry.currentValue)}`,
-          )
+              ` Value: ${formatter.formatAmount(entry.currentValue)}`
+            );
+          })
           .toArray(),
       {
-        tree: this.formatOptions?.tree,
-        aggregate: this.formatOptions?.showTotals,
+        tree: this.options.formatOptions?.tree,
+        aggregate: this.options.formatOptions?.showTotals,
         reduce: (entries): PnlEntry[] => entries.flat(),
         filter: entries => entries.length > 0,
-        maxDepth: this.formatOptions?.maxDepth,
+        maxDepth: this.options.formatOptions?.maxDepth,
       },
     );
   }

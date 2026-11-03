@@ -1,0 +1,424 @@
+{
+  "options": {
+    "compareSignConventions": true
+  },
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "directives": [
+        {
+          "type": "open",
+          "date": "2026-01-01T00:00:00.000Z",
+          "meta": {
+            "normal-balance": {
+              "type": "string",
+              "value": "credit"
+            }
+          },
+          "account": "Assets:Properties:Depreciation",
+          "currencies": [],
+          "normalBalanceSide": "credit"
+        },
+        {
+          "type": "open",
+          "date": "2026-01-01T00:00:00.000Z",
+          "meta": {
+            "normal-balance": {
+              "type": "string",
+              "value": "debit"
+            }
+          },
+          "account": "Liabilities:Bonds-Payable:Discounts",
+          "currencies": [],
+          "normalBalanceSide": "debit"
+        },
+        {
+          "type": "open",
+          "date": "2026-01-01T00:00:00.000Z",
+          "meta": {
+            "normal-balance": {
+              "type": "string",
+              "value": "debit"
+            }
+          },
+          "account": "Equity:Owner-Drawings",
+          "currencies": [],
+          "normalBalanceSide": "debit"
+        },
+        {
+          "type": "open",
+          "date": "2026-01-01T00:00:00.000Z",
+          "meta": {
+            "normal-balance": {
+              "type": "string",
+              "value": "debit"
+            }
+          },
+          "account": "Income:Sales:Discounts",
+          "currencies": [],
+          "normalBalanceSide": "debit"
+        },
+        {
+          "type": "open",
+          "date": "2026-01-01T00:00:00.000Z",
+          "meta": {
+            "normal-balance": {
+              "type": "string",
+              "value": "credit"
+            }
+          },
+          "account": "Expenses:Credit-Card:Rebates",
+          "currencies": [],
+          "normalBalanceSide": "credit"
+        },
+        {
+          "type": "transaction",
+          "date": "2026-10-01T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2026-10-01",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Opening Balances",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Bank",
+              "flag": "*",
+              "amount": {
+                "amount": "1000",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Equity:Opening-Balances",
+              "flag": "*",
+              "amount": {
+                "amount": "-1000",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "credit"
+            }
+          ],
+          "signConvention": "legacy"
+        },
+        {
+          "type": "transaction",
+          "date": "2026-10-02T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2026-10-02",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Salary Income",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Bank",
+              "flag": "*",
+              "amount": {
+                "amount": "1000",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Income:Salary",
+              "flag": "*",
+              "amount": {
+                "amount": "-1000",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "credit"
+            }
+          ],
+          "signConvention": "legacy"
+        },
+        {
+          "type": "transaction",
+          "date": "2026-10-03T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2026-10-03",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Cash Expense",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Expenses:Groceries",
+              "flag": "*",
+              "amount": {
+                "amount": "100",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "-100",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "debit"
+            }
+          ],
+          "signConvention": "legacy"
+        },
+        {
+          "type": "transaction",
+          "date": "2026-10-04T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2026-10-04",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Credit Card Expense",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Expenses:Groceries",
+              "flag": "*",
+              "amount": {
+                "amount": "100",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Liabilities:Credit-Card",
+              "flag": "*",
+              "amount": {
+                "amount": "-100",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "credit"
+            }
+          ],
+          "signConvention": "legacy"
+        },
+        {
+          "type": "transaction",
+          "date": "2026-10-05T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2026-10-05",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Assets Depreciation",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Expenses:Depreciation",
+              "flag": "*",
+              "amount": {
+                "amount": "5000",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Assets:Properties:Depreciation",
+              "flag": "*",
+              "amount": {
+                "amount": "-5000",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "credit"
+            }
+          ],
+          "signConvention": "legacy"
+        },
+        {
+          "type": "transaction",
+          "date": "2026-10-06T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2026-10-06",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Discounted Bond",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Liabilities:Bonds-Payable",
+              "flag": "*",
+              "amount": {
+                "amount": "-100000",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "credit"
+            },
+            {
+              "account": "Liabilities:Bonds-Payable:Discounts",
+              "flag": "*",
+              "amount": {
+                "amount": "2000",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "98000",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "debit"
+            }
+          ],
+          "signConvention": "legacy"
+        },
+        {
+          "type": "transaction",
+          "date": "2026-10-07T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2026-10-07",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Owner's Drawings",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Equity:Owner-Drawings",
+              "flag": "*",
+              "amount": {
+                "amount": "500",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "-500",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "debit"
+            }
+          ],
+          "signConvention": "legacy"
+        },
+        {
+          "type": "transaction",
+          "date": "2026-10-08T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2026-10-08",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Sale with Discount",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Income:Sales",
+              "flag": "*",
+              "amount": {
+                "amount": "-1000",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "credit"
+            },
+            {
+              "account": "Income:Sales:Discounts",
+              "flag": "*",
+              "amount": {
+                "amount": "20",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "980",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "debit"
+            }
+          ],
+          "signConvention": "legacy"
+        },
+        {
+          "type": "transaction",
+          "date": "2026-10-09T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2026-10-09",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Credit Card Cashback",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Liabilities:Credit-Card",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "credit"
+            },
+            {
+              "account": "Expenses:Credit-Card:Rebates",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "costSpec": null,
+              "priceSpec": null,
+              "normalBalanceSide": "credit"
+            }
+          ],
+          "signConvention": "legacy"
+        }
+      ],
+      "signConvention": "legacy"
+    }
+  }
+}

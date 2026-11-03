@@ -1,6 +1,8 @@
 {
-  "_tag": "Left",
-  "left": {
-    "error": "Circular load dependency detected: lib/loading/testdata/load-self.ledger was already loaded (at <main>) at lib/loading/testdata/load-self.ledger:2"
+  "want": {
+    "_tag": "Left",
+    "left": {
+      "error": "Circular load dependency detected: lib/loading/testdata/load-self.ledger was already loaded (at <main>) at lib/loading/testdata/load-self.ledger:2"
+    }
   }
 }

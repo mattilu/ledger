@@ -11,13 +11,17 @@ npm run -s main -- report cash-flow main.ledger \
 ```
 
 `--date-from` includes transactions on the specified date. The shared `--date`
-option limits all Ledger directives processed to that date, inclusive.
+option limits all Ledger directives processed to that date, inclusive. Account
+movements are displayed using the final `sign-convention` value in the root
+Ledger file, or `legacy` if none is set. Use `--sign-convention` to override the
+report convention.
 
 ## Options
 
 | Option                    | Short | Behavior                                                                                                                           |
 | ------------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `--date DATE`             | `-D`  | Process Ledger directives through `DATE`, inclusive.                                                                               |
+| `--sign-convention NAME`  | —     | Override the sign convention used to display amounts.                                                                              |
 | `--date-from DATE`        | `-d`  | Include transactions on or after this date.                                                                                        |
 | `--account REGEX`         | `-a`  | Select accounts matching this case-insensitive regular expression. Repeat to add alternatives.                                     |
 | `--exclude-account REGEX` | `-A`  | Exclude accounts matching this case-insensitive regular expression. Repeat to add alternatives.                                    |

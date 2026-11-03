@@ -3,10 +3,9 @@ import { either as E, function as F } from 'fp-ts';
 import { Map } from 'immutable';
 
 import { Amount } from '../core/amount.js';
+import { CanonicalAmountConverter } from '../core/sign-convention.js';
 import { Directive, DirectiveCommon } from '../loading/directive.js';
-import { CloseDirective } from '../loading/directives/close.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
-import { OpenDirective } from '../loading/directives/open.js';
 import { PriceDirective } from '../loading/directives/price.js';
 import {
   CostSpec,
@@ -14,7 +13,7 @@ import {
   PriceSpec,
   TransactionDirective,
 } from '../loading/directives/transaction.js';
-import { Ledger } from '../loading/ledger.js';
+import { AccountMap, AccountMapValue, Ledger } from '../loading/ledger.js';
 import { Metadata } from '../loading/metadata.js';
 import { SourceContext } from '../loading/source-context.js';
 import { DateSpec } from '../parsing/spec/date.js';
@@ -25,7 +24,7 @@ import { BookingMethod } from './internal/booking-method.js';
 import { FIFO } from './internal/fifo.js';
 import { LIFO } from './internal/lifo.js';
 import { Inventory, InventoryMap } from './inventory.js';
-import { AccountMap, BookedLedger } from './ledger.js';
+import { BookedLedger } from './ledger.js';
 import { Position } from './position.js';
 import { BookedPosting, Transaction } from './transaction.js';
 
@@ -35,19 +34,19 @@ const ZERO = ExactNumber(0);
  * Runs booking logic, transforming a Ledger to a BookedLedger.
  *
  * @param ledger Ledger containing directives to evaluate.
- * @param start Optional, starting state to book from. Can be used to execute
- *   additional directives on top of a previous `book` result.
  * @returns A BookedLedger, or a BookingError in case of failure.
  */
-export function book(
-  ledger: Ledger,
-  start?: BookedLedger,
-): E.Either<BookingError, BookedLedger> {
+export function book(ledger: Ledger): E.Either<BookingError, BookedLedger> {
   const transactions: Transaction[] = [];
   const prices: PriceDirective[] = [];
-  let accountMap: AccountMap = start?.accountMap ?? Map();
-  const currencyMap = start?.currencyMap ?? ledger.currencyMap;
-  let inventories: InventoryMap = start?.inventories ?? Map();
+  let accountMap: AccountMap = Map();
+  const currencyMap = ledger.currencyMap;
+  let inventories: InventoryMap = Map();
+  const converter = new CanonicalAmountConverter({
+    get(account) {
+      return accountMap.get(account)?.open?.normalBalanceSide;
+    },
+  });
 
   for (const directive of ledger.directives) {
     switch (directive.type) {
@@ -79,10 +78,15 @@ export function book(
           );
           if (delta.abs().gt(maxDelta)) {
             const formatter = new Formatter({ currencyMap });
+            const fromCanonicalAmount = converter.getConvertFn(
+              directive.signConvention,
+              balance.account,
+            );
+
             let msg = `Balance for ${balance.account} does not match.
-Expected: ${formatter.formatAmount(balance.amount)}
-Actual: ${formatter.formatAmount(amount)}
-Delta: ${formatter.formatAmount(delta)}`;
+Expected: ${formatter.formatAmount(fromCanonicalAmount(balance.amount))}
+Actual: ${formatter.formatAmount(fromCanonicalAmount(amount))}
+Delta: ${formatter.formatAmount(fromCanonicalAmount(delta))}`;
             if (!maxDelta.isZero()) {
               msg += `\nMaxDelta: ${formatter.formatAmount(maxDelta)}`;
             }
@@ -102,31 +106,34 @@ Delta: ${formatter.formatAmount(delta)}`;
         if (E.isLeft(accountCheck)) {
           return E.left(enrichError(accountCheck.left, directive));
         }
-        if (accountCheck.right?.type === 'close') {
+        if (accountCheck.right.close) {
           return E.left(
             new BookingError(
               `Account ${directive.account} is already closed (at ` +
-                `${formatSourceContext(accountCheck.right.srcCtx)})`,
+                `${formatSourceContext(accountCheck.right.close.srcCtx)})`,
               directive,
             ),
           );
         }
-        accountMap = accountMap.set(directive.account, directive);
+        accountMap = directive.accountMap;
+        // Note: no need to clear the cache here, closing cannot alter the
+        // normal-balance side.
         break;
       }
       case 'open': {
         // Note: reopening a closed account is allowed.
         const account = accountMap.get(directive.account, null);
-        if (account?.type === 'open') {
+        if (account?.open && !account.close) {
           return E.left(
             new BookingError(
               `Account ${directive.account} is already open (at ` +
-                `${formatSourceContext(account.srcCtx)})`,
+                `${formatSourceContext(account.open.srcCtx)})`,
               directive,
             ),
           );
         }
-        accountMap = accountMap.set(directive.account, directive);
+        accountMap = directive.accountMap;
+        converter.clearCache();
         break;
       }
       case 'price': {
@@ -139,6 +146,7 @@ Delta: ${formatter.formatAmount(delta)}`;
           inventories,
           accountMap,
           currencyMap,
+          converter,
         );
         if (E.isLeft(got)) {
           return E.left(enrichError(got.left, directive));
@@ -170,6 +178,7 @@ Delta: ${formatter.formatAmount(delta)}`;
     accountMap,
     currencyMap,
     inventories,
+    signConvention: ledger.signConvention,
   });
 }
 
@@ -178,7 +187,7 @@ function checkValidAccount(
   optionMap: Map<string, string>,
   account: string,
   options?: { allowClosed: boolean },
-): E.Either<Error, OpenDirective | CloseDirective | null> {
+): E.Either<Error, AccountMapValue> {
   const state = accountMap.get(account, null);
   const referenceChecksMode = optionMap.get(
     'account-reference-checks',
@@ -196,14 +205,14 @@ function checkValidAccount(
   }
 
   if (referenceChecksMode === 'none') {
-    return E.right(state);
+    return E.right(state ?? {});
   }
 
-  if (state?.type === 'close' && !(options?.allowClosed ?? false)) {
+  if (state?.close && !(options?.allowClosed ?? false)) {
     return E.left(
       new Error(
         `Account ${account} has been closed ` +
-          `(at ${formatSourceContext(state.srcCtx)})`,
+          `(at ${formatSourceContext(state.close.srcCtx)})`,
       ),
     );
   }
@@ -212,7 +221,7 @@ function checkValidAccount(
     return E.left(new Error(`Account ${account} has not been opened`));
   }
 
-  return E.right(state);
+  return E.right(state ?? {});
 }
 
 function enrichError(error: Error, directive: Directive) {
@@ -224,6 +233,7 @@ function bookTransaction(
   inventories: InventoryMap,
   accountMap: AccountMap,
   currencyMap: Map<string, CurrencyDirective>,
+  converter: CanonicalAmountConverter,
 ): E.Either<Error, [Transaction, PriceDirective[]]> {
   const inventoriesBefore = inventories;
   const postings: BookedPosting[] = [];
@@ -246,6 +256,7 @@ function bookTransaction(
       inventories,
       balance,
       accountCheck.right,
+      converter,
     );
     if (E.isLeft(got)) {
       return got;
@@ -265,10 +276,7 @@ function bookTransaction(
         return accountCheck;
       }
 
-      const allowedCurrencies =
-        accountCheck?.right?.type === 'open'
-          ? accountCheck.right.currencies
-          : [];
+      const allowedCurrencies = accountCheck.right.open?.currencies ?? [];
       if (allowedCurrencies.length > 0) {
         if (allowedCurrencies.indexOf(posting.amount.currency) === -1) {
           const formatter = new Formatter({ currencyMap });
@@ -298,6 +306,7 @@ function bookTransaction(
       flag: transaction.flag,
       postings,
       meta: transaction.meta,
+      signConvention: transaction.signConvention,
       inventoriesBefore,
       inventoriesAfter: inventories,
       srcCtx: transaction.srcCtx,
@@ -311,7 +320,8 @@ function bookPosting(
   posting: Posting,
   inventories: InventoryMap,
   balance: Inventory,
-  accountDirective: OpenDirective | CloseDirective | null,
+  accountMapValue: AccountMapValue,
+  converter: CanonicalAmountConverter,
 ): E.Either<
   Error,
   [BookedPosting[], InventoryMap, balance: Inventory, PriceDirective[]]
@@ -326,8 +336,10 @@ function bookPosting(
     const tradingAccount = getTradingAccount(
       transaction,
       posting,
-      accountDirective?.type === 'open' ? accountDirective : null,
+      accountMapValue,
     );
+    const tradingAccountNormalBalanceSide =
+      converter.getNormalBalanceSide(tradingAccount);
 
     if (posting.costSpec.amounts.length > 0) {
       // Both cost and amount are known. We increase the account by the amount
@@ -378,6 +390,7 @@ function bookPosting(
               amount: postingAmount,
               cost,
               meta: posting.meta,
+              normalBalanceSide: posting.normalBalanceSide,
             },
             {
               account: tradingAccount,
@@ -385,6 +398,7 @@ function bookPosting(
               amount: postingAmount.neg(),
               cost: null,
               meta: Map(),
+              normalBalanceSide: tradingAccountNormalBalanceSide,
             },
             ...costSpec.amounts.map(amount => ({
               account: tradingAccount,
@@ -392,6 +406,7 @@ function bookPosting(
               amount: getTotalAmount(amount, postingAmount, costSpec.kind),
               cost: null,
               meta: Map() as Metadata,
+              normalBalanceSide: tradingAccountNormalBalanceSide,
             })),
           ),
           makePriceDirectives(
@@ -430,11 +445,7 @@ function bookPosting(
 
     const postingAmount = posting.amount;
     const bookResult = F.pipe(
-      getBookingMethod(
-        transaction,
-        posting,
-        accountDirective?.type === 'open' ? accountDirective : null,
-      ),
+      getBookingMethod(transaction, posting, accountMapValue),
       E.flatMap(bookingMethod =>
         bookingMethod.book(
           posting.account,
@@ -459,7 +470,10 @@ function bookPosting(
         //
         // Assets:Broker    -60 USD { 1.2 CHF }
         //
-        posting,
+        {
+          ...posting,
+          normalBalanceSide: converter.getNormalBalanceSide(posting.account),
+        },
         // Additonally, post the amount, negated, and the total cost, to the
         // trading accounts, e.g.
         //
@@ -480,6 +494,7 @@ function bookPosting(
           amount: posting.amount.neg(),
           cost: null,
           meta: Map(),
+          normalBalanceSide: tradingAccountNormalBalanceSide,
         },
         ...(posting.cost?.amounts ?? []).map(cost => ({
           account: tradingAccount,
@@ -487,6 +502,7 @@ function bookPosting(
           amount: cost.mul(posting.amount.amount),
           cost: null,
           meta: Map() as Metadata,
+          normalBalanceSide: tradingAccountNormalBalanceSide,
         })),
       );
       postings.push(...postings1);
@@ -513,8 +529,10 @@ function bookPosting(
     const tradingAccount = getTradingAccount(
       transaction,
       posting,
-      accountDirective?.type === 'open' ? accountDirective : null,
+      accountMapValue,
     );
+    const tradingAccountNormalBalanceSide =
+      converter.getNormalBalanceSide(tradingAccount);
 
     // Similar to the cost case, but here we don't hold the position at cost.
     return E.right([
@@ -527,6 +545,7 @@ function bookPosting(
           amount: posting.amount,
           cost: null,
           meta: posting.meta,
+          normalBalanceSide: posting.normalBalanceSide,
         },
         {
           account: tradingAccount,
@@ -534,6 +553,7 @@ function bookPosting(
           amount: posting.amount.neg(),
           cost: null,
           meta: Map(),
+          normalBalanceSide: tradingAccountNormalBalanceSide,
         },
         {
           account: tradingAccount,
@@ -545,6 +565,7 @@ function bookPosting(
           ),
           cost: null,
           meta: Map() as Metadata,
+          normalBalanceSide: tradingAccountNormalBalanceSide,
         },
       ),
       makePriceDirectives(transaction, posting.amount, posting.priceSpec, null),
@@ -560,6 +581,7 @@ function bookPosting(
         amount: posting.amount,
         cost: null,
         meta: posting.meta,
+        normalBalanceSide: posting.normalBalanceSide,
       }),
       [],
     ]);
@@ -574,6 +596,7 @@ function bookPosting(
       amount: amount.amount.neg(),
       cost: null,
       meta: posting.meta,
+      normalBalanceSide: posting.normalBalanceSide,
     }),
   );
 
@@ -760,9 +783,13 @@ function getPerUnitAmount(
 function getTradingAccount(
   transaction: TransactionDirective,
   posting: Posting,
-  openDirective: OpenDirective | null,
+  accountMapValue: AccountMapValue,
 ): string {
-  for (const meta of [posting.meta, transaction.meta, openDirective?.meta]) {
+  for (const meta of [
+    posting.meta,
+    transaction.meta,
+    accountMapValue.open?.meta,
+  ]) {
     const acc = meta?.get('trading-account');
     if (acc?.type === 'account') {
       return acc.value;
@@ -775,10 +802,14 @@ function getTradingAccount(
 function getBookingMethod(
   transaction: TransactionDirective,
   posting: Posting,
-  openDirective: OpenDirective | null,
+  accountMapValue: AccountMapValue,
 ): E.Either<Error, BookingMethod> {
   function get(): string {
-    for (const meta of [posting.meta, transaction.meta, openDirective?.meta]) {
+    for (const meta of [
+      posting.meta,
+      transaction.meta,
+      accountMapValue.open?.meta,
+    ]) {
       const acc = meta?.get('booking-method');
       if (acc?.type === 'string') {
         return acc.value;

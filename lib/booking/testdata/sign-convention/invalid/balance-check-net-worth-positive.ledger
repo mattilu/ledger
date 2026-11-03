@@ -1,0 +1,8 @@
+option "sign-convention" "net-worth-positive"
+
+2026-10-01 * "Groceries"
+  Expenses:Groceries       -100 USD
+  Liabilities:Credit-Card
+
+2026-10-01 balance
+  Liabilities:Credit-Card   -90 USD

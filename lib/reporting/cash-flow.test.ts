@@ -1,6 +1,6 @@
-import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
 
+import { SignConvention } from '../core/sign-convention.js';
 import { CashFlowReport, CashFlowReportOptions } from './cash-flow.js';
 import { collectTests } from './internal/testing.js';
 
@@ -53,6 +53,17 @@ await describe('CashFlowReport', async () => {
         },
       },
       {
+        name: 'show from accounts, net-worth-positive convention',
+        scenario: 'cash-flow-net-worth-positive',
+        options: {
+          dateFrom: new Date('2025-11-04T00:00:00Z'),
+          showFromAccounts: true,
+          formatOptions: {
+            signConvention: SignConvention.NetWorthPositive,
+          },
+        },
+      },
+      {
         name: 'tree baseline',
         scenario: 'cash-flow-tree-baseline',
         options: {
@@ -76,6 +87,18 @@ await describe('CashFlowReport', async () => {
         },
       },
       {
+        name: 'tree show from accounts',
+        scenario: 'cash-flow-tree-net-worth-positive',
+        options: {
+          dateFrom: new Date('2025-11-04T00:00:00Z'),
+          showFromAccounts: true,
+          formatOptions: {
+            tree: true,
+            signConvention: SignConvention.NetWorthPositive,
+          },
+        },
+      },
+      {
         name: 'tree show totals',
         scenario: 'cash-flow-tree-totals',
         options: {
@@ -83,10 +106,29 @@ await describe('CashFlowReport', async () => {
         },
       },
       {
+        name: 'tree show totals including root',
+        scenario: 'cash-flow-tree-totals-include-root',
+        options: {
+          formatOptions: { tree: true, showTotals: true, showRootTotal: true },
+        },
+      },
+      {
         name: 'tree show totals, hide cost',
         scenario: 'cash-flow-tree-totals-hide-cost',
         options: {
           formatOptions: { tree: true, showTotals: true, showCost: false },
+        },
+      },
+      {
+        name: 'tree show totals including root, hide cost',
+        scenario: 'cash-flow-tree-totals-hide-cost-include-root',
+        options: {
+          formatOptions: {
+            tree: true,
+            showTotals: true,
+            showRootTotal: true,
+            showCost: false,
+          },
         },
       },
       {
@@ -109,9 +151,11 @@ await describe('CashFlowReport', async () => {
       await describe(testCase.name, async () => {
         const tests = await collectTests(testCase.scenario);
         for (const t of tests) {
-          await it(t.testName, async () => {
+          await it(t.testName, async ctx => {
             const got = new CashFlowReport(testCase.options).run(t.ledger);
-            assert.equal(got.trim(), t.wantReport, t.wantPath);
+            ctx.assert.fileSnapshot(got.trim() + '\n', t.wantPath, {
+              serializers: [],
+            });
           });
         }
       });

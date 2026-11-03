@@ -1,0 +1,49 @@
+option "sign-convention" "normal-balance-positive"
+
+2026-01-01 open Assets:Properties:Depreciation
+  normal-balance: "credit"
+2026-01-01 open Liabilities:Bonds-Payable:Discounts
+  normal-balance: "debit"
+2026-01-01 open Equity:Owner-Drawings
+  normal-balance: "debit"
+2026-01-01 open Income:Sales:Discounts
+  normal-balance: "debit"
+2026-01-01 open Expenses:Credit-Card:Rebates
+  normal-balance: "credit"
+
+2026-10-01 * "Opening Balances"
+  Assets:Bank                             1000 USD
+  Equity:Opening-Balances                 1000 USD
+
+2026-10-02 * "Salary Income"
+  Assets:Bank                             1000 USD
+  Income:Salary                           1000 USD
+
+2026-10-03 * "Cash Expense"
+  Expenses:Groceries                       100 USD
+  Assets:Cash                             -100 USD
+
+2026-10-04 * "Credit Card Expense"
+  Expenses:Groceries                       100 USD
+  Liabilities:Credit-Card                  100 USD
+
+2026-10-05 * "Assets Depreciation"
+  Expenses:Depreciation                   5000 USD
+  Assets:Properties:Depreciation          5000 USD
+2026-10-06 * "Discounted Bond"
+  Liabilities:Bonds-Payable            100,000 USD
+  Liabilities:Bonds-Payable:Discounts    2,000 USD
+  Assets:Cash                           98,000 USD
+
+2026-10-07 * "Owner's Drawings"
+  Equity:Owner-Drawings                    500 USD
+  Assets:Cash                             -500 USD
+
+2026-10-08 * "Sale with Discount"
+  Income:Sales                            1000 USD
+  Income:Sales:Discounts                    20 USD
+  Assets:Cash                              980 USD
+
+2026-10-09 * "Credit Card Cashback"
+  Liabilities:Credit-Card                  -10 USD
+  Expenses:Credit-Card:Rebates              10 USD

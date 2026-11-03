@@ -1,4 +1,6 @@
+import { NormalBalanceSide } from '../../core/account.js';
 import { Amount } from '../../core/amount.js';
+import { SignConvention } from '../../core/sign-convention.js';
 import { DateSpec } from '../../parsing/spec/date.js';
 import { DirectiveCommon } from '../directive.js';
 import { Metadata } from '../metadata.js';
@@ -24,6 +26,7 @@ export interface Posting {
   readonly costSpec: CostSpec | null;
   readonly priceSpec: PriceSpec | null;
   readonly meta: Metadata;
+  readonly normalBalanceSide: NormalBalanceSide;
 }
 
 export interface TransactionDirective extends DirectiveCommon<'transaction'> {
@@ -31,4 +34,5 @@ export interface TransactionDirective extends DirectiveCommon<'transaction'> {
   readonly description: string;
   readonly flag: string;
   readonly postings: readonly Posting[];
+  readonly signConvention: SignConvention;
 }

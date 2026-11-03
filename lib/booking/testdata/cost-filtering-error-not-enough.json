@@ -1,6 +1,8 @@
 {
-  "_tag": "Left",
-  "left": {
-    "error": "While processing 'transaction' directive at lib/booking/testdata/cost-filtering-error-not-enough.ledger:7: Not enough positions to reduce: -1 USD from Assets:Broker"
+  "want": {
+    "_tag": "Left",
+    "left": {
+      "error": "While processing 'transaction' directive at lib/booking/testdata/cost-filtering-error-not-enough.ledger:7: Not enough positions to reduce: -1 USD from Assets:Broker"
+    }
   }
 }
