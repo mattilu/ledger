@@ -6,6 +6,7 @@ import {
   Parser,
   rep_sc,
   seq,
+  str,
   tok,
 } from 'typescript-parsec';
 
@@ -99,11 +100,7 @@ const postingParser = apply(
 export const transactionDirectiveParser = apply(
   seq(
     dateParser,
-    alt_sc(
-      tok(TokenKind.KEYWORD_txn),
-      tok(TokenKind.Times),
-      tok(TokenKind.ExclamationMark),
-    ),
+    alt_sc(str('txn'), tok(TokenKind.Times), tok(TokenKind.ExclamationMark)),
     stringParser,
     metadataParser,
     rep_sc(postingParser),
