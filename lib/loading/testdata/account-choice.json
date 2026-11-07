@@ -1,8 +1,0 @@
-{
-  "want": {
-    "_tag": "Left",
-    "left": {
-      "error": "Account-choice postings are not implemented yet at lib/loading/testdata/account-choice.ledger:5"
-    }
-  }
-}

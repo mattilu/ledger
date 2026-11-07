@@ -10,10 +10,15 @@ import { SourceContext } from './source-context.js';
 
 export interface DirectiveCommon<T extends string> {
   readonly type: T;
-  readonly date: Date;
   readonly meta: Metadata;
   readonly srcCtx: SourceContext;
   readonly optionMap: Map<string, string>;
+}
+
+export interface DatedDirectiveCommon<
+  T extends string,
+> extends DirectiveCommon<T> {
+  readonly date: Date;
 }
 
 export type Directive =

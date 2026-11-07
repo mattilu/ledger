@@ -1,0 +1,6 @@
+account-rule "capital-gains" {
+  when direction is credit: Income:Capital-Gains
+}
+account-rule "capital-gains" {
+  when direction is debit: Income:Other
+}

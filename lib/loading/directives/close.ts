@@ -1,7 +1,7 @@
-import { DirectiveCommon } from '../directive.js';
+import { DatedDirectiveCommon } from '../directive.js';
 import { AccountMap } from '../ledger.js';
 
-export interface CloseDirective extends DirectiveCommon<'close'> {
+export interface CloseDirective extends DatedDirectiveCommon<'close'> {
   readonly account: string;
   readonly accountMap: AccountMap;
 }

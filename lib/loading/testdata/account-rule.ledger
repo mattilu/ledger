@@ -1,4 +1,0 @@
-account-rule "foo" {
-  when direction is debit: Income:Capital-Gains:Losses,
-  otherwise: Income:Capital-Gains
-}

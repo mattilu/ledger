@@ -8,6 +8,8 @@ import { Directive, DirectiveCommon } from '../loading/directive.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
 import { PriceDirective } from '../loading/directives/price.js';
 import {
+  AccountChoicePosting,
+  AccountPosting,
   CostSpec,
   Posting,
   PriceSpec,
@@ -241,6 +243,12 @@ function bookTransaction(
   let balance = Inventory.Empty;
 
   for (const posting of transaction.postings) {
+    if (isAccountChoicePosting(posting)) {
+      return E.left(
+        new Error('Account-choice postings are not implemented yet'),
+      );
+    }
+
     const accountCheck = checkValidAccount(
       accountMap,
       transaction.optionMap,
@@ -315,9 +323,15 @@ function bookTransaction(
   ]);
 }
 
+function isAccountChoicePosting(
+  posting: Posting,
+): posting is AccountChoicePosting {
+  return typeof posting.account !== 'string';
+}
+
 function bookPosting(
   transaction: TransactionDirective,
-  posting: Posting,
+  posting: AccountPosting,
   inventories: InventoryMap,
   balance: Inventory,
   accountMapValue: AccountMapValue,

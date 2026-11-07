@@ -1,0 +1,29 @@
+{
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "directives": [
+        {
+          "type": "transaction",
+          "date": "2026-11-01T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2026-11-01",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Undefined rule is not a loading error",
+          "flag": "*",
+          "postings": [
+            {
+              "account": {
+                "type": "ref",
+                "name": "missing-rule"
+              },
+              "flag": "*"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

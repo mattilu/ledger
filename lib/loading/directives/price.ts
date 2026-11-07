@@ -1,7 +1,7 @@
 import { Amount } from '../../core/amount.js';
-import { DirectiveCommon } from '../directive.js';
+import { DatedDirectiveCommon } from '../directive.js';
 
-export interface PriceDirective extends DirectiveCommon<'price'> {
+export interface PriceDirective extends DatedDirectiveCommon<'price'> {
   readonly currency: string;
   readonly price: Amount;
 }
