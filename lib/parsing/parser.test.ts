@@ -40,6 +40,29 @@ await describe('parse', async () => {
       });
     });
   }
+
+  for (const keyword of ['and', 'or', 'not', 'is']) {
+    await test(`rejects reserved keyword '${keyword}' as condition attribute`, () => {
+      const got = parse(
+        `account-rule "r" {\n  when ${keyword} is debit: Income:Foo\n}\n`,
+      );
+      assert(E.isLeft(got));
+    });
+
+    await test(`rejects reserved keyword '${keyword}' as unquoted condition literal`, () => {
+      const got = parse(
+        `account-rule "r" {\n  when direction == ${keyword}: Income:Foo\n}\n`,
+      );
+      assert(E.isLeft(got));
+    });
+
+    await test(`allows '${keyword}' as quoted string condition literal`, () => {
+      const got = parse(
+        `account-rule "r" {\n  when label == "${keyword}": Income:Foo\n}\n`,
+      );
+      assert(E.isRight(got));
+    });
+  }
 });
 
 function cleanup(ledger: LedgerSpec) {

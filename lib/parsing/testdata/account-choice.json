@@ -1,0 +1,846 @@
+{
+  "_tag": "Right",
+  "right": {
+    "directives": [
+      {
+        "type": "account-rule",
+        "name": "comparisons",
+        "rules": [
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "identifier",
+              "operator": "is",
+              "value": {
+                "type": "identifier",
+                "value": "id"
+              }
+            },
+            "account": "Income:Identifier"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "string",
+              "operator": "==",
+              "value": {
+                "type": "string",
+                "value": "str"
+              }
+            },
+            "account": "Income:String"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "number",
+              "operator": "==",
+              "value": {
+                "type": "number",
+                "value": {
+                  "type": "literal",
+                  "value": "42"
+                }
+              }
+            },
+            "account": "Income:Number:Eq"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "number",
+              "operator": "!=",
+              "value": {
+                "type": "number",
+                "value": {
+                  "type": "literal",
+                  "value": "42"
+                }
+              }
+            },
+            "account": "Income:Number:Neq"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "number",
+              "operator": ">",
+              "value": {
+                "type": "number",
+                "value": {
+                  "type": "literal",
+                  "value": "42"
+                }
+              }
+            },
+            "account": "Income:Number:Gt"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "number",
+              "operator": ">=",
+              "value": {
+                "type": "number",
+                "value": {
+                  "type": "literal",
+                  "value": "42"
+                }
+              }
+            },
+            "account": "Income:Number:Gte"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "number",
+              "operator": "<",
+              "value": {
+                "type": "number",
+                "value": {
+                  "type": "literal",
+                  "value": "42"
+                }
+              }
+            },
+            "account": "Income:Number:Lt"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "number",
+              "operator": "<=",
+              "value": {
+                "type": "number",
+                "value": {
+                  "type": "literal",
+                  "value": "42"
+                }
+              }
+            },
+            "account": "Income:Number:Lte"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "amount",
+              "operator": ">=",
+              "value": {
+                "type": "amount",
+                "value": {
+                  "amount": {
+                    "type": "literal",
+                    "value": "10"
+                  },
+                  "currency": "USD"
+                }
+              }
+            },
+            "account": "Income:Amount"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "date",
+              "operator": "is",
+              "value": {
+                "type": "date",
+                "value": {
+                  "date": "2026-11-01",
+                  "time": null,
+                  "timezone": null
+                }
+              }
+            },
+            "account": "Income:Date"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "account",
+              "operator": "is",
+              "value": {
+                "type": "account",
+                "value": "Assets:Test"
+              }
+            },
+            "account": "Income:Account"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "currency",
+              "operator": "is",
+              "value": {
+                "type": "currency",
+                "value": "USD"
+              }
+            },
+            "account": "Income:Currency"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "duration",
+              "operator": ">",
+              "value": {
+                "type": "duration",
+                "value": "3",
+                "unit": "d"
+              }
+            },
+            "account": "Income:Duration"
+          }
+        ]
+      },
+      {
+        "type": "account-rule",
+        "name": "boolean-operators",
+        "rules": [
+          {
+            "type": "when",
+            "condition": {
+              "type": "and",
+              "lhs": {
+                "type": "comparison",
+                "attribute": "foo",
+                "operator": "==",
+                "value": {
+                  "type": "number",
+                  "value": {
+                    "type": "literal",
+                    "value": "1"
+                  }
+                }
+              },
+              "rhs": {
+                "type": "comparison",
+                "attribute": "bar",
+                "operator": "==",
+                "value": {
+                  "type": "number",
+                  "value": {
+                    "type": "literal",
+                    "value": "2"
+                  }
+                }
+              }
+            },
+            "account": "Income:And"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "or",
+              "lhs": {
+                "type": "comparison",
+                "attribute": "foo",
+                "operator": "==",
+                "value": {
+                  "type": "number",
+                  "value": {
+                    "type": "literal",
+                    "value": "1"
+                  }
+                }
+              },
+              "rhs": {
+                "type": "comparison",
+                "attribute": "bar",
+                "operator": "==",
+                "value": {
+                  "type": "number",
+                  "value": {
+                    "type": "literal",
+                    "value": "2"
+                  }
+                }
+              }
+            },
+            "account": "Income:Or"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "not",
+              "expr": {
+                "type": "comparison",
+                "attribute": "foo",
+                "operator": "==",
+                "value": {
+                  "type": "number",
+                  "value": {
+                    "type": "literal",
+                    "value": "1"
+                  }
+                }
+              }
+            },
+            "account": "Income:Not"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "not",
+              "expr": {
+                "type": "not",
+                "expr": {
+                  "type": "comparison",
+                  "attribute": "foo",
+                  "operator": "==",
+                  "value": {
+                    "type": "number",
+                    "value": {
+                      "type": "literal",
+                      "value": "1"
+                    }
+                  }
+                }
+              }
+            },
+            "account": "Income:NotNot"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "and",
+              "lhs": {
+                "type": "and",
+                "lhs": {
+                  "type": "comparison",
+                  "attribute": "foo",
+                  "operator": "==",
+                  "value": {
+                    "type": "number",
+                    "value": {
+                      "type": "literal",
+                      "value": "1"
+                    }
+                  }
+                },
+                "rhs": {
+                  "type": "comparison",
+                  "attribute": "bar",
+                  "operator": "==",
+                  "value": {
+                    "type": "number",
+                    "value": {
+                      "type": "literal",
+                      "value": "2"
+                    }
+                  }
+                }
+              },
+              "rhs": {
+                "type": "comparison",
+                "attribute": "baz",
+                "operator": "==",
+                "value": {
+                  "type": "number",
+                  "value": {
+                    "type": "literal",
+                    "value": "3"
+                  }
+                }
+              }
+            },
+            "account": "Income:AndLeftAssociative"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "or",
+              "lhs": {
+                "type": "or",
+                "lhs": {
+                  "type": "comparison",
+                  "attribute": "foo",
+                  "operator": "==",
+                  "value": {
+                    "type": "number",
+                    "value": {
+                      "type": "literal",
+                      "value": "1"
+                    }
+                  }
+                },
+                "rhs": {
+                  "type": "comparison",
+                  "attribute": "bar",
+                  "operator": "==",
+                  "value": {
+                    "type": "number",
+                    "value": {
+                      "type": "literal",
+                      "value": "2"
+                    }
+                  }
+                }
+              },
+              "rhs": {
+                "type": "comparison",
+                "attribute": "baz",
+                "operator": "==",
+                "value": {
+                  "type": "number",
+                  "value": {
+                    "type": "literal",
+                    "value": "3"
+                  }
+                }
+              }
+            },
+            "account": "Income:OrLeftAssociative"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "or",
+              "lhs": {
+                "type": "comparison",
+                "attribute": "foo",
+                "operator": "==",
+                "value": {
+                  "type": "number",
+                  "value": {
+                    "type": "literal",
+                    "value": "1"
+                  }
+                }
+              },
+              "rhs": {
+                "type": "and",
+                "lhs": {
+                  "type": "comparison",
+                  "attribute": "bar",
+                  "operator": "==",
+                  "value": {
+                    "type": "number",
+                    "value": {
+                      "type": "literal",
+                      "value": "2"
+                    }
+                  }
+                },
+                "rhs": {
+                  "type": "comparison",
+                  "attribute": "baz",
+                  "operator": "==",
+                  "value": {
+                    "type": "number",
+                    "value": {
+                      "type": "literal",
+                      "value": "3"
+                    }
+                  }
+                }
+              }
+            },
+            "account": "Income:PrecedenceAnd"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "and",
+              "lhs": {
+                "type": "or",
+                "lhs": {
+                  "type": "comparison",
+                  "attribute": "foo",
+                  "operator": "==",
+                  "value": {
+                    "type": "number",
+                    "value": {
+                      "type": "literal",
+                      "value": "1"
+                    }
+                  }
+                },
+                "rhs": {
+                  "type": "comparison",
+                  "attribute": "bar",
+                  "operator": "==",
+                  "value": {
+                    "type": "number",
+                    "value": {
+                      "type": "literal",
+                      "value": "2"
+                    }
+                  }
+                }
+              },
+              "rhs": {
+                "type": "comparison",
+                "attribute": "baz",
+                "operator": "==",
+                "value": {
+                  "type": "number",
+                  "value": {
+                    "type": "literal",
+                    "value": "3"
+                  }
+                }
+              }
+            },
+            "account": "Income:PrecedenceParens"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "and",
+              "lhs": {
+                "type": "comparison",
+                "attribute": "foo",
+                "operator": "==",
+                "value": {
+                  "type": "number",
+                  "value": {
+                    "type": "literal",
+                    "value": "1"
+                  }
+                }
+              },
+              "rhs": {
+                "type": "not",
+                "expr": {
+                  "type": "comparison",
+                  "attribute": "bar",
+                  "operator": "==",
+                  "value": {
+                    "type": "number",
+                    "value": {
+                      "type": "literal",
+                      "value": "2"
+                    }
+                  }
+                }
+              }
+            },
+            "account": "Income:PrecedenceNot"
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "or",
+              "lhs": {
+                "type": "not",
+                "expr": {
+                  "type": "comparison",
+                  "attribute": "foo",
+                  "operator": "==",
+                  "value": {
+                    "type": "number",
+                    "value": {
+                      "type": "literal",
+                      "value": "1"
+                    }
+                  }
+                }
+              },
+              "rhs": {
+                "type": "comparison",
+                "attribute": "bar",
+                "operator": "==",
+                "value": {
+                  "type": "number",
+                  "value": {
+                    "type": "literal",
+                    "value": "2"
+                  }
+                }
+              }
+            },
+            "account": "Income:NotOr"
+          }
+        ]
+      },
+      {
+        "type": "account-rule",
+        "name": "otherwise",
+        "rules": [
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "foo",
+              "operator": "==",
+              "value": {
+                "type": "number",
+                "value": {
+                  "type": "literal",
+                  "value": "0"
+                }
+              }
+            },
+            "account": "Income:Foo"
+          },
+          {
+            "type": "otherwise",
+            "account": "Income:Otherwise"
+          }
+        ]
+      },
+      {
+        "type": "account-rule",
+        "name": "without-trailing-comma",
+        "rules": [
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "foo",
+              "operator": "==",
+              "value": {
+                "type": "number",
+                "value": {
+                  "type": "literal",
+                  "value": "0"
+                }
+              }
+            },
+            "account": "Income:Foo"
+          }
+        ]
+      },
+      {
+        "type": "account-rule",
+        "name": "without-trailing-comma-otherwise",
+        "rules": [
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "foo",
+              "operator": "==",
+              "value": {
+                "type": "number",
+                "value": {
+                  "type": "literal",
+                  "value": "0"
+                }
+              }
+            },
+            "account": "Income:Foo"
+          },
+          {
+            "type": "otherwise",
+            "account": "Income:Otherwise"
+          }
+        ]
+      },
+      {
+        "type": "account-rule",
+        "name": "meta",
+        "rules": [
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "foo",
+              "operator": "==",
+              "value": {
+                "type": "number",
+                "value": {
+                  "type": "literal",
+                  "value": "0"
+                }
+              }
+            },
+            "account": "Income:Foo"
+          }
+        ],
+        "meta": {
+          "meta-key": {
+            "type": "string",
+            "value": "value"
+          }
+        }
+      },
+      {
+        "type": "transaction",
+        "date": {
+          "date": "2026-11-01",
+          "time": null,
+          "timezone": null
+        },
+        "description": "Transaction",
+        "flag": "*",
+        "postings": [
+          {
+            "account": {
+              "type": "inline",
+              "rules": [
+                {
+                  "type": "when",
+                  "condition": {
+                    "type": "comparison",
+                    "attribute": "foo",
+                    "operator": "==",
+                    "value": {
+                      "type": "number",
+                      "value": {
+                        "type": "literal",
+                        "value": "0"
+                      }
+                    }
+                  },
+                  "account": "Income:Inline"
+                }
+              ]
+            },
+            "flag": null
+          },
+          {
+            "account": {
+              "type": "ref",
+              "name": "rule-reference"
+            },
+            "flag": null
+          }
+        ]
+      },
+      {
+        "type": "transaction",
+        "date": {
+          "date": "2026-11-01",
+          "time": null,
+          "timezone": null
+        },
+        "description": "Flags",
+        "flag": "*",
+        "postings": [
+          {
+            "account": {
+              "type": "inline",
+              "rules": [
+                {
+                  "type": "when",
+                  "condition": {
+                    "type": "comparison",
+                    "attribute": "foo",
+                    "operator": "==",
+                    "value": {
+                      "type": "number",
+                      "value": {
+                        "type": "literal",
+                        "value": "0"
+                      }
+                    }
+                  },
+                  "account": "Income:Inline"
+                }
+              ]
+            },
+            "flag": "*"
+          },
+          {
+            "account": {
+              "type": "inline",
+              "rules": [
+                {
+                  "type": "when",
+                  "condition": {
+                    "type": "comparison",
+                    "attribute": "foo",
+                    "operator": "==",
+                    "value": {
+                      "type": "number",
+                      "value": {
+                        "type": "literal",
+                        "value": "0"
+                      }
+                    }
+                  },
+                  "account": "Income:Inline"
+                }
+              ]
+            },
+            "flag": "!"
+          },
+          {
+            "account": {
+              "type": "ref",
+              "name": "rule-reference"
+            },
+            "flag": "*"
+          },
+          {
+            "account": {
+              "type": "ref",
+              "name": "rule-reference"
+            },
+            "flag": "!"
+          }
+        ]
+      },
+      {
+        "type": "transaction",
+        "date": {
+          "date": "2026-11-01",
+          "time": null,
+          "timezone": null
+        },
+        "description": "Meta",
+        "flag": "*",
+        "postings": [
+          {
+            "account": {
+              "type": "inline",
+              "rules": [
+                {
+                  "type": "when",
+                  "condition": {
+                    "type": "comparison",
+                    "attribute": "foo",
+                    "operator": "==",
+                    "value": {
+                      "type": "number",
+                      "value": {
+                        "type": "literal",
+                        "value": "0"
+                      }
+                    }
+                  },
+                  "account": "Income:Inline"
+                }
+              ]
+            },
+            "flag": null,
+            "meta": {
+              "meta-key": {
+                "type": "string",
+                "value": "value"
+              }
+            }
+          },
+          {
+            "account": {
+              "type": "ref",
+              "name": "rule-reference"
+            },
+            "flag": null,
+            "meta": {
+              "meta-key": {
+                "type": "string",
+                "value": "value"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

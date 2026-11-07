@@ -19,7 +19,11 @@ import { SourcePosition } from '../parsing/source-position.js';
 import { AmountSpec } from '../parsing/spec/amount.js';
 import { DateSpec } from '../parsing/spec/date.js';
 import { DirectiveCommonSpec } from '../parsing/spec/directive.js';
-import { CostSpec } from '../parsing/spec/directives/transaction.js';
+import {
+  AccountChoicePostingSpec,
+  CostSpec,
+  PostingSpec,
+} from '../parsing/spec/directives/transaction.js';
 import { Expression } from '../parsing/spec/expression.js';
 import { MetadataSpec } from '../parsing/spec/metadata.js';
 import { takeWhile, tee, zip } from '../utils/iter.js';
@@ -229,6 +233,16 @@ async function doLoad(
   for (const directive of parsed.right.directives) {
     let result: E.Either<LoadError, unknown>;
     switch (directive.type) {
+      case 'account-rule': {
+        result = E.left(
+          new LoadError(
+            'Account rules are not implemented yet',
+            makeSourceContext(filePath, directive.srcPos),
+            ctx.stackTrace,
+          ),
+        );
+        break;
+      }
       case 'balance': {
         result = F.pipe(
           E.Do,
@@ -444,8 +458,18 @@ async function doLoad(
           E.bind('postings', () =>
             F.pipe(
               directive.postings,
-              A.traverse(E.Applicative)(posting =>
-                F.pipe(
+              A.traverse(E.Applicative)(posting => {
+                if (isAccountChoicePosting(posting)) {
+                  return E.left(
+                    new LoadError(
+                      'Account-choice postings are not implemented yet',
+                      makeSourceContext(filePath, directive.srcPos),
+                      ctx.stackTrace,
+                    ),
+                  );
+                }
+                const account = posting.account;
+                return F.pipe(
                   makeMeta({ meta: posting.meta, srcPos: directive.srcPos }),
                   E.bindTo('meta'),
                   E.bind('costSpec', () =>
@@ -457,7 +481,7 @@ async function doLoad(
                   ),
                   E.map(
                     ({ meta, costSpec }): PartialPosting => ({
-                      account: posting.account,
+                      account,
                       flag: posting.flag ?? directive.flag,
                       amount: posting.amount
                         ? evaluateAmount(posting.amount)
@@ -472,8 +496,8 @@ async function doLoad(
                       meta,
                     }),
                   ),
-                ),
-              ),
+                );
+              }),
             ),
           ),
           E.map(({ date, meta, postings }) => {
@@ -511,6 +535,12 @@ async function doLoad(
   }
 
   return E.right(ctx);
+}
+
+function isAccountChoicePosting(
+  postingSpec: PostingSpec,
+): postingSpec is AccountChoicePostingSpec {
+  return typeof postingSpec.account !== 'string';
 }
 
 type NormalizeResult = {

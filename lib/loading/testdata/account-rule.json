@@ -1,0 +1,8 @@
+{
+  "want": {
+    "_tag": "Left",
+    "left": {
+      "error": "Account rules are not implemented yet at lib/loading/testdata/account-rule.ledger:1"
+    }
+  }
+}

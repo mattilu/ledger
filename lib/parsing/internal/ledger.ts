@@ -1,6 +1,7 @@
 import { alt_sc, apply, rep_sc } from 'typescript-parsec';
 
 import { LedgerSpec } from '../spec/ledger.js';
+import { accountRuleDirectiveParser } from './directives/account-rule.js';
 import { balanceDirectiveParser } from './directives/balance.js';
 import { closeDirectiveParser } from './directives/close.js';
 import { currencyDirectiveParser } from './directives/currency.js';
@@ -11,6 +12,7 @@ import { priceDirectiveParser } from './directives/price.js';
 import { transactionDirectiveParser } from './directives/transaction.js';
 
 const directiveParser = alt_sc(
+  accountRuleDirectiveParser,
   balanceDirectiveParser,
   closeDirectiveParser,
   currencyDirectiveParser,
