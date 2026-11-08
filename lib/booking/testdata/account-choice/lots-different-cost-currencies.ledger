@@ -1,0 +1,55 @@
+2026-11-01 * "Buy USD lot"
+  Assets:Broker                     1 ACME { 10 USD }
+  Assets:Cash                     -10 USD
+
+2026-11-02 * "Buy second USD lot"
+  Assets:Broker                     1 ACME { 20 USD }
+  Assets:Cash                     -20 USD
+
+2026-11-03 * "Buy EUR lot"
+  Assets:Broker                     1 ACME { 15 EUR }
+  Assets:Cash                     -15 EUR
+
+2026-11-04 * "Sell all lots across cost currencies"
+  Assets:Broker                    -3 ACME {}
+  Assets:Cash                      28 USD
+  Assets:Cash                      18 EUR
+  choose account {
+    when context is reduction and direction is debit: Income:Capital-Gains:Losses,
+    when context is reduction and direction is credit: Income:Capital-Gains,
+    otherwise: Income:Unexpected-Residual
+  }
+
+2026-11-04 balance
+  Assets:Broker                     0 ACME
+  Assets:Cash                      -2 USD
+  Assets:Cash                       3 EUR
+  Income:Capital-Gains             -4 USD
+  Income:Capital-Gains             -3 EUR
+  Income:Capital-Gains:Losses       6 USD
+  Income:Capital-Gains:Losses       0 EUR
+  Income:Unexpected-Residual        0 USD
+  Income:Unexpected-Residual        0 EUR
+
+2026-11-05 * "Buy USD lot"
+  Assets:Broker                     1 ACME { 10 USD }
+  Assets:Cash                     -10 USD
+
+2026-11-06 * "Sell USD-costed lot for GBP proceeds"
+  Assets:Broker                    -1 ACME {}
+  Assets:Cash                       8 GBP
+  choose account {
+    when context is reduction and direction is debit: Income:Capital-Gains:Losses,
+    when context is reduction and direction is credit: Income:Capital-Gains,
+    when context is aggregate: Income:Proceeds-Other-Currency
+  }
+
+2026-11-06 balance
+  Assets:Broker                     0 ACME
+  Assets:Cash                     -12 USD
+  Assets:Cash                       8 GBP
+  Income:Capital-Gains             -4 USD
+  Income:Capital-Gains:Losses      16 USD
+  Income:Capital-Gains:Losses       0 GBP
+  Income:Proceeds-Other-Currency    0 USD
+  Income:Proceeds-Other-Currency   -8 GBP

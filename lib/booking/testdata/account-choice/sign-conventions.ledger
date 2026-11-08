@@ -1,0 +1,47 @@
+2026-11-01 open Income:Capital-Gains:Losses
+  normal-balance: "debit"
+
+account-rule "capital-gains" {
+  when direction is debit: Income:Capital-Gains:Losses,
+  otherwise: Income:Capital-Gains
+}
+
+option "sign-convention" "normal-balance-positive"
+
+2026-11-01 * "Buy stock (normal-balance-positive)"
+  Assets:Broker                  2 ACME {{ 20 USD }}
+  Assets:Cash                  -20 USD
+
+2026-11-02 * "Sell for gain (normal-balance-positive)"
+  Assets:Broker                 -1 ACME {}
+  Assets:Cash                   15 USD
+  choose account "capital-gains"
+
+2026-11-03 * "Sell for loss (normal-balance-positive)"
+  Assets:Broker                 -1 ACME {}
+  Assets:Cash                    6 USD
+  choose account "capital-gains"
+
+2026-11-03 balance
+  Income:Capital-Gains           5 USD
+  Income:Capital-Gains:Losses    4 USD
+
+option "sign-convention" "net-worth-positive"
+
+2026-11-04 * "Buy stock (net-worth-positive)"
+  Assets:Broker                  2 ACME {{ 20 USD }}
+  Assets:Cash                  -20 USD
+
+2026-11-05 * "Sell for gain (net-worth-positive)"
+  Assets:Broker                 -1 ACME {}
+  Assets:Cash                   15 USD
+  choose account "capital-gains"
+
+2026-11-06 * "Sell for loss (net-worth-positive)"
+  Assets:Broker                 -1 ACME {}
+  Assets:Cash                    6 USD
+  choose account "capital-gains"
+
+2026-11-06 balance
+  Income:Capital-Gains          10 USD
+  Income:Capital-Gains:Losses   -8 USD

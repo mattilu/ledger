@@ -1,0 +1,5 @@
+2026-11-01 * "Missing holding period"
+  Assets:Cash  10 USD
+  choose account {
+    when holding-period >= 365d: Income:Capital-Gains
+  }

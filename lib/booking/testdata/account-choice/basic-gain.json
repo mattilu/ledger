@@ -1,0 +1,213 @@
+{
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "transactions": [
+        {
+          "date": "2026-11-01T00:00:00.000Z",
+          "description": "Buy stock",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "10",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-11-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-11-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker": {
+              "ACME": [
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "10",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2026-11-01T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2026-11-01",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": []
+                  }
+                }
+              ],
+              "USD": [
+                {
+                  "amount": "-10",
+                  "cost": null
+                }
+              ]
+            },
+            "Trading:Default": {
+              "ACME": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ],
+              "USD": [
+                {
+                  "amount": "10",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-11-02T00:00:00.000Z",
+          "description": "Sell for profit",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "10",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-11-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-11-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "15",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Income:Capital-Gains",
+              "flag": "*",
+              "amount": {
+                "amount": "-5",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker": {
+              "USD": [
+                {
+                  "amount": "5",
+                  "cost": null
+                }
+              ]
+            },
+            "Trading:Default": {},
+            "Income:Capital-Gains": {
+              "USD": [
+                {
+                  "amount": "-5",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "prices": [
+        {
+          "type": "price",
+          "date": "2026-11-01T00:00:00.000Z",
+          "currency": "ACME",
+          "price": {
+            "amount": "10",
+            "currency": "USD"
+          },
+          "meta": {
+            "synthetized-from": {
+              "type": "string",
+              "value": "cost-spec"
+            }
+          },
+          "optionMap": {}
+        }
+      ]
+    }
+  }
+}

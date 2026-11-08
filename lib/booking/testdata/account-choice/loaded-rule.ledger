@@ -1,0 +1,22 @@
+load "_loaded-rule.ledger"
+
+2026-01-01 * "Buy stock"
+  Assets:Broker                         2 ACME { 10 USD }
+  Assets:Broker
+
+2026-06-01 * "Sell 1 share short-term gain"
+  Assets:Broker                        -1 ACME {}
+  Assets:Broker                        14 USD
+  choose account "capital-gains"
+
+2027-02-01 * "Sell 1 share long-term loss"
+  Assets:Broker                        -1 ACME {}
+  Assets:Broker                         7 USD
+  choose account "capital-gains"
+
+2027-02-01 balance
+  Assets:Broker                         0 ACME
+  Assets:Broker                         1 USD
+  Income:Capital-Gains:Short-Term      -4 USD
+  Income:Capital-Gains:Long-Term        0 USD
+  Income:Capital-Gains:Losses           3 USD

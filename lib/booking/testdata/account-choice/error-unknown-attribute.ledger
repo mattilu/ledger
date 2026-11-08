@@ -1,0 +1,5 @@
+2026-11-03 * "Unknown condition attribute"
+  Assets:Cash  10 USD
+  choose account {
+    when booking-result is valid: Income:Route
+  }

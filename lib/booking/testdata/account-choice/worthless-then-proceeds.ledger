@@ -1,0 +1,24 @@
+2026-11-01 * "Buy long call"
+  Assets:Broker            1 ACME-20261107-C-30 {{ 10 USD }}
+  Assets:Broker
+
+2026-11-02 * "Sell short call"
+  Assets:Broker           -1 FOO-20261107-C-20 {{ -20 USD }}
+  Assets:Broker
+
+2026-11-07 * "Expired options"
+  Assets:Broker            1 FOO-20261107-C-20 {}  ; Expires worthless
+  choose account {
+    when direction is debit: Income:Options:Losses,
+    otherwise: Income:Options
+  }
+  Assets:Broker           -1 ACME-20261107-C-30 {}  ; Expires ITM and cash-settles
+  Assets:Broker           50 USD
+  choose account {
+    when direction is debit: Income:Options:Losses,
+    otherwise: Income:Options
+  }
+
+2026-11-07 balance
+  Income:Options         -60 USD
+  Income:Options:Losses    0 USD

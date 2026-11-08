@@ -1,0 +1,237 @@
+{
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "transactions": [
+        {
+          "date": "2026-11-01T00:00:00.000Z",
+          "description": "Buy at cost",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "10",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-11-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-11-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker": {
+              "ACME": [
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "10",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2026-11-01T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2026-11-01",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": []
+                  }
+                }
+              ]
+            },
+            "Trading:Default": {
+              "ACME": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ],
+              "USD": [
+                {
+                  "amount": "10",
+                  "cost": null
+                }
+              ]
+            },
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "-10",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-11-02T00:00:00.000Z",
+          "description": "Sell at same price",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "10",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-11-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-11-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker": {},
+            "Trading:Default": {},
+            "Assets:Cash": {}
+          }
+        },
+        {
+          "date": "2026-11-03T00:00:00.000Z",
+          "description": "Already balanced transaction with zero aggregate residual",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Bank",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker": {},
+            "Trading:Default": {},
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "10",
+                  "cost": null
+                }
+              ]
+            },
+            "Assets:Bank": {
+              "USD": [
+                {
+                  "amount": "-10",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "prices": [
+        {
+          "type": "price",
+          "date": "2026-11-01T00:00:00.000Z",
+          "currency": "ACME",
+          "price": {
+            "amount": "10",
+            "currency": "USD"
+          },
+          "meta": {
+            "synthetized-from": {
+              "type": "string",
+              "value": "cost-spec"
+            }
+          },
+          "optionMap": {}
+        }
+      ]
+    }
+  }
+}

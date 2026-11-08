@@ -1,0 +1,437 @@
+{
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "transactions": [
+        {
+          "date": "2025-11-01T00:00:00.000Z",
+          "description": "Buy exact 1-year lot",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "10",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2025-11-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2025-11-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker": {
+              "ACME": [
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "10",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2025-11-01T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2025-11-01",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": []
+                  }
+                }
+              ]
+            },
+            "Trading:Default": {
+              "ACME": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ],
+              "USD": [
+                {
+                  "amount": "10",
+                  "cost": null
+                }
+              ]
+            },
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "-10",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-10-31T12:00:00.000Z",
+          "description": "Buy fractional-day lot",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "12",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-10-31T12:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-10-31",
+                  "time": "12:00",
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "12",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "-12",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker": {
+              "ACME": [
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "10",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2025-11-01T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2025-11-01",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": []
+                  }
+                },
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "12",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2026-10-31T12:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2026-10-31",
+                      "time": "12:00",
+                      "timezone": null
+                    },
+                    "tags": []
+                  }
+                }
+              ]
+            },
+            "Trading:Default": {
+              "ACME": [
+                {
+                  "amount": "-2",
+                  "cost": null
+                }
+              ],
+              "USD": [
+                {
+                  "amount": "22",
+                  "cost": null
+                }
+              ]
+            },
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "-22",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-11-01T00:00:00.000Z",
+          "description": "Sell lots testing operators, precedence, short-circuiting, and first-match",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Fees",
+              "flag": "*",
+              "amount": {
+                "amount": "3",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "10",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2025-11-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2025-11-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "12",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-10-31T12:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-10-31",
+                  "time": "12:00",
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-12",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "30",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Income:Capital-Gains:Exact-Year",
+              "flag": "*",
+              "amount": {
+                "amount": "-5",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Income:Capital-Gains:Intraday",
+              "flag": "*",
+              "amount": {
+                "amount": "-3",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "-3",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker": {},
+            "Trading:Default": {},
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "5",
+                  "cost": null
+                }
+              ]
+            },
+            "Assets:Fees": {
+              "USD": [
+                {
+                  "amount": "3",
+                  "cost": null
+                }
+              ]
+            },
+            "Income:Capital-Gains:Exact-Year": {
+              "USD": [
+                {
+                  "amount": "-5",
+                  "cost": null
+                }
+              ]
+            },
+            "Income:Capital-Gains:Intraday": {
+              "USD": [
+                {
+                  "amount": "-3",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "prices": [
+        {
+          "type": "price",
+          "date": "2025-11-01T00:00:00.000Z",
+          "currency": "ACME",
+          "price": {
+            "amount": "10",
+            "currency": "USD"
+          },
+          "meta": {
+            "synthetized-from": {
+              "type": "string",
+              "value": "cost-spec"
+            }
+          },
+          "optionMap": {}
+        },
+        {
+          "type": "price",
+          "date": "2026-10-31T12:00:00.000Z",
+          "currency": "ACME",
+          "price": {
+            "amount": "12",
+            "currency": "USD"
+          },
+          "meta": {
+            "synthetized-from": {
+              "type": "string",
+              "value": "cost-spec"
+            }
+          },
+          "optionMap": {}
+        }
+      ]
+    }
+  }
+}

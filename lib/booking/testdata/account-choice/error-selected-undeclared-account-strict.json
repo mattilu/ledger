@@ -1,0 +1,8 @@
+{
+  "want": {
+    "_tag": "Left",
+    "left": {
+      "error": "While processing 'transaction' directive at lib/booking/testdata/account-choice/error-selected-undeclared-account-strict.ledger:5: Account Income:Undeclared has not been opened"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+2026-11-01 * "Open position with multiple cost amounts"
+  Assets:Crypto                 1 ETH-BTC-LP {{ 1 BTC, 34 ETH }}
+  Assets:Crypto
+
+2026-11-02 * "Close position with gain in BTC and loss in ETH"
+  Assets:Crypto                -1 ETH-BTC-LP {}
+  Assets:Crypto                 2 BTC
+  Assets:Crypto                30 ETH
+  choose account {
+    when direction is debit: Income:Capital-Gains:Losses,
+    otherwise: Income:Capital-Gains
+  }
+
+2026-11-02 balance
+  Income:Capital-Gains         -1 BTC
+  Income:Capital-Gains          0 ETH
+  Income:Capital-Gains:Losses   0 BTC
+  Income:Capital-Gains:Losses   4 ETH

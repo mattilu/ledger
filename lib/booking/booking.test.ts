@@ -1,4 +1,5 @@
 import { strict as assert } from 'node:assert';
+import { basename } from 'node:path';
 import { describe, test } from 'node:test';
 
 import { either as E, function as F } from 'fp-ts';
@@ -20,7 +21,9 @@ type TestOptions = {
 await describe('book', async () => {
   const tests = [];
   const dirname = 'lib/booking/testdata/';
-  for await (const f of glob([`${dirname}**/*.ledger`])) {
+  for await (const f of glob([`${dirname}**/*.ledger`], {
+    exclude: f => basename(f).startsWith('_'),
+  })) {
     tests.push({
       testName: f.replace(dirname, '').replace('.ledger', ''),
       srcPath: f,

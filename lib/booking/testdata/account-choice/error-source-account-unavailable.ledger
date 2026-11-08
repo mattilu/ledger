@@ -1,0 +1,6 @@
+2026-11-03 * "Source account unavailable for residual"
+  Assets:Cash  10 USD
+  choose account {
+    when source-account is Assets:Cash: Income:Route,
+    otherwise: Income:Fallback
+  }

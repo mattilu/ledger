@@ -1,0 +1,16 @@
+2026-11-01 * "Buy position"
+  Assets:Broker                  1 ACME { 10 USD }
+  Assets:Cash                  -10 USD
+
+2026-11-02 * "Sell with fee"
+  Assets:Broker                 -1 ACME {}
+  Assets:Cash                    5 USD
+  Assets:Fees                   -1 USD
+  choose account {
+    when direction is debit: Income:Capital-Gains:Losses,
+    otherwise: Income:Capital-Gains
+  }
+
+2026-11-02 balance
+  Income:Capital-Gains           0 USD
+  Income:Capital-Gains:Losses    6 USD

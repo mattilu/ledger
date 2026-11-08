@@ -1,0 +1,28 @@
+2025-11-01 * "Buy exact 1-year lot"
+  Assets:Broker                             1 ACME { 10 USD }
+  Assets:Cash                             -10 USD
+
+2026-10-31 12:00 * "Buy fractional-day lot"
+  Assets:Broker                             1 ACME { 12 USD }
+  Assets:Cash                             -12 USD
+
+2026-11-01 00:00 * "Sell lots testing operators, precedence, short-circuiting, and first-match"
+  Assets:Fees                               3 USD
+  Assets:Broker                            -2 ACME {}
+  Assets:Cash                              30 USD
+  choose account {
+    ; Short-circuit 'or' and 'and' when evaluating aggregate residual (no holding-period error)
+    when (context is aggregate or holding-period > 1000d) and not (direction is debit): Assets:Cash,
+    ; Exact equality on duration (365d)
+    when holding-period == 365d and holding-period is 365d and holding-period <= 365d and holding-period >= 365d: Income:Capital-Gains:Exact-Year,
+    ; Overlapping condition that would also match 365d, verifying first-match priority
+    when holding-period >= 300d: Income:Capital-Gains:Unreached-Overlap,
+    ; Fractional duration (0.5d) with inequality and ordered comparisons
+    when holding-period != 365d and holding-period is not 365d and holding-period > 0d and holding-period < 1d: Income:Capital-Gains:Intraday
+  }
+
+2026-11-01 00:00 balance
+  Assets:Cash                               5 USD
+  Income:Capital-Gains:Exact-Year          -5 USD
+  Income:Capital-Gains:Unreached-Overlap    0 USD
+  Income:Capital-Gains:Intraday            -3 USD

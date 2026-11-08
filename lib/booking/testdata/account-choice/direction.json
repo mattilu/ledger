@@ -1,0 +1,180 @@
+{
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "transactions": [
+        {
+          "date": "2026-11-01T00:00:00.000Z",
+          "description": "Credit routing with leftover",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Income:Credit",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "10",
+                  "cost": null
+                }
+              ]
+            },
+            "Income:Credit": {
+              "USD": [
+                {
+                  "amount": "-10",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-11-02T00:00:00.000Z",
+          "description": "Debit routing",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "-20",
+                "currency": "EUR"
+              },
+              "cost": null
+            },
+            {
+              "account": "Expenses:Debit",
+              "flag": "*",
+              "amount": {
+                "amount": "20",
+                "currency": "EUR"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "10",
+                  "cost": null
+                }
+              ],
+              "EUR": [
+                {
+                  "amount": "-20",
+                  "cost": null
+                }
+              ]
+            },
+            "Income:Credit": {
+              "USD": [
+                {
+                  "amount": "-10",
+                  "cost": null
+                }
+              ]
+            },
+            "Expenses:Debit": {
+              "EUR": [
+                {
+                  "amount": "20",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-11-03T00:00:00.000Z",
+          "description": "Named rule",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "5",
+                "currency": "GBP"
+              },
+              "cost": null
+            },
+            {
+              "account": "Income:Named",
+              "flag": "*",
+              "amount": {
+                "amount": "-5",
+                "currency": "GBP"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "10",
+                  "cost": null
+                }
+              ],
+              "EUR": [
+                {
+                  "amount": "-20",
+                  "cost": null
+                }
+              ],
+              "GBP": [
+                {
+                  "amount": "5",
+                  "cost": null
+                }
+              ]
+            },
+            "Income:Credit": {
+              "USD": [
+                {
+                  "amount": "-10",
+                  "cost": null
+                }
+              ]
+            },
+            "Expenses:Debit": {
+              "EUR": [
+                {
+                  "amount": "20",
+                  "cost": null
+                }
+              ]
+            },
+            "Income:Named": {
+              "GBP": [
+                {
+                  "amount": "-5",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

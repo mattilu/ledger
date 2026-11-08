@@ -1,13 +1,20 @@
-import { ExactNumber } from 'exactnumber';
-import { either as E, function as F } from 'fp-ts';
-import { Map } from 'immutable';
+import { ExactNumber, ExactNumberType } from 'exactnumber';
+import { either as E, function as F, readonlyArray as RA } from 'fp-ts';
+import { Map as ImmutableMap } from 'immutable';
 
 import { Amount } from '../core/amount.js';
 import { CanonicalAmountConverter } from '../core/sign-convention.js';
 import { Directive, DirectiveCommon } from '../loading/directive.js';
+import {
+  AccountChoiceRule,
+  AccountRuleDirective,
+  ConditionExpression,
+  ConditionLiteral,
+} from '../loading/directives/account-choice.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
 import { PriceDirective } from '../loading/directives/price.js';
 import {
+  AccountChoice,
   AccountChoicePosting,
   AccountPosting,
   CostSpec,
@@ -41,9 +48,9 @@ const ZERO = ExactNumber(0);
 export function book(ledger: Ledger): E.Either<BookingError, BookedLedger> {
   const transactions: Transaction[] = [];
   const prices: PriceDirective[] = [];
-  let accountMap: AccountMap = Map();
+  let accountMap: AccountMap = ImmutableMap();
   const currencyMap = ledger.currencyMap;
-  let inventories: InventoryMap = Map();
+  let inventories: InventoryMap = ImmutableMap();
   const converter = new CanonicalAmountConverter({
     get(account) {
       return accountMap.get(account)?.open?.normalBalanceSide;
@@ -148,13 +155,14 @@ Delta: ${formatter.formatAmount(fromCanonicalAmount(delta))}`;
           inventories,
           accountMap,
           currencyMap,
+          ledger.accountRuleMap,
           converter,
         );
         if (E.isLeft(got)) {
           return E.left(enrichError(got.left, directive));
         }
 
-        const [transaction, priceDirectives] = got.right;
+        const { transaction, priceDirectives } = got.right;
 
         transactions.push(transaction);
         inventories = transaction.inventoriesAfter;
@@ -186,7 +194,7 @@ Delta: ${formatter.formatAmount(fromCanonicalAmount(delta))}`;
 
 function checkValidAccount(
   accountMap: AccountMap,
-  optionMap: Map<string, string>,
+  optionMap: ImmutableMap<string, string>,
   account: string,
   options?: { allowClosed: boolean },
 ): E.Either<Error, AccountMapValue> {
@@ -230,75 +238,149 @@ function enrichError(error: Error, directive: Directive) {
   return new BookingError(error.message, directive, { cause: error });
 }
 
+interface LotReduction {
+  readonly amount: Amount;
+  readonly sourceAccount: string;
+  readonly cost: Cost;
+}
+
+interface LotReductionGroup {
+  readonly reductions: readonly LotReduction[];
+  readonly proceeds: Amount[];
+}
+
+interface AccountChoiceAggregatePortion {
+  readonly context: 'aggregate';
+  readonly amount: Amount;
+}
+
+interface AccountChoiceReductionPortion {
+  readonly context: 'reduction';
+  readonly amount: Amount;
+  readonly sourceAccount: string;
+  readonly holdingPeriod: ExactNumberType;
+}
+
+type AccountChoicePortion =
+  | AccountChoiceAggregatePortion
+  | AccountChoiceReductionPortion;
+
+interface BookTransactionResult {
+  readonly transaction: Transaction;
+  readonly priceDirectives: readonly PriceDirective[];
+}
+
 function bookTransaction(
   transaction: TransactionDirective,
   inventories: InventoryMap,
   accountMap: AccountMap,
-  currencyMap: Map<string, CurrencyDirective>,
+  currencyMap: ImmutableMap<string, CurrencyDirective>,
+  accountRuleMap: ImmutableMap<string, AccountRuleDirective>,
   converter: CanonicalAmountConverter,
-): E.Either<Error, [Transaction, PriceDirective[]]> {
+): E.Either<Error, BookTransactionResult> {
   const inventoriesBefore = inventories;
   const postings: BookedPosting[] = [];
   const prices: PriceDirective[] = [];
+  let activeReductionGroup: LotReductionGroup | null = null;
+  let pendingReductionGroups: LotReductionGroup[] = [];
+  let pendingReductionPortions: AccountChoiceReductionPortion[] = [];
   let balance = Inventory.Empty;
+
+  function finishReductionGroup() {
+    if (activeReductionGroup !== null) {
+      pendingReductionGroups.push(activeReductionGroup);
+      activeReductionGroup = null;
+    }
+  }
 
   for (const posting of transaction.postings) {
     if (isAccountChoicePosting(posting)) {
-      return E.left(
-        new Error('Account-choice postings are not implemented yet'),
-      );
-    }
-
-    const accountCheck = checkValidAccount(
-      accountMap,
-      transaction.optionMap,
-      posting.account,
-    );
-    if (E.isLeft(accountCheck)) {
-      return accountCheck;
-    }
-
-    const got = bookPosting(
-      transaction,
-      posting,
-      inventories,
-      balance,
-      accountCheck.right,
-      converter,
-    );
-    if (E.isLeft(got)) {
-      return got;
-    }
-
-    let bookedPostings: BookedPosting[];
-    let priceDirectives: PriceDirective[];
-    [bookedPostings, inventories, balance, priceDirectives] = got.right;
-
-    for (const posting of bookedPostings) {
-      const accountCheck = checkValidAccount(
-        accountMap,
-        transaction.optionMap,
-        posting.account,
-      );
-      if (E.isLeft(accountCheck)) {
-        return accountCheck;
-      }
-
-      const allowedCurrencies = accountCheck.right.open?.currencies ?? [];
-      if (allowedCurrencies.length > 0) {
-        if (allowedCurrencies.indexOf(posting.amount.currency) === -1) {
-          const formatter = new Formatter({ currencyMap });
-          return E.left(
-            new Error(
-              `Cannot post ${formatter.formatAmount(posting.amount)} to account ${posting.account}: currency ${posting.amount.currency} not allowed`,
+      const accountChoiceResult = F.pipe(
+        resolveAccountChoiceRules(posting.account, accountRuleMap),
+        E.flatMap(rules => {
+          finishReductionGroup();
+          const reductionPortions = [
+            ...pendingReductionPortions,
+            ...pendingReductionGroups.flatMap(group =>
+              makeLotPortions(group, transaction.date),
             ),
+          ];
+          pendingReductionGroups = [];
+          return bookAccountChoice(
+            posting,
+            rules,
+            inventories,
+            balance,
+            converter,
+            reductionPortions,
           );
-        }
+        }),
+        E.tap(accountChoiceResult => {
+          inventories = accountChoiceResult.inventories;
+          balance = accountChoiceResult.balance;
+          pendingReductionPortions =
+            accountChoiceResult.unmatchedReductionPortions;
+          postings.push(...accountChoiceResult.postings);
+          return validateBookedPostings(
+            accountChoiceResult.postings,
+            accountMap,
+            transaction,
+            currencyMap,
+          );
+        }),
+      );
+      if (E.isLeft(accountChoiceResult)) {
+        return accountChoiceResult;
       }
+      continue;
     }
 
-    postings.push(...bookedPostings);
-    prices.push(...priceDirectives);
+    if (posting.costSpec !== null || posting.priceSpec !== null) {
+      finishReductionGroup();
+    }
+
+    const bookPostingResult = F.pipe(
+      checkValidAccount(accountMap, transaction.optionMap, posting.account),
+      E.flatMap(accountMapValue =>
+        bookPosting(
+          transaction,
+          posting,
+          inventories,
+          balance,
+          accountMapValue,
+          converter,
+        ),
+      ),
+      E.tap(bookResult => {
+        inventories = bookResult.inventories;
+        balance = bookResult.balance;
+        if (bookResult.lotReductions.length > 0) {
+          finishReductionGroup();
+          activeReductionGroup = {
+            reductions: bookResult.lotReductions,
+            proceeds: [],
+          };
+        } else if (posting.amount !== null && activeReductionGroup !== null) {
+          activeReductionGroup.proceeds.push(posting.amount);
+        }
+        postings.push(...bookResult.postings);
+        prices.push(...bookResult.priceDirectives);
+        if (posting.amount === null) {
+          activeReductionGroup = null;
+          pendingReductionGroups = [];
+          pendingReductionPortions = [];
+        }
+        return validateBookedPostings(
+          bookResult.postings,
+          accountMap,
+          transaction,
+          currencyMap,
+        );
+      }),
+    );
+    if (E.isLeft(bookPostingResult)) {
+      return bookPostingResult;
+    }
   }
 
   if (!balance.isEmpty()) {
@@ -307,8 +389,8 @@ function bookTransaction(
     );
   }
 
-  return E.right([
-    {
+  return E.right({
+    transaction: {
       date: transaction.date,
       description: transaction.description,
       flag: transaction.flag,
@@ -319,14 +401,421 @@ function bookTransaction(
       inventoriesAfter: inventories,
       srcCtx: transaction.srcCtx,
     },
-    prices,
-  ]);
+    priceDirectives: prices,
+  });
 }
 
 function isAccountChoicePosting(
   posting: Posting,
 ): posting is AccountChoicePosting {
   return typeof posting.account !== 'string';
+}
+
+function validateBookedPostings(
+  postings: readonly BookedPosting[],
+  accountMap: AccountMap,
+  transaction: TransactionDirective,
+  currencyMap: ImmutableMap<string, CurrencyDirective>,
+): E.Either<Error, void> {
+  return F.pipe(
+    postings,
+    RA.traverse(E.Applicative)(posting =>
+      F.pipe(
+        checkValidAccount(accountMap, transaction.optionMap, posting.account),
+        E.flatMap(accountMapValue => {
+          const allowedCurrencies = accountMapValue.open?.currencies ?? [];
+          if (
+            allowedCurrencies.length > 0 &&
+            !allowedCurrencies.includes(posting.amount.currency)
+          ) {
+            const formatter = new Formatter({ currencyMap });
+            return E.left(
+              new Error(
+                `Cannot post ${formatter.formatAmount(posting.amount)} to account ${posting.account}: currency ${posting.amount.currency} not allowed`,
+              ),
+            );
+          }
+          return E.of(undefined);
+        }),
+      ),
+    ),
+    E.asUnit,
+  );
+}
+
+function resolveAccountChoiceRules(
+  choice: AccountChoice,
+  accountRuleMap: ImmutableMap<string, AccountRuleDirective>,
+): E.Either<Error, readonly AccountChoiceRule[]> {
+  if (choice.type === 'inline') {
+    return E.right(choice.rules);
+  }
+
+  const accountRule = accountRuleMap.get(choice.name);
+  return accountRule === undefined
+    ? E.left(new Error(`Account rule '${choice.name}' is not defined`))
+    : E.right(accountRule.rules);
+}
+
+interface BookAccountChoiceResult {
+  readonly postings: readonly BookedPosting[];
+  readonly inventories: InventoryMap;
+  readonly balance: Inventory;
+  readonly unmatchedReductionPortions: AccountChoiceReductionPortion[];
+}
+
+function bookAccountChoice(
+  posting: AccountChoicePosting,
+  rules: readonly AccountChoiceRule[],
+  inventories: InventoryMap,
+  balance: Inventory,
+  converter: CanonicalAmountConverter,
+  portions: readonly AccountChoicePortion[],
+): E.Either<Error, BookAccountChoiceResult> {
+  const bookedPostings: BookedPosting[] = [];
+  const unmatchedReductionPortions: AccountChoiceReductionPortion[] = [];
+
+  return F.pipe(
+    [...portions, ...makeBalanceResidualPortions(balance, portions)],
+    RA.traverse(E.Applicative)(portion =>
+      F.pipe(
+        selectAccount(rules, {
+          direction: portion.amount.isPos() ? 'debit' : 'credit',
+          ...portion,
+        }),
+        E.map(account => {
+          if (account !== null) {
+            bookedPostings.push({
+              account,
+              flag: posting.flag,
+              amount: portion.amount,
+              cost: null,
+              meta: posting.meta,
+              normalBalanceSide: converter.getNormalBalanceSide(account),
+            });
+          } else if (portion.context === 'reduction') {
+            unmatchedReductionPortions.push(portion);
+          }
+        }),
+      ),
+    ),
+    E.map(() => ({
+      ...doBook(inventories, balance, ...bookedPostings),
+      unmatchedReductionPortions,
+    })),
+  );
+}
+
+function makeBalanceResidualPortions(
+  balance: Inventory,
+  portions: readonly AccountChoicePortion[],
+): AccountChoiceAggregatePortion[] {
+  return balance
+    .addAmounts(portions.map(portion => portion.amount))
+    .getPositions()
+    .map(position => ({
+      amount: position.amount.neg(),
+      context: 'aggregate',
+    }));
+}
+
+function makeLotPortions(
+  group: LotReductionGroup,
+  reductionDate: Date,
+): AccountChoicePortion[] {
+  if (group.reductions.length === 0) {
+    return [];
+  }
+
+  const totalUnitsByCostCurrency = new Map<string, ExactNumberType>();
+  for (const reduction of group.reductions) {
+    for (const cost of reduction.cost.amounts) {
+      const current = totalUnitsByCostCurrency.get(cost.currency) ?? ZERO;
+      totalUnitsByCostCurrency.set(
+        cost.currency,
+        current.add(reduction.amount.amount),
+      );
+    }
+  }
+
+  const totalProceeds = Inventory.Empty.addAmounts(group.proceeds);
+  const portions: AccountChoicePortion[] = [];
+
+  for (const reduction of group.reductions) {
+    for (const cost of reduction.cost.amounts) {
+      const totalUnits = totalUnitsByCostCurrency.get(cost.currency) ?? ZERO;
+      if (totalUnits.isZero()) {
+        continue;
+      }
+      const unitShare = reduction.amount.amount.div(totalUnits);
+      const totalProceedsForCurrency =
+        totalProceeds.getPositionsForCurrency(cost.currency)?.[0]?.amount ??
+        Amount.zero(cost.currency);
+      const allocatedProceeds = totalProceedsForCurrency.mul(unitShare);
+      const costBasis = cost.mul(reduction.amount.amount);
+      const inferredAmount = allocatedProceeds.add(costBasis);
+      if (inferredAmount.isZero()) {
+        continue;
+      }
+      const elapsedMilliseconds =
+        reductionDate.getTime() - reduction.cost.date.getTime();
+      portions.push({
+        context: 'reduction',
+        amount: inferredAmount.neg(),
+        sourceAccount: reduction.sourceAccount,
+        holdingPeriod: ExactNumber(elapsedMilliseconds).div(86_400_000),
+      });
+    }
+  }
+
+  return portions;
+}
+
+type AccountChoiceFacts = AccountChoicePortion & {
+  readonly direction: 'debit' | 'credit';
+};
+
+function selectAccount(
+  rules: readonly AccountChoiceRule[],
+  facts: AccountChoiceFacts,
+): E.Either<Error, string | null> {
+  for (const rule of rules) {
+    if (rule.type === 'otherwise') {
+      return E.right(rule.account);
+    }
+    const matches = evaluateCondition(rule.condition, facts);
+    if (E.isLeft(matches)) {
+      return matches;
+    }
+    if (matches.right) {
+      return E.right(rule.account);
+    }
+  }
+  return E.right(null);
+}
+
+function evaluateCondition(
+  condition: ConditionExpression,
+  facts: AccountChoiceFacts,
+): E.Either<Error, boolean> {
+  switch (condition.type) {
+    case 'not': {
+      return F.pipe(
+        evaluateCondition(condition.expression, facts),
+        E.map(result => !result),
+      );
+    }
+    case 'and': {
+      return F.pipe(
+        evaluateCondition(condition.lhs, facts),
+        E.flatMap(lhs =>
+          !lhs ? E.right(false) : evaluateCondition(condition.rhs, facts),
+        ),
+      );
+    }
+    case 'or': {
+      return F.pipe(
+        evaluateCondition(condition.lhs, facts),
+        E.flatMap(lhs =>
+          lhs ? E.right(true) : evaluateCondition(condition.rhs, facts),
+        ),
+      );
+    }
+    case 'comparison': {
+      switch (condition.attribute) {
+        case 'direction':
+          if (
+            condition.value.type === 'identifier' &&
+            !['debit', 'credit'].includes(condition.value.value)
+          ) {
+            return E.left(
+              new Error(
+                'Invalid account-choice direction; expected debit or credit',
+              ),
+            );
+          }
+          return compareConditionValues(
+            { type: 'identifier', value: facts.direction },
+            condition.operator,
+            condition.value,
+          );
+        case 'context':
+          if (
+            condition.value.type === 'identifier' &&
+            !['reduction', 'aggregate'].includes(condition.value.value)
+          ) {
+            return E.left(
+              new Error(
+                'Invalid account-choice context; expected reduction or aggregate',
+              ),
+            );
+          }
+          return compareConditionValues(
+            { type: 'identifier', value: facts.context },
+            condition.operator,
+            condition.value,
+          );
+        case 'source-account':
+          if (facts.context !== 'reduction') {
+            return E.left(
+              new Error(
+                `Condition requires source-account, but no reduced lot context is available`,
+              ),
+            );
+          }
+          return compareConditionValues(
+            { type: 'account', value: facts.sourceAccount },
+            condition.operator,
+            condition.value,
+          );
+        case 'holding-period':
+          if (facts.context !== 'reduction') {
+            return E.left(
+              new Error(
+                `Condition requires holding-period, but no reduced lot context is available`,
+              ),
+            );
+          }
+          return compareConditionValues(
+            { type: 'duration', value: facts.holdingPeriod, unit: 'd' },
+            condition.operator,
+            condition.value,
+          );
+        default:
+          return E.left(
+            new Error(
+              `Unknown account-choice attribute: ${condition.attribute}`,
+            ),
+          );
+      }
+    }
+    default: {
+      return E.left(
+        new Error(
+          `Invalid account-choice condition ${(condition as ConditionExpression).type}`,
+        ),
+      );
+    }
+  }
+}
+
+function compareConditionValues(
+  actual: ConditionLiteral,
+  operator: Extract<ConditionExpression, { type: 'comparison' }>['operator'],
+  expected: ConditionLiteral,
+): E.Either<Error, boolean> {
+  if (actual.type !== expected.type) {
+    return E.left(
+      new Error(
+        `Cannot compare account-choice values of types '${actual.type}' and '${expected.type}'`,
+      ),
+    );
+  }
+
+  if (actual.type === 'identifier' && expected.type === 'identifier') {
+    return compareEquality(
+      actual.value === expected.value,
+      operator,
+      actual.type,
+    );
+  } else if (actual.type === 'string' && expected.type === 'string') {
+    return compareEquality(
+      actual.value === expected.value,
+      operator,
+      actual.type,
+    );
+  } else if (actual.type === 'account' && expected.type === 'account') {
+    return compareEquality(
+      actual.value === expected.value,
+      operator,
+      actual.type,
+    );
+  } else if (actual.type === 'currency' && expected.type === 'currency') {
+    return compareEquality(
+      actual.value === expected.value,
+      operator,
+      actual.type,
+    );
+  } else if (actual.type === 'number' && expected.type === 'number') {
+    return E.right(compareNumbers(actual.value, expected.value, operator));
+  } else if (actual.type === 'duration' && expected.type === 'duration') {
+    return E.right(compareNumbers(actual.value, expected.value, operator));
+  } else if (actual.type === 'date' && expected.type === 'date') {
+    return E.right(
+      compareNumbers(
+        ExactNumber(actual.value.getTime()),
+        ExactNumber(expected.value.getTime()),
+        operator,
+      ),
+    );
+  } else if (actual.type === 'amount' && expected.type === 'amount') {
+    if (actual.value.currency !== expected.value.currency) {
+      return E.left(
+        new Error(
+          `Cannot compare amounts in ${actual.value.currency} and ${expected.value.currency}`,
+        ),
+      );
+    }
+    return E.right(
+      compareNumbers(actual.value.amount, expected.value.amount, operator),
+    );
+  } else {
+    return E.left(new Error('Unsupported account-choice comparison'));
+  }
+}
+
+function compareEquality(
+  equal: boolean,
+  operator: Extract<ConditionExpression, { type: 'comparison' }>['operator'],
+  type: string,
+): E.Either<Error, boolean> {
+  switch (operator) {
+    case 'is':
+    case '==':
+      return E.right(equal);
+    case 'is not':
+    case '!=':
+      return E.right(!equal);
+    default:
+      return invalidOrderComparison(type);
+  }
+}
+
+function compareNumbers(
+  actual: ExactNumberType,
+  expected: ExactNumberType,
+  operator: Extract<ConditionExpression, { type: 'comparison' }>['operator'],
+): boolean {
+  switch (operator) {
+    case 'is':
+    case '==':
+      return actual.eq(expected);
+    case 'is not':
+    case '!=':
+      return !actual.eq(expected);
+    case '<':
+      return actual.lt(expected);
+    case '<=':
+      return actual.lte(expected);
+    case '>':
+      return actual.gt(expected);
+    case '>=':
+      return actual.gte(expected);
+  }
+}
+
+function invalidOrderComparison(type: string): E.Either<Error, never> {
+  return E.left(
+    new Error(`Ordered comparison is not valid for account-choice ${type}`),
+  );
+}
+
+interface BookPostingResult {
+  readonly postings: readonly BookedPosting[];
+  readonly inventories: InventoryMap;
+  readonly balance: Inventory;
+  readonly lotReductions: readonly LotReduction[];
+  readonly priceDirectives: readonly PriceDirective[];
 }
 
 function bookPosting(
@@ -336,10 +825,7 @@ function bookPosting(
   balance: Inventory,
   accountMapValue: AccountMapValue,
   converter: CanonicalAmountConverter,
-): E.Either<
-  Error,
-  [BookedPosting[], InventoryMap, balance: Inventory, PriceDirective[]]
-> {
+): E.Either<Error, BookPostingResult> {
   if (posting.costSpec !== null) {
     if (posting.amount === null) {
       return E.left(
@@ -394,8 +880,8 @@ function bookPosting(
               costSpec.tags,
             ),
         ),
-        E.map(({ cost }) => [
-          ...doBook(
+        E.map(({ cost }) => {
+          const result = doBook(
             inventories,
             balance,
             {
@@ -411,7 +897,7 @@ function bookPosting(
               flag: posting.flag,
               amount: postingAmount.neg(),
               cost: null,
-              meta: Map(),
+              meta: ImmutableMap(),
               normalBalanceSide: tradingAccountNormalBalanceSide,
             },
             ...costSpec.amounts.map(amount => ({
@@ -419,17 +905,21 @@ function bookPosting(
               flag: posting.flag,
               amount: getTotalAmount(amount, postingAmount, costSpec.kind),
               cost: null,
-              meta: Map() as Metadata,
+              meta: ImmutableMap() as Metadata,
               normalBalanceSide: tradingAccountNormalBalanceSide,
             })),
-          ),
-          makePriceDirectives(
-            transaction,
-            postingAmount,
-            posting.priceSpec,
-            cost,
-          ),
-        ]),
+          );
+          return {
+            ...result,
+            lotReductions: [],
+            priceDirectives: makePriceDirectives(
+              transaction,
+              postingAmount,
+              posting.priceSpec,
+              cost,
+            ),
+          };
+        }),
       );
     }
 
@@ -474,10 +964,21 @@ function bookPosting(
       return bookResult;
     }
 
+    const lotReductions = bookResult.right[0]
+      .filter(posting => posting.cost !== null)
+      .map(posting => ({
+        amount: posting.amount,
+        sourceAccount: posting.account,
+        cost: posting.cost!,
+      }));
+
     const postings: BookedPosting[] = [];
     for (const posting of bookResult.right[0]) {
-      let postings1: BookedPosting[];
-      [postings1, inventories, balance] = doBook(
+      const {
+        postings: postings1,
+        inventories: newInventories,
+        balance: newBalance,
+      } = doBook(
         inventories,
         balance,
         // Post the reduction as we got it from the booking method, e.g.
@@ -507,7 +1008,7 @@ function bookPosting(
           flag: posting.flag,
           amount: posting.amount.neg(),
           cost: null,
-          meta: Map(),
+          meta: ImmutableMap(),
           normalBalanceSide: tradingAccountNormalBalanceSide,
         },
         ...(posting.cost?.amounts ?? []).map(cost => ({
@@ -515,10 +1016,12 @@ function bookPosting(
           flag: posting.flag,
           amount: cost.mul(posting.amount.amount),
           cost: null,
-          meta: Map() as Metadata,
+          meta: ImmutableMap() as Metadata,
           normalBalanceSide: tradingAccountNormalBalanceSide,
         })),
       );
+      inventories = newInventories;
+      balance = newBalance;
       postings.push(...postings1);
     }
 
@@ -530,7 +1033,13 @@ function bookPosting(
       mergeInventories(inventoryRest, bookResult.right[1]),
     );
 
-    return E.right([postings, inventories, balance, []]);
+    return E.right({
+      postings,
+      inventories,
+      balance,
+      lotReductions,
+      priceDirectives: [],
+    });
   }
 
   if (posting.priceSpec !== null) {
@@ -549,7 +1058,7 @@ function bookPosting(
       converter.getNormalBalanceSide(tradingAccount);
 
     // Similar to the cost case, but here we don't hold the position at cost.
-    return E.right([
+    return E.right({
       ...doBook(
         inventories,
         balance,
@@ -566,7 +1075,7 @@ function bookPosting(
           flag: posting.flag,
           amount: posting.amount.neg(),
           cost: null,
-          meta: Map(),
+          meta: ImmutableMap(),
           normalBalanceSide: tradingAccountNormalBalanceSide,
         },
         {
@@ -578,17 +1087,23 @@ function bookPosting(
             posting.priceSpec.kind,
           ),
           cost: null,
-          meta: Map() as Metadata,
+          meta: ImmutableMap() as Metadata,
           normalBalanceSide: tradingAccountNormalBalanceSide,
         },
       ),
-      makePriceDirectives(transaction, posting.amount, posting.priceSpec, null),
-    ]);
+      lotReductions: [],
+      priceDirectives: makePriceDirectives(
+        transaction,
+        posting.amount,
+        posting.priceSpec,
+        null,
+      ),
+    });
   }
 
   if (posting.amount !== null) {
     // Posting is fully specified, we can just book it.
-    return E.right([
+    return E.right({
       ...doBook(inventories, balance, {
         account: posting.account,
         flag: posting.flag,
@@ -597,8 +1112,9 @@ function bookPosting(
         meta: posting.meta,
         normalBalanceSide: posting.normalBalanceSide,
       }),
-      [],
-    ]);
+      lotReductions: [],
+      priceDirectives: [],
+    });
   }
 
   // Posting doesn't specify amount, so we infer it to be the running balance of
@@ -614,7 +1130,11 @@ function bookPosting(
     }),
   );
 
-  return E.right([...doBook(inventories, balance, ...balancePostings), []]);
+  return E.right({
+    ...doBook(inventories, balance, ...balancePostings),
+    lotReductions: [],
+    priceDirectives: [],
+  });
 }
 
 function validateCostSpecForAugmentation(
@@ -710,11 +1230,17 @@ function mergeInventories(a: Inventory, b: Inventory): Inventory {
   return a.isEmpty() ? b : b.isEmpty() ? a : a.addPositions(b.getPositions());
 }
 
+interface DoBookResult {
+  readonly postings: readonly BookedPosting[];
+  readonly inventories: InventoryMap;
+  readonly balance: Inventory;
+}
+
 function doBook(
   inventories: InventoryMap,
   balance: Inventory,
   ...postings: BookedPosting[]
-): [BookedPosting[], InventoryMap, balance: Inventory] {
+): DoBookResult {
   inventories = inventories.withMutations(inventories => {
     for (const posting of postings) {
       inventories = inventories.update(posting.account, inventory =>
@@ -726,7 +1252,7 @@ function doBook(
     }
   });
 
-  return [postings, inventories, balance];
+  return { postings, inventories, balance };
 }
 
 function makePriceDirectives(
@@ -742,7 +1268,7 @@ function makePriceDirectives(
         date: transaction.date,
         currency: amount.currency,
         price: getPerUnitAmount(priceSpec.amount, amount, priceSpec.kind),
-        meta: Map([
+        meta: ImmutableMap([
           ['synthetized-from', { type: 'string', value: 'price-spec' }],
         ]),
         optionMap: transaction.optionMap,
@@ -758,7 +1284,7 @@ function makePriceDirectives(
         date: cost.date,
         currency: amount.currency,
         price: cost.amounts[0],
-        meta: Map([
+        meta: ImmutableMap([
           ['synthetized-from', { type: 'string', value: 'cost-spec' }],
         ]),
         optionMap: transaction.optionMap,

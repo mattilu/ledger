@@ -1,0 +1,6 @@
+2026-11-03 * "Unsupported context"
+  Assets:Cash 10 USD
+  choose account {
+    when context is price: Income:Route,
+    otherwise: Income:Fallback
+  }

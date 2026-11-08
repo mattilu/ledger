@@ -1,0 +1,29 @@
+2026-01-01 * "Open short position"
+  Assets:Broker                        -2 ACME { 10 USD }
+  Assets:Broker
+
+2026-06-01 * "Cover 1 unit at a gain"
+  Assets:Broker                         1 ACME {}
+  Assets:Broker                        -6 USD
+  choose account {
+    when direction is debit: Income:Capital-Gains:Losses,
+    when holding-period > 365d: Income:Capital-Gains:Long-Term,
+    otherwise: Income:Capital-Gains:Short-Term
+  }
+
+2027-02-01 * "Cover 1 unit at a loss"
+  Assets:Broker                         1 ACME {}
+  Assets:Broker                       -15 USD
+  choose account {
+    when direction is debit and holding-period > 365d: Income:Capital-Gains:Losses:Long-Term,
+    when direction is debit: Income:Capital-Gains:Losses:Short-Term,
+    otherwise: Income:Capital-Gains:Short-Term
+  }
+
+2027-02-01 balance
+  Assets:Broker                         0 ACME
+  Assets:Broker                        -1 USD
+  Income:Capital-Gains:Short-Term      -4 USD
+  Income:Capital-Gains:Long-Term        0 USD
+  Income:Capital-Gains:Losses:Long-Term 5 USD
+  Income:Capital-Gains:Losses:Short-Term 0 USD

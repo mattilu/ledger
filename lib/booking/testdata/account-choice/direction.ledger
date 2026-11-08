@@ -1,0 +1,30 @@
+2026-11-01 * "Credit routing with leftover"
+  Assets:Cash           10 USD
+  choose account {
+    when direction is debit: Expenses:Unexpected
+  }
+  choose account {
+    when direction == credit: Income:Credit
+  }
+
+2026-11-02 * "Debit routing"
+  Assets:Cash          -20 EUR
+  choose account {
+    when direction is debit: Expenses:Debit,
+    otherwise: Income:Fallback
+  }
+
+account-rule "named-rule" {
+  when direction is credit and not (direction is debit) and direction is not debit: Income:Named
+}
+
+2026-11-03 * "Named rule"
+  Assets:Cash            5 GBP
+  choose account "named-rule"
+
+2026-11-03 balance
+  Expenses:Unexpected    0 USD
+  Income:Credit        -10 USD
+  Expenses:Debit        20 EUR
+  Income:Fallback        0 EUR
+  Income:Named          -5 GBP

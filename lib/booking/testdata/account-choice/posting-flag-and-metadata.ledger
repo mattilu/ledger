@@ -1,0 +1,23 @@
+2025-01-01 * "Buy long-term lot"
+  Assets:Broker                      1 ACME { 10 USD }
+  Assets:Cash                      -10 USD
+
+2026-06-01 * "Buy short-term lot"
+  Assets:Broker                      1 ACME { 12 USD }
+  Assets:Cash                      -12 USD
+
+2026-11-01 * "Sell lots with flagged and annotated selector"
+  Assets:Fees                        2 USD
+  Assets:Broker                     -2 ACME {}
+  Assets:Cash                       30 USD
+  ! choose account {
+    when context is reduction and holding-period >= 365d: Income:Capital-Gains:Long-Term,
+    when context is reduction: Income:Capital-Gains:Short-Term,
+    otherwise: Assets:Cash
+  } tax-year: 2026
+    source: "auto-routed"
+
+2026-11-01 balance
+  Assets:Cash                        6 USD
+  Income:Capital-Gains:Long-Term    -5 USD
+  Income:Capital-Gains:Short-Term   -3 USD

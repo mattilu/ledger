@@ -1,0 +1,406 @@
+{
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "transactions": [
+        {
+          "date": "2026-11-01T00:00:00.000Z",
+          "description": "Buy long call",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME-20261107-C-30"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "10",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-11-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-11-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME-20261107-C-30"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker": {
+              "ACME-20261107-C-30": [
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "10",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2026-11-01T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2026-11-01",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": []
+                  }
+                }
+              ],
+              "USD": [
+                {
+                  "amount": "-10",
+                  "cost": null
+                }
+              ]
+            },
+            "Trading:Default": {
+              "ACME-20261107-C-30": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ],
+              "USD": [
+                {
+                  "amount": "10",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-11-02T00:00:00.000Z",
+          "description": "Sell short call",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "FOO-20261107-C-20"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "20",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-11-02T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-11-02",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "FOO-20261107-C-20"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-20",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "20",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker": {
+              "ACME-20261107-C-30": [
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "10",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2026-11-01T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2026-11-01",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": []
+                  }
+                }
+              ],
+              "USD": [
+                {
+                  "amount": "10",
+                  "cost": null
+                }
+              ],
+              "FOO-20261107-C-20": [
+                {
+                  "amount": "-1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "20",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2026-11-02T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2026-11-02",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": []
+                  }
+                }
+              ]
+            },
+            "Trading:Default": {
+              "ACME-20261107-C-30": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ],
+              "USD": [
+                {
+                  "amount": "-10",
+                  "cost": null
+                }
+              ],
+              "FOO-20261107-C-20": [
+                {
+                  "amount": "1",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-11-07T00:00:00.000Z",
+          "description": "Expired options",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "FOO-20261107-C-20"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "20",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-11-02T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-11-02",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "FOO-20261107-C-20"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "20",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Income:Options",
+              "flag": "*",
+              "amount": {
+                "amount": "-20",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME-20261107-C-30"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "10",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-11-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-11-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME-20261107-C-30"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "50",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Income:Options",
+              "flag": "*",
+              "amount": {
+                "amount": "-40",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker": {
+              "USD": [
+                {
+                  "amount": "60",
+                  "cost": null
+                }
+              ]
+            },
+            "Trading:Default": {},
+            "Income:Options": {
+              "USD": [
+                {
+                  "amount": "-60",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "prices": [
+        {
+          "type": "price",
+          "date": "2026-11-01T00:00:00.000Z",
+          "currency": "ACME-20261107-C-30",
+          "price": {
+            "amount": "10",
+            "currency": "USD"
+          },
+          "meta": {
+            "synthetized-from": {
+              "type": "string",
+              "value": "cost-spec"
+            }
+          },
+          "optionMap": {}
+        },
+        {
+          "type": "price",
+          "date": "2026-11-02T00:00:00.000Z",
+          "currency": "FOO-20261107-C-20",
+          "price": {
+            "amount": "20",
+            "currency": "USD"
+          },
+          "meta": {
+            "synthetized-from": {
+              "type": "string",
+              "value": "cost-spec"
+            }
+          },
+          "optionMap": {}
+        }
+      ]
+    }
+  }
+}

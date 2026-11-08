@@ -1,0 +1,9 @@
+2026-11-01 open Income:Closed
+2026-11-02 close Income:Closed
+
+2026-11-03 * "Selected closed account"
+  Assets:Cash  10 USD
+  choose account {
+    when direction is credit: Income:Closed,
+    otherwise: Income:Open
+  }

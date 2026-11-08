@@ -1,0 +1,21 @@
+option "booking-method" "lifo"
+
+2026-11-01 * "Buy stock low"
+  Assets:Broker                  1 ACME {{ 100 USD }}
+  Assets:Broker
+
+2026-11-02 * "Buy stock high"
+  Assets:Broker                  1 ACME {{ 120 USD }}
+  Assets:Broker
+
+2026-11-03 * "Sell in the middle"
+  Assets:Broker                 -2 ACME {}
+  Assets:Broker                230 USD
+  choose account {
+    when direction is debit: Income:Capital-Gains:Losses,
+    otherwise: Income:Capital-Gains
+  }
+
+2026-11-03 balance
+  Income:Capital-Gains         -15 USD
+  Income:Capital-Gains:Losses    5 USD

@@ -1,0 +1,21 @@
+2026-11-01 * "Buy stock"
+  Assets:Broker                 1 ACME {{ 10 USD }}
+  Assets:Broker
+
+2026-11-02 * "Buy another stock"
+  Assets:Broker                 1 FOO {{ 20 USD }}
+  Assets:Broker
+
+2026-11-02 * "Sell both for profit and loss"
+  Assets:Broker                -1 ACME {}
+  Assets:Broker                15 USD
+  Assets:Broker                -1 FOO {}
+  Assets:Broker                16 USD
+  choose account {
+    when direction is debit: Income:Capital-Gains:Losses,
+    otherwise: Income:Capital-Gains
+  }
+
+2026-11-02 balance
+  Income:Capital-Gains         -5 USD
+  Income:Capital-Gains:Losses   4 USD
