@@ -7,10 +7,11 @@ what each directive does, behavior-changing metadata, and practical constraints.
 
 ## Undated directives
 
-| Directive | Purpose                                                   | Reference             |
-| --------- | --------------------------------------------------------- | --------------------- |
-| `option`  | Set loader or booking behavior for subsequent directives. | [Option](./option.md) |
-| `load`    | Include another Ledger file, optionally using a glob.     | [Load](./load.md)     |
+| Directive      | Purpose                                                                 | Reference                         |
+| -------------- | ----------------------------------------------------------------------- | --------------------------------- |
+| `option`       | Set loader or booking behavior for subsequent directives.               | [Option](./option.md)             |
+| `load`         | Include another Ledger file, optionally using a glob.                   | [Load](./load.md)                 |
+| `account-rule` | Define a reusable named rule for dynamic account selection in postings. | [Account rule](./account-rule.md) |
 
 ## Dated directives
 

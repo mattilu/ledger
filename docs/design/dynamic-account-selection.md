@@ -1,6 +1,6 @@
 # Dynamic account selection
 
-- **Status:** Proposed.
+- **Status:** Implemented.
 - **Supersedes:** None.
 
 The direction of an inferred amount on an omitted-amount posting depends on

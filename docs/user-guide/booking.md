@@ -213,6 +213,85 @@ And the inferred capital-gains posting would be -50 USD, i.e. a 50 USD gain
 
 Values in real scenarios would depend on the selected lots and their cost basis.
 
+## Dynamic account selection
+
+When the direction or tax treatment of an inferred amount depends on which lots
+are reduced during booking, an omitted-amount posting can use `choose account`
+(inline or via a named [`account-rule`](./directives/account-rule.md)) to select
+the destination account from booking-time facts:
+
+```text
+2026-11-02 * "Sell shares"
+  Assets:Brokerage:Stocks  -10 ACME {}
+  Assets:Brokerage:Cash    950 USD
+  choose account {
+    when direction is debit: Income:Capital-Gains:Losses,
+    when direction is credit and holding-period < 365d:
+      Income:Capital-Gains:Short-Term,
+    when direction is credit and holding-period >= 365d:
+      Income:Capital-Gains:Long-Term
+  }
+```
+
+### Reduction groups and aggregate residuals
+
+A `choose account` posting evaluates two kinds of candidate amounts:
+
+1. **Per-lot reduction portions (`context is reduction`):** A posting that
+   reduces one or more costed lots opens a _reduction group_. Subsequent
+   unannotated postings with explicit amounts in the reduced lots' cost
+   currencies contribute proceeds to that group until another reduction, a cost-
+   or price-annotated posting, an ordinary omitted-amount posting, or a
+   `choose account` posting closes the group.
+   - Multiple explicit amounts in the same group (such as gross sale proceeds
+     and fees) are netted by currency, then allocated proportionally across the
+     reduced units.
+   - Each reduced lot produces its own realized portion equal to the inverse of
+     (`allocated proceeds + cost basis`), so a single reduction spanning
+     multiple lots can route gains and losses or different holding periods to
+     separate accounts.
+   - A reduction group with no explicit proceeds has zero proceeds (for example,
+     when an option expires worthless).
+2. **Per-currency balance residuals (`context is aggregate`):** All other
+   running-balance effects—including amounts before any reduction, costed
+   augmentations, price-annotated conversions, and amounts in currencies outside
+   the reduced lots' cost basis—are combined into one aggregate residual per
+   currency, equal to the inverse of the current running balance minus any
+   pending reduction portions in that currency.
+
+### Available booking facts
+
+Each nonzero portion is evaluated against the rule clauses using its facts:
+
+| Attribute        | Context                  | Values / Type            | Description                                                                                                                                        |
+| ---------------- | ------------------------ | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `context`        | `reduction`, `aggregate` | `reduction`, `aggregate` | Whether the portion is a per-lot realized amount or a general per-currency balance residual.                                                       |
+| `direction`      | `reduction`, `aggregate` | `debit`, `credit`        | Accounting direction of the inferred portion (`debit` for canonical positive, `credit` for negative), independent of the active `sign-convention`. |
+| `source-account` | `reduction` only         | Account                  | The account from which the lot was reduced.                                                                                                        |
+| `holding-period` | `reduction` only         | Duration (`<number>d`)   | Elapsed days between the lot's acquisition date and the transaction date.                                                                          |
+
+Referencing `source-account` or `holding-period` when evaluating an `aggregate`
+residual is a booking error unless guarded earlier in the condition (for
+example, `when context is reduction and holding-period >= 365d: ...`).
+
+### Evaluation, chaining, and validation
+
+Clauses are evaluated in source order; the first matching `when` clause (or the
+optional final `otherwise` clause) selects the account for that portion. Zero
+portions are ignored and do not emit postings.
+
+Only accounts selected for a nonzero portion are checked against
+`account-reference-checks` and currency restrictions; unselected candidate
+accounts are not validated.
+
+If a portion matches no clause in a `choose account` posting, it remains
+pending: unmatched reduction portions carry forward with their lot context to
+subsequent `choose account` postings, and unmatched residuals remain in the
+running balance. An ordinary omitted-amount posting consumes the entire
+remaining balance and clears any pending reduction portions.
+
+See [Syntax](./syntax.md#dynamic-account-selection) for the condition grammar.
+
 ## Price annotations
 
 A price annotation (`@` for per-unit, `@@` for total price) converts one

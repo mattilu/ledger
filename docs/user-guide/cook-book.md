@@ -73,6 +73,32 @@ With a 600 USD cost basis for the shares sold, the inferred income posting is
 Which lot is reduced depends on the selected booking method; see
 [Booking](./booking.md#positions-costs-and-trading-accounts).
 
+## Route capital gains and losses automatically
+
+When selling a position across multiple lots, you may not know in advance
+whether each lot will realize a gain or a loss, or whether it qualifies as
+short-term or long-term. Define an
+[`account-rule`](./directives/account-rule.md) and use `choose account` on the
+omitted-amount posting:
+
+```text
+account-rule "capital-gains" {
+  when direction is debit: Income:Capital-Gains:Losses,
+  when direction is credit and holding-period >= 365d:
+    Income:Capital-Gains:Long-Term,
+  otherwise: Income:Capital-Gains:Short-Term
+}
+
+2026-11-01 * "Sell shares"
+  Assets:Brokerage:Stocks  -5 ACME {}
+  Assets:Brokerage:Cash  1,400 USD
+  choose account "capital-gains"
+```
+
+Ledger evaluates the rule for each reduced lot's realized portion and posts
+losses, short-term gains, and long-term gains to their respective accounts. See
+[Dynamic account selection](./booking.md#dynamic-account-selection).
+
 ## Short selling
 
 Record the negative shares at cost, with a negative total cost in double braces:
