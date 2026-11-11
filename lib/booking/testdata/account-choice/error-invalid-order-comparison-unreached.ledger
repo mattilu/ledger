@@ -1,0 +1,6 @@
+2026-11-01 * "Invalid ordered comparison on already-balanced transaction"
+  Assets:Cash   10 USD
+  Assets:Bank  -10 USD
+  choose account {
+    when direction < credit: Income:Route
+  }

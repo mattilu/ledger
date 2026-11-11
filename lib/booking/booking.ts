@@ -5,12 +5,7 @@ import { Map as ImmutableMap } from 'immutable';
 import { Amount } from '../core/amount.js';
 import { CanonicalAmountConverter } from '../core/sign-convention.js';
 import { Directive, DirectiveCommon } from '../loading/directive.js';
-import {
-  AccountChoiceRule,
-  AccountRuleDirective,
-  ConditionExpression,
-  ConditionLiteral,
-} from '../loading/directives/account-choice.js';
+import { AccountRuleDirective } from '../loading/directives/account-choice.js';
 import { CurrencyDirective } from '../loading/directives/currency.js';
 import { PriceDirective } from '../loading/directives/price.js';
 import {
@@ -29,6 +24,10 @@ import { DateSpec } from '../parsing/spec/date.js';
 import { Formatter } from '../utils/formatting.js';
 import { Cost } from './cost.js';
 import { BookingError } from './error.js';
+import {
+  AccountChoiceEvaluator,
+  compileAccountChoiceRules,
+} from './internal/account-choice.js';
 import { BookingMethod } from './internal/booking-method.js';
 import { FIFO } from './internal/fifo.js';
 import { LIFO } from './internal/lifo.js';
@@ -56,6 +55,7 @@ export function book(ledger: Ledger): E.Either<BookingError, BookedLedger> {
       return accountMap.get(account)?.open?.normalBalanceSide;
     },
   });
+  const compiledAccountRules = new Map<string, AccountChoiceEvaluator>();
 
   for (const directive of ledger.directives) {
     switch (directive.type) {
@@ -156,6 +156,7 @@ Delta: ${formatter.formatAmount(fromCanonicalAmount(delta))}`;
           accountMap,
           currencyMap,
           ledger.accountRuleMap,
+          compiledAccountRules,
           converter,
         );
         if (E.isLeft(got)) {
@@ -276,6 +277,7 @@ function bookTransaction(
   accountMap: AccountMap,
   currencyMap: ImmutableMap<string, CurrencyDirective>,
   accountRuleMap: ImmutableMap<string, AccountRuleDirective>,
+  compiledAccountRules: Map<string, AccountChoiceEvaluator>,
   converter: CanonicalAmountConverter,
 ): E.Either<Error, BookTransactionResult> {
   const inventoriesBefore = inventories;
@@ -296,8 +298,12 @@ function bookTransaction(
   for (const posting of transaction.postings) {
     if (isAccountChoicePosting(posting)) {
       const accountChoiceResult = F.pipe(
-        resolveAccountChoiceRules(posting.account, accountRuleMap),
-        E.flatMap(rules => {
+        resolveAccountChoiceRules(
+          posting.account,
+          accountRuleMap,
+          compiledAccountRules,
+        ),
+        E.flatMap(selectAccount => {
           finishReductionGroup();
           const reductionPortions = [
             ...pendingReductionPortions,
@@ -308,7 +314,7 @@ function bookTransaction(
           pendingReductionGroups = [];
           return bookAccountChoice(
             posting,
-            rules,
+            selectAccount,
             inventories,
             balance,
             converter,
@@ -446,15 +452,29 @@ function validateBookedPostings(
 function resolveAccountChoiceRules(
   choice: AccountChoice,
   accountRuleMap: ImmutableMap<string, AccountRuleDirective>,
-): E.Either<Error, readonly AccountChoiceRule[]> {
+  compiledAccountRules: Map<string, AccountChoiceEvaluator>,
+): E.Either<Error, AccountChoiceEvaluator> {
   if (choice.type === 'inline') {
-    return E.right(choice.rules);
+    return compileAccountChoiceRules(choice.rules);
+  }
+
+  const cached = compiledAccountRules.get(choice.name);
+  if (cached !== undefined) {
+    return E.right(cached);
   }
 
   const accountRule = accountRuleMap.get(choice.name);
-  return accountRule === undefined
-    ? E.left(new Error(`Account rule '${choice.name}' is not defined`))
-    : E.right(accountRule.rules);
+  if (accountRule === undefined) {
+    return E.left(new Error(`Account rule '${choice.name}' is not defined`));
+  }
+
+  return F.pipe(
+    compileAccountChoiceRules(accountRule.rules),
+    E.tap(evaluator => {
+      compiledAccountRules.set(choice.name, evaluator);
+      return E.of(undefined);
+    }),
+  );
 }
 
 interface BookAccountChoiceResult {
@@ -466,7 +486,7 @@ interface BookAccountChoiceResult {
 
 function bookAccountChoice(
   posting: AccountChoicePosting,
-  rules: readonly AccountChoiceRule[],
+  selectAccount: AccountChoiceEvaluator,
   inventories: InventoryMap,
   balance: Inventory,
   converter: CanonicalAmountConverter,
@@ -479,7 +499,7 @@ function bookAccountChoice(
     [...portions, ...makeBalanceResidualPortions(balance, portions)],
     RA.traverse(E.Applicative)(portion =>
       F.pipe(
-        selectAccount(rules, {
+        selectAccount({
           direction: portion.amount.isPos() ? 'debit' : 'credit',
           ...portion,
         }),
@@ -569,245 +589,6 @@ function makeLotPortions(
   }
 
   return portions;
-}
-
-type AccountChoiceFacts = AccountChoicePortion & {
-  readonly direction: 'debit' | 'credit';
-};
-
-function selectAccount(
-  rules: readonly AccountChoiceRule[],
-  facts: AccountChoiceFacts,
-): E.Either<Error, string | null> {
-  for (const rule of rules) {
-    if (rule.type === 'otherwise') {
-      return E.right(rule.account);
-    }
-    const matches = evaluateCondition(rule.condition, facts);
-    if (E.isLeft(matches)) {
-      return matches;
-    }
-    if (matches.right) {
-      return E.right(rule.account);
-    }
-  }
-  return E.right(null);
-}
-
-function evaluateCondition(
-  condition: ConditionExpression,
-  facts: AccountChoiceFacts,
-): E.Either<Error, boolean> {
-  switch (condition.type) {
-    case 'not': {
-      return F.pipe(
-        evaluateCondition(condition.expression, facts),
-        E.map(result => !result),
-      );
-    }
-    case 'and': {
-      return F.pipe(
-        evaluateCondition(condition.lhs, facts),
-        E.flatMap(lhs =>
-          !lhs ? E.right(false) : evaluateCondition(condition.rhs, facts),
-        ),
-      );
-    }
-    case 'or': {
-      return F.pipe(
-        evaluateCondition(condition.lhs, facts),
-        E.flatMap(lhs =>
-          lhs ? E.right(true) : evaluateCondition(condition.rhs, facts),
-        ),
-      );
-    }
-    case 'comparison': {
-      switch (condition.attribute) {
-        case 'direction':
-          if (
-            condition.value.type === 'identifier' &&
-            !['debit', 'credit'].includes(condition.value.value)
-          ) {
-            return E.left(
-              new Error(
-                'Invalid account-choice direction; expected debit or credit',
-              ),
-            );
-          }
-          return compareConditionValues(
-            { type: 'identifier', value: facts.direction },
-            condition.operator,
-            condition.value,
-          );
-        case 'context':
-          if (
-            condition.value.type === 'identifier' &&
-            !['reduction', 'aggregate'].includes(condition.value.value)
-          ) {
-            return E.left(
-              new Error(
-                'Invalid account-choice context; expected reduction or aggregate',
-              ),
-            );
-          }
-          return compareConditionValues(
-            { type: 'identifier', value: facts.context },
-            condition.operator,
-            condition.value,
-          );
-        case 'source-account':
-          if (facts.context !== 'reduction') {
-            return E.left(
-              new Error(
-                `Condition requires source-account, but no reduced lot context is available`,
-              ),
-            );
-          }
-          return compareConditionValues(
-            { type: 'account', value: facts.sourceAccount },
-            condition.operator,
-            condition.value,
-          );
-        case 'holding-period':
-          if (facts.context !== 'reduction') {
-            return E.left(
-              new Error(
-                `Condition requires holding-period, but no reduced lot context is available`,
-              ),
-            );
-          }
-          return compareConditionValues(
-            { type: 'duration', value: facts.holdingPeriod, unit: 'd' },
-            condition.operator,
-            condition.value,
-          );
-        default:
-          return E.left(
-            new Error(
-              `Unknown account-choice attribute: ${condition.attribute}`,
-            ),
-          );
-      }
-    }
-    default: {
-      return E.left(
-        new Error(
-          `Invalid account-choice condition ${(condition as ConditionExpression).type}`,
-        ),
-      );
-    }
-  }
-}
-
-function compareConditionValues(
-  actual: ConditionLiteral,
-  operator: Extract<ConditionExpression, { type: 'comparison' }>['operator'],
-  expected: ConditionLiteral,
-): E.Either<Error, boolean> {
-  if (actual.type !== expected.type) {
-    return E.left(
-      new Error(
-        `Cannot compare account-choice values of types '${actual.type}' and '${expected.type}'`,
-      ),
-    );
-  }
-
-  if (actual.type === 'identifier' && expected.type === 'identifier') {
-    return compareEquality(
-      actual.value === expected.value,
-      operator,
-      actual.type,
-    );
-  } else if (actual.type === 'string' && expected.type === 'string') {
-    return compareEquality(
-      actual.value === expected.value,
-      operator,
-      actual.type,
-    );
-  } else if (actual.type === 'account' && expected.type === 'account') {
-    return compareEquality(
-      actual.value === expected.value,
-      operator,
-      actual.type,
-    );
-  } else if (actual.type === 'currency' && expected.type === 'currency') {
-    return compareEquality(
-      actual.value === expected.value,
-      operator,
-      actual.type,
-    );
-  } else if (actual.type === 'number' && expected.type === 'number') {
-    return E.right(compareNumbers(actual.value, expected.value, operator));
-  } else if (actual.type === 'duration' && expected.type === 'duration') {
-    return E.right(compareNumbers(actual.value, expected.value, operator));
-  } else if (actual.type === 'date' && expected.type === 'date') {
-    return E.right(
-      compareNumbers(
-        ExactNumber(actual.value.getTime()),
-        ExactNumber(expected.value.getTime()),
-        operator,
-      ),
-    );
-  } else if (actual.type === 'amount' && expected.type === 'amount') {
-    if (actual.value.currency !== expected.value.currency) {
-      return E.left(
-        new Error(
-          `Cannot compare amounts in ${actual.value.currency} and ${expected.value.currency}`,
-        ),
-      );
-    }
-    return E.right(
-      compareNumbers(actual.value.amount, expected.value.amount, operator),
-    );
-  } else {
-    return E.left(new Error('Unsupported account-choice comparison'));
-  }
-}
-
-function compareEquality(
-  equal: boolean,
-  operator: Extract<ConditionExpression, { type: 'comparison' }>['operator'],
-  type: string,
-): E.Either<Error, boolean> {
-  switch (operator) {
-    case 'is':
-    case '==':
-      return E.right(equal);
-    case 'is not':
-    case '!=':
-      return E.right(!equal);
-    default:
-      return invalidOrderComparison(type);
-  }
-}
-
-function compareNumbers(
-  actual: ExactNumberType,
-  expected: ExactNumberType,
-  operator: Extract<ConditionExpression, { type: 'comparison' }>['operator'],
-): boolean {
-  switch (operator) {
-    case 'is':
-    case '==':
-      return actual.eq(expected);
-    case 'is not':
-    case '!=':
-      return !actual.eq(expected);
-    case '<':
-      return actual.lt(expected);
-    case '<=':
-      return actual.lte(expected);
-    case '>':
-      return actual.gt(expected);
-    case '>=':
-      return actual.gte(expected);
-  }
-}
-
-function invalidOrderComparison(type: string): E.Either<Error, never> {
-  return E.left(
-    new Error(`Ordered comparison is not valid for account-choice ${type}`),
-  );
 }
 
 interface BookPostingResult {
