@@ -303,7 +303,7 @@ function bookTransaction(
           accountRuleMap,
           compiledAccountRules,
         ),
-        E.flatMap(selectAccount => {
+        E.flatMap(({ selectAccount, accountRule }) => {
           finishReductionGroup();
           const reductionPortions = [
             ...pendingReductionPortions,
@@ -312,26 +312,30 @@ function bookTransaction(
             ),
           ];
           pendingReductionGroups = [];
-          return bookAccountChoice(
-            posting,
-            selectAccount,
-            inventories,
-            balance,
-            converter,
-            reductionPortions,
-          );
-        }),
-        E.tap(accountChoiceResult => {
-          inventories = accountChoiceResult.inventories;
-          balance = accountChoiceResult.balance;
-          pendingReductionPortions =
-            accountChoiceResult.unmatchedReductionPortions;
-          postings.push(...accountChoiceResult.postings);
-          return validateBookedPostings(
-            accountChoiceResult.postings,
-            accountMap,
-            transaction,
-            currencyMap,
+          return F.pipe(
+            bookAccountChoice(
+              posting,
+              selectAccount,
+              inventories,
+              balance,
+              converter,
+              reductionPortions,
+            ),
+            E.tap(result => {
+              inventories = result.inventories;
+              balance = result.balance;
+              pendingReductionPortions = result.unmatchedReductionPortions;
+              postings.push(...result.postings);
+              return validateBookedPostings(
+                result.postings,
+                accountMap,
+                transaction,
+                currencyMap,
+              );
+            }),
+            accountRule !== null
+              ? E.mapLeft(err => enrichAccountRuleError(err, accountRule))
+              : F.identity,
           );
         }),
       );
@@ -449,18 +453,21 @@ function validateBookedPostings(
   );
 }
 
+interface ResolvedAccountChoice {
+  readonly selectAccount: AccountChoiceEvaluator;
+  readonly accountRule: AccountRuleDirective | null;
+}
+
 function resolveAccountChoiceRules(
   choice: AccountChoice,
   accountRuleMap: ImmutableMap<string, AccountRuleDirective>,
   compiledAccountRules: Map<string, AccountChoiceEvaluator>,
-): E.Either<Error, AccountChoiceEvaluator> {
+): E.Either<Error, ResolvedAccountChoice> {
   if (choice.type === 'inline') {
-    return compileAccountChoiceRules(choice.rules);
-  }
-
-  const cached = compiledAccountRules.get(choice.name);
-  if (cached !== undefined) {
-    return E.right(cached);
+    return F.pipe(
+      compileAccountChoiceRules(choice.rules),
+      E.map(selectAccount => ({ selectAccount, accountRule: null })),
+    );
   }
 
   const accountRule = accountRuleMap.get(choice.name);
@@ -468,12 +475,31 @@ function resolveAccountChoiceRules(
     return E.left(new Error(`Account rule '${choice.name}' is not defined`));
   }
 
+  const cached = compiledAccountRules.get(choice.name);
+  if (cached !== undefined) {
+    return E.right({ selectAccount: cached, accountRule });
+  }
+
   return F.pipe(
     compileAccountChoiceRules(accountRule.rules),
-    E.tap(evaluator => {
-      compiledAccountRules.set(choice.name, evaluator);
-      return E.of(undefined);
-    }),
+    E.bimap(
+      err => enrichAccountRuleError(err, accountRule),
+      selectAccount => {
+        compiledAccountRules.set(choice.name, selectAccount);
+        return { selectAccount, accountRule };
+      },
+    ),
+  );
+}
+
+function enrichAccountRuleError(
+  error: Error,
+  accountRule: AccountRuleDirective,
+): Error {
+  return new Error(
+    `In account rule '${accountRule.name}' (defined at ` +
+      `${formatSourceContext(accountRule.srcCtx)}): ${error.message}`,
+    { cause: error },
   );
 }
 
