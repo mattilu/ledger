@@ -55,6 +55,8 @@ const id = (value: string): ConditionLiteral => ({ type: 'identifier', value });
 
 const acct = (value: string): ConditionLiteral => ({ type: 'account', value });
 
+const curr = (value: string): ConditionLiteral => ({ type: 'currency', value });
+
 const days = (value: number | string): ConditionLiteral => ({
   type: 'duration',
   value: ExactNumber(value),
@@ -68,22 +70,26 @@ const num = (value: number | string): ConditionLiteral => ({
   value: ExactNumber(value),
 });
 
-const aggregateDebit: AccountChoiceAggregateFacts = {
+const aggregateFacts = (
+  overrides?: Partial<Omit<AccountChoiceAggregateFacts, 'context'>>,
+): AccountChoiceAggregateFacts => ({
   context: 'aggregate',
-  direction: 'debit',
-};
+  direction: overrides?.direction ?? 'debit',
+  currency: overrides?.currency ?? 'USD',
+});
 
-const aggregateCredit: AccountChoiceAggregateFacts = {
-  context: 'aggregate',
-  direction: 'credit',
-};
+const aggregateDebit = aggregateFacts({ direction: 'debit' });
+
+const aggregateCredit = aggregateFacts({ direction: 'credit' });
 
 const reductionFacts = (
   overrides?: Partial<Omit<AccountChoiceReductionFacts, 'context'>>,
 ): AccountChoiceReductionFacts => ({
   context: 'reduction',
   direction: overrides?.direction ?? 'credit',
+  currency: overrides?.currency ?? 'USD',
   sourceAccount: overrides?.sourceAccount ?? 'Assets:Broker:Foo',
+  sourceCurrency: overrides?.sourceCurrency ?? 'ACME',
   holdingPeriod: overrides?.holdingPeriod ?? ExactNumber(400),
 });
 
@@ -138,6 +144,18 @@ describe('compileAccountChoiceRules', () => {
         );
       });
 
+      it('fails on currency type mismatch', () => {
+        const got = compileAccountChoiceRules([
+          when(cmp('currency', 'is', str('USD')), 'Income:Gain'),
+        ]);
+
+        assert(E.isLeft(got));
+        assert.equal(
+          got.left.message,
+          "Cannot compare account-choice values of types 'currency' and 'string'",
+        );
+      });
+
       it('fails on source-account type mismatch', () => {
         const got = compileAccountChoiceRules([
           when(
@@ -150,6 +168,18 @@ describe('compileAccountChoiceRules', () => {
         assert.equal(
           got.left.message,
           "Cannot compare account-choice values of types 'account' and 'string'",
+        );
+      });
+
+      it('fails on source-currency type mismatch', () => {
+        const got = compileAccountChoiceRules([
+          when(cmp('source-currency', 'is', str('ACME')), 'Income:Gain'),
+        ]);
+
+        assert(E.isLeft(got));
+        assert.equal(
+          got.left.message,
+          "Cannot compare account-choice values of types 'currency' and 'string'",
         );
       });
 
@@ -192,6 +222,18 @@ describe('compileAccountChoiceRules', () => {
           );
         });
 
+        it(`fails on '${op}' comparison for currency`, () => {
+          const got = compileAccountChoiceRules([
+            when(cmp('currency', op, curr('USD')), 'Income:Gain'),
+          ]);
+
+          assert(E.isLeft(got));
+          assert.equal(
+            got.left.message,
+            'Ordered comparison is not valid for account-choice currency',
+          );
+        });
+
         it(`fails on '${op}' comparison for source-account`, () => {
           const got = compileAccountChoiceRules([
             when(
@@ -204,6 +246,18 @@ describe('compileAccountChoiceRules', () => {
           assert.equal(
             got.left.message,
             'Ordered comparison is not valid for account-choice account',
+          );
+        });
+
+        it(`fails on '${op}' comparison for source-currency`, () => {
+          const got = compileAccountChoiceRules([
+            when(cmp('source-currency', op, curr('ACME')), 'Income:Gain'),
+          ]);
+
+          assert(E.isLeft(got));
+          assert.equal(
+            got.left.message,
+            'Ordered comparison is not valid for account-choice currency',
           );
         });
       }
@@ -411,6 +465,38 @@ describe('compileAccountChoiceRules', () => {
       }
     });
 
+    it('evaluates currency comparisons in both aggregate and reduction contexts', () => {
+      const ops: Array<[ComparisonOperator, boolean, boolean]> = [
+        ['is', true, false],
+        ['==', true, false],
+        ['is not', false, true],
+        ['!=', false, true],
+      ];
+
+      for (const [op, matchUsd, matchEur] of ops) {
+        const compiled = compileAccountChoiceRules([
+          when(cmp('currency', op, curr('USD')), 'Income:Usd'),
+        ]);
+        assert(E.isRight(compiled));
+        assert.deepEqual(
+          compiled.right(aggregateFacts({ currency: 'USD' })),
+          E.right(matchUsd ? 'Income:Usd' : null),
+        );
+        assert.deepEqual(
+          compiled.right(aggregateFacts({ currency: 'EUR' })),
+          E.right(matchEur ? 'Income:Usd' : null),
+        );
+        assert.deepEqual(
+          compiled.right(reductionFacts({ currency: 'USD' })),
+          E.right(matchUsd ? 'Income:Usd' : null),
+        );
+        assert.deepEqual(
+          compiled.right(reductionFacts({ currency: 'EUR' })),
+          E.right(matchEur ? 'Income:Usd' : null),
+        );
+      }
+    });
+
     it('evaluates source-account comparisons in reduction context', () => {
       const ops: Array<[ComparisonOperator, boolean, boolean]> = [
         ['is', true, false],
@@ -438,6 +524,30 @@ describe('compileAccountChoiceRules', () => {
             reductionFacts({ sourceAccount: 'Assets:Broker:OTHER' }),
           ),
           E.right(matchOther ? 'Income:Foo' : null),
+        );
+      }
+    });
+
+    it('evaluates source-currency comparisons in reduction context', () => {
+      const ops: Array<[ComparisonOperator, boolean, boolean]> = [
+        ['is', true, false],
+        ['==', true, false],
+        ['is not', false, true],
+        ['!=', false, true],
+      ];
+
+      for (const [op, matchSame, matchOther] of ops) {
+        const compiled = compileAccountChoiceRules([
+          when(cmp('source-currency', op, curr('ACME')), 'Income:Acme'),
+        ]);
+        assert(E.isRight(compiled));
+        assert.deepEqual(
+          compiled.right(reductionFacts({ sourceCurrency: 'ACME' })),
+          E.right(matchSame ? 'Income:Acme' : null),
+        );
+        assert.deepEqual(
+          compiled.right(reductionFacts({ sourceCurrency: 'FOO' })),
+          E.right(matchOther ? 'Income:Acme' : null),
         );
       }
     });
@@ -549,6 +659,20 @@ describe('compileAccountChoiceRules', () => {
       assert.equal(
         got.left.message,
         'Condition requires source-account, but no reduced lot context is available',
+      );
+    });
+
+    it('fails when source-currency is evaluated in aggregate context', () => {
+      const compiled = compileAccountChoiceRules([
+        when(cmp('source-currency', 'is', curr('ACME')), 'Income:Gain'),
+      ]);
+      assert(E.isRight(compiled));
+
+      const got = compiled.right(aggregateCredit);
+      assert(E.isLeft(got));
+      assert.equal(
+        got.left.message,
+        'Condition requires source-currency, but no reduced lot context is available',
       );
     });
 

@@ -12,6 +12,7 @@ import {
 export interface AccountChoiceAggregateFacts {
   readonly context: 'aggregate';
   readonly direction: 'debit' | 'credit';
+  readonly currency: string;
 }
 
 /**
@@ -20,7 +21,9 @@ export interface AccountChoiceAggregateFacts {
 export interface AccountChoiceReductionFacts {
   readonly context: 'reduction';
   readonly direction: 'debit' | 'credit';
+  readonly currency: string;
   readonly sourceAccount: string;
+  readonly sourceCurrency: string;
   readonly holdingPeriod: ExactNumberType;
 }
 
@@ -195,6 +198,25 @@ function compileCondition(
             ),
           );
         }
+        case 'currency': {
+          if (condition.value.type !== 'currency') {
+            return invalidTypeComparison('currency', condition.value.type);
+          }
+          const expectedCurrency = condition.value.value;
+          return F.pipe(
+            validateEqualityOperator(condition.operator, 'currency'),
+            E.map(
+              (operator): ConditionEvaluator =>
+                facts =>
+                  E.right(
+                    compareEquality(
+                      facts.currency === expectedCurrency,
+                      operator,
+                    ),
+                  ),
+            ),
+          );
+        }
         case 'source-account': {
           if (condition.value.type !== 'account') {
             return invalidTypeComparison('account', condition.value.type);
@@ -215,6 +237,32 @@ function compileCondition(
                     : E.right(
                         compareEquality(
                           facts.sourceAccount === expectedAccount,
+                          operator,
+                        ),
+                      ),
+            ),
+          );
+        }
+        case 'source-currency': {
+          if (condition.value.type !== 'currency') {
+            return invalidTypeComparison('currency', condition.value.type);
+          }
+          const expectedCurrency = condition.value.value;
+          const missingContextError = E.left(
+            new Error(
+              `Condition requires source-currency, but no reduced lot context is available`,
+            ),
+          );
+          return F.pipe(
+            validateEqualityOperator(condition.operator, 'currency'),
+            E.map(
+              (operator): ConditionEvaluator =>
+                facts =>
+                  facts.context !== 'reduction'
+                    ? missingContextError
+                    : E.right(
+                        compareEquality(
+                          facts.sourceCurrency === expectedCurrency,
                           operator,
                         ),
                       ),

@@ -259,6 +259,7 @@ interface AccountChoiceReductionPortion {
   readonly context: 'reduction';
   readonly amount: Amount;
   readonly sourceAccount: string;
+  readonly sourceCurrency: string;
   readonly holdingPeriod: ExactNumberType;
 }
 
@@ -526,8 +527,9 @@ function bookAccountChoice(
     RA.traverse(E.Applicative)(portion =>
       F.pipe(
         selectAccount({
-          direction: portion.amount.isPos() ? 'debit' : 'credit',
           ...portion,
+          direction: portion.amount.isPos() ? 'debit' : 'credit',
+          currency: portion.amount.currency,
         }),
         E.map(account => {
           if (account !== null) {
@@ -609,6 +611,7 @@ function makeLotPortions(
         context: 'reduction',
         amount: inferredAmount.neg(),
         sourceAccount: reduction.sourceAccount,
+        sourceCurrency: reduction.amount.currency,
         holdingPeriod: ExactNumber(elapsedMilliseconds).div(86_400_000),
       });
     }

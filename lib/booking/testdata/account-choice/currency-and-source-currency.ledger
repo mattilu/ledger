@@ -1,0 +1,36 @@
+2026-01-01 open Income:Capital-Gains:Stocks:USD   USD
+2026-01-01 open Income:Capital-Gains:Stocks:EUR   EUR
+2026-01-01 open Income:Capital-Gains:Crypto:USD   USD
+2026-01-01 open Expenses:Fees:USD                 USD
+2026-01-01 open Expenses:Fees:EUR                 EUR
+
+account-rule "multi-asset-gains" {
+  when context is aggregate and currency is USD: Expenses:Fees:USD,
+  when context is aggregate and currency is EUR: Expenses:Fees:EUR,
+  when source-currency is ETH and currency is USD: Income:Capital-Gains:Crypto:USD,
+  when source-currency is ACME and currency is USD: Income:Capital-Gains:Stocks:USD,
+  when source-currency is ACME and currency is EUR: Income:Capital-Gains:Stocks:EUR
+}
+
+2026-11-01 * "Buy lots in same broker account"
+  Assets:Broker                       1 ACME { 100 USD }
+  Assets:Broker                       1 ACME { 80 EUR }
+  Assets:Broker                       1 ETH  { 2000 USD }
+  Assets:Cash
+
+2026-11-02 * "Sell USD stock, EUR stock, and ETH with unassociated EUR fee"
+  Assets:Cash                        -3 EUR
+  Assets:Broker                      -1 ACME { USD }
+  Assets:Cash                       130 USD
+  Assets:Broker                      -1 ACME { EUR }
+  Assets:Cash                        95 EUR
+  Assets:Broker                      -1 ETH  {}
+  Assets:Cash                      2100 USD
+  choose account "multi-asset-gains"
+
+2026-11-02 balance
+  Income:Capital-Gains:Stocks:USD   -30 USD
+  Income:Capital-Gains:Stocks:EUR   -15 EUR
+  Income:Capital-Gains:Crypto:USD  -100 USD
+  Expenses:Fees:USD                   0 USD
+  Expenses:Fees:EUR                   3 EUR

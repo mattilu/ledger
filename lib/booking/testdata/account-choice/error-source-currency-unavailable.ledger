@@ -1,0 +1,5 @@
+2026-11-01 * "Source currency without reduction"
+  Assets:Cash  10 USD
+  choose account {
+    when source-currency is ACME: Income:Capital-Gains
+  }
