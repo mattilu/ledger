@@ -1,0 +1,5 @@
+2026-11-01 * "Acquisition date without reduction"
+  Assets:Cash  10 USD
+  choose account {
+    when acquisition-date < 2026-01-01: Income:Capital-Gains
+  }

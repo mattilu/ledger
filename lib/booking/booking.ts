@@ -260,7 +260,9 @@ interface AccountChoiceReductionPortion {
   readonly amount: Amount;
   readonly sourceAccount: string;
   readonly sourceCurrency: string;
+  readonly acquisitionDate: Date;
   readonly holdingPeriod: ExactNumberType;
+  readonly tags: readonly string[];
 }
 
 type AccountChoicePortion =
@@ -612,7 +614,9 @@ function makeLotPortions(
         amount: inferredAmount.neg(),
         sourceAccount: reduction.sourceAccount,
         sourceCurrency: reduction.amount.currency,
+        acquisitionDate: reduction.cost.date,
         holdingPeriod: ExactNumber(elapsedMilliseconds).div(86_400_000),
+        tags: reduction.cost.tags,
       });
     }
   }

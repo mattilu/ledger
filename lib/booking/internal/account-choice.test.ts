@@ -57,6 +57,11 @@ const acct = (value: string): ConditionLiteral => ({ type: 'account', value });
 
 const curr = (value: string): ConditionLiteral => ({ type: 'currency', value });
 
+const date = (value: string): ConditionLiteral => ({
+  type: 'date',
+  value: new Date(value),
+});
+
 const days = (value: number | string): ConditionLiteral => ({
   type: 'duration',
   value: ExactNumber(value),
@@ -90,7 +95,10 @@ const reductionFacts = (
   currency: overrides?.currency ?? 'USD',
   sourceAccount: overrides?.sourceAccount ?? 'Assets:Broker:Foo',
   sourceCurrency: overrides?.sourceCurrency ?? 'ACME',
+  acquisitionDate:
+    overrides?.acquisitionDate ?? new Date('2025-06-01T00:00:00Z'),
   holdingPeriod: overrides?.holdingPeriod ?? ExactNumber(400),
+  tags: overrides?.tags ?? [],
 });
 
 describe('compileAccountChoiceRules', () => {
@@ -183,6 +191,18 @@ describe('compileAccountChoiceRules', () => {
         );
       });
 
+      it('fails on acquisition-date type mismatch', () => {
+        const got = compileAccountChoiceRules([
+          when(cmp('acquisition-date', '<', str('2026-01-01')), 'Income:Gain'),
+        ]);
+
+        assert(E.isLeft(got));
+        assert.equal(
+          got.left.message,
+          "Cannot compare account-choice values of types 'date' and 'string'",
+        );
+      });
+
       it('fails on holding-period type mismatch', () => {
         const got = compileAccountChoiceRules([
           when(cmp('holding-period', '>=', num(365)), 'Income:Gain'),
@@ -192,6 +212,18 @@ describe('compileAccountChoiceRules', () => {
         assert.equal(
           got.left.message,
           "Cannot compare account-choice values of types 'duration' and 'number'",
+        );
+      });
+
+      it('fails on tag type mismatch', () => {
+        const got = compileAccountChoiceRules([
+          when(cmp('tag', 'is', id('espp')), 'Income:Gain'),
+        ]);
+
+        assert(E.isLeft(got));
+        assert.equal(
+          got.left.message,
+          "Cannot compare account-choice values of types 'string' and 'identifier'",
         );
       });
     });
@@ -258,6 +290,18 @@ describe('compileAccountChoiceRules', () => {
           assert.equal(
             got.left.message,
             'Ordered comparison is not valid for account-choice currency',
+          );
+        });
+
+        it(`fails on '${op}' comparison for tag`, () => {
+          const got = compileAccountChoiceRules([
+            when(cmp('tag', op, str('espp')), 'Income:Gain'),
+          ]);
+
+          assert(E.isLeft(got));
+          assert.equal(
+            got.left.message,
+            'Ordered comparison is not valid for account-choice string',
           );
         });
       }
@@ -552,6 +596,42 @@ describe('compileAccountChoiceRules', () => {
       }
     });
 
+    it('evaluates acquisition-date comparisons for all operators', () => {
+      const cutoff = '2026-01-01T00:00:00Z';
+      const before = new Date('2025-12-31T00:00:00Z');
+      const exact = new Date('2026-01-01T00:00:00Z');
+      const after = new Date('2026-01-02T00:00:00Z');
+      const cases: Array<[ComparisonOperator, Date, boolean]> = [
+        ['is', exact, true],
+        ['is', before, false],
+        ['==', exact, true],
+        ['==', before, false],
+        ['is not', before, true],
+        ['is not', exact, false],
+        ['!=', before, true],
+        ['!=', exact, false],
+        ['<', before, true],
+        ['<', exact, false],
+        ['<=', exact, true],
+        ['<=', after, false],
+        ['>', after, true],
+        ['>', exact, false],
+        ['>=', exact, true],
+        ['>=', before, false],
+      ];
+
+      for (const [op, actualDate, expectedMatch] of cases) {
+        const compiled = compileAccountChoiceRules([
+          when(cmp('acquisition-date', op, date(cutoff)), 'Income:Target'),
+        ]);
+        assert(E.isRight(compiled));
+        assert.deepEqual(
+          compiled.right(reductionFacts({ acquisitionDate: actualDate })),
+          E.right(expectedMatch ? 'Income:Target' : null),
+        );
+      }
+    });
+
     it('evaluates holding-period comparisons for all operators', () => {
       const cases: Array<[ComparisonOperator, number, boolean]> = [
         ['is', 365, true],
@@ -584,6 +664,75 @@ describe('compileAccountChoiceRules', () => {
           E.right(expectedMatch ? 'Income:Target' : null),
         );
       }
+    });
+
+    it('evaluates tag comparisons for untagged, single-tag, and multi-tag lots', () => {
+      const untagged: string[] = [];
+      const singleOther = ['rsu'];
+      const singleMatch = ['espp'];
+      const multiMatch = ['espp', '2024'];
+
+      for (const op of ['is', '=='] as const) {
+        const compiled = compileAccountChoiceRules([
+          when(cmp('tag', op, str('espp')), 'Income:Espp'),
+        ]);
+        assert(E.isRight(compiled));
+        assert.deepEqual(
+          compiled.right(reductionFacts({ tags: untagged })),
+          E.right(null),
+        );
+        assert.deepEqual(
+          compiled.right(reductionFacts({ tags: singleOther })),
+          E.right(null),
+        );
+        assert.deepEqual(
+          compiled.right(reductionFacts({ tags: singleMatch })),
+          E.right('Income:Espp'),
+        );
+        assert.deepEqual(
+          compiled.right(reductionFacts({ tags: multiMatch })),
+          E.right('Income:Espp'),
+        );
+      }
+
+      for (const op of ['is not', '!='] as const) {
+        const compiled = compileAccountChoiceRules([
+          when(cmp('tag', op, str('espp')), 'Income:NotEspp'),
+        ]);
+        assert(E.isRight(compiled));
+        assert.deepEqual(
+          compiled.right(reductionFacts({ tags: untagged })),
+          E.right('Income:NotEspp'),
+        );
+        assert.deepEqual(
+          compiled.right(reductionFacts({ tags: singleOther })),
+          E.right('Income:NotEspp'),
+        );
+        assert.deepEqual(
+          compiled.right(reductionFacts({ tags: singleMatch })),
+          E.right(null),
+        );
+        assert.deepEqual(
+          compiled.right(reductionFacts({ tags: multiMatch })),
+          E.right(null),
+        );
+      }
+
+      const bothTags = compileAccountChoiceRules([
+        when(
+          and(cmp('tag', 'is', str('espp')), cmp('tag', 'is', str('2024'))),
+          'Income:Espp2024',
+        ),
+      ]);
+      assert(E.isRight(bothTags));
+      assert.deepEqual(
+        bothTags.right(reductionFacts({ tags: singleMatch })),
+        E.right(null),
+      );
+      assert.deepEqual(
+        bothTags.right(reductionFacts({ tags: multiMatch })),
+        E.right('Income:Espp2024'),
+      );
     });
 
     describe('logical operators', () => {
@@ -676,6 +825,23 @@ describe('compileAccountChoiceRules', () => {
       );
     });
 
+    it('fails when acquisition-date is evaluated in aggregate context', () => {
+      const compiled = compileAccountChoiceRules([
+        when(
+          cmp('acquisition-date', '<', date('2026-01-01T00:00:00Z')),
+          'Income:Gain',
+        ),
+      ]);
+      assert(E.isRight(compiled));
+
+      const got = compiled.right(aggregateCredit);
+      assert(E.isLeft(got));
+      assert.equal(
+        got.left.message,
+        'Condition requires acquisition-date, but no reduced lot context is available',
+      );
+    });
+
     it('fails when holding-period is evaluated in aggregate context', () => {
       const compiled = compileAccountChoiceRules([
         when(cmp('holding-period', '>=', days(365)), 'Income:Gain'),
@@ -687,6 +853,20 @@ describe('compileAccountChoiceRules', () => {
       assert.equal(
         got.left.message,
         'Condition requires holding-period, but no reduced lot context is available',
+      );
+    });
+
+    it('fails when tag is evaluated in aggregate context', () => {
+      const compiled = compileAccountChoiceRules([
+        when(cmp('tag', 'is', str('espp')), 'Income:Gain'),
+      ]);
+      assert(E.isRight(compiled));
+
+      const got = compiled.right(aggregateCredit);
+      assert(E.isLeft(got));
+      assert.equal(
+        got.left.message,
+        'Condition requires tag, but no reduced lot context is available',
       );
     });
 

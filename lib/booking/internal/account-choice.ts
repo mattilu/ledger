@@ -24,7 +24,9 @@ export interface AccountChoiceReductionFacts {
   readonly currency: string;
   readonly sourceAccount: string;
   readonly sourceCurrency: string;
+  readonly acquisitionDate: Date;
   readonly holdingPeriod: ExactNumberType;
+  readonly tags: readonly string[];
 }
 
 /**
@@ -269,6 +271,28 @@ function compileCondition(
             ),
           );
         }
+        case 'acquisition-date': {
+          if (condition.value.type !== 'date') {
+            return invalidTypeComparison('date', condition.value.type);
+          }
+          const expectedTimestamp = condition.value.value.getTime();
+          const missingContextError = E.left(
+            new Error(
+              `Condition requires acquisition-date, but no reduced lot context is available`,
+            ),
+          );
+          return E.right(facts =>
+            facts.context !== 'reduction'
+              ? missingContextError
+              : E.right(
+                  compareTimestamps(
+                    facts.acquisitionDate.getTime(),
+                    expectedTimestamp,
+                    condition.operator,
+                  ),
+                ),
+          );
+        }
         case 'holding-period': {
           if (condition.value.type !== 'duration') {
             return invalidTypeComparison('duration', condition.value.type);
@@ -289,6 +313,32 @@ function compileCondition(
                     condition.operator,
                   ),
                 ),
+          );
+        }
+        case 'tag': {
+          if (condition.value.type !== 'string') {
+            return invalidTypeComparison('string', condition.value.type);
+          }
+          const expectedTag = condition.value.value;
+          const missingContextError = E.left(
+            new Error(
+              `Condition requires tag, but no reduced lot context is available`,
+            ),
+          );
+          return F.pipe(
+            validateEqualityOperator(condition.operator, 'string'),
+            E.map(
+              (operator): ConditionEvaluator =>
+                facts =>
+                  facts.context !== 'reduction'
+                    ? missingContextError
+                    : E.right(
+                        compareEquality(
+                          facts.tags.includes(expectedTag),
+                          operator,
+                        ),
+                      ),
+            ),
           );
         }
         default: {
@@ -356,6 +406,29 @@ function compareNumbers(
       return actual.gt(expected);
     case '>=':
       return actual.gte(expected);
+  }
+}
+
+function compareTimestamps(
+  actual: number,
+  expected: number,
+  operator: ComparisonOperator,
+): boolean {
+  switch (operator) {
+    case 'is':
+    case '==':
+      return actual === expected;
+    case 'is not':
+    case '!=':
+      return actual !== expected;
+    case '<':
+      return actual < expected;
+    case '<=':
+      return actual <= expected;
+    case '>':
+      return actual > expected;
+    case '>=':
+      return actual >= expected;
   }
 }
 
