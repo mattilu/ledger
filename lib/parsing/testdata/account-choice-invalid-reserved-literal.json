@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "Unable to consume token: : at lib/parsing/testdata/account-choice-invalid-reserved-literal.ledger:2"
+  }
+}

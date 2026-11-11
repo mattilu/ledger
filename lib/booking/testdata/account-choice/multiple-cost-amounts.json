@@ -1,0 +1,278 @@
+{
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "transactions": [
+        {
+          "date": "2026-11-01T00:00:00.000Z",
+          "description": "Open position with multiple cost amounts",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Crypto",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ETH-BTC-LP"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "1",
+                    "currency": "BTC"
+                  },
+                  {
+                    "amount": "34",
+                    "currency": "ETH"
+                  }
+                ],
+                "date": "2026-11-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-11-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ETH-BTC-LP"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "BTC"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "34",
+                "currency": "ETH"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Crypto",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "BTC"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Crypto",
+              "flag": "*",
+              "amount": {
+                "amount": "-34",
+                "currency": "ETH"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Crypto": {
+              "ETH-BTC-LP": [
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "1",
+                        "currency": "BTC"
+                      },
+                      {
+                        "amount": "34",
+                        "currency": "ETH"
+                      }
+                    ],
+                    "date": "2026-11-01T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2026-11-01",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": []
+                  }
+                }
+              ],
+              "BTC": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ],
+              "ETH": [
+                {
+                  "amount": "-34",
+                  "cost": null
+                }
+              ]
+            },
+            "Trading:Default": {
+              "ETH-BTC-LP": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ],
+              "BTC": [
+                {
+                  "amount": "1",
+                  "cost": null
+                }
+              ],
+              "ETH": [
+                {
+                  "amount": "34",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-11-02T00:00:00.000Z",
+          "description": "Close position with gain in BTC and loss in ETH",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Crypto",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ETH-BTC-LP"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "1",
+                    "currency": "BTC"
+                  },
+                  {
+                    "amount": "34",
+                    "currency": "ETH"
+                  }
+                ],
+                "date": "2026-11-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-11-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ETH-BTC-LP"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "BTC"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-34",
+                "currency": "ETH"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Crypto",
+              "flag": "*",
+              "amount": {
+                "amount": "2",
+                "currency": "BTC"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Crypto",
+              "flag": "*",
+              "amount": {
+                "amount": "30",
+                "currency": "ETH"
+              },
+              "cost": null
+            },
+            {
+              "account": "Income:Capital-Gains",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "BTC"
+              },
+              "cost": null
+            },
+            {
+              "account": "Income:Capital-Gains:Losses",
+              "flag": "*",
+              "amount": {
+                "amount": "4",
+                "currency": "ETH"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Crypto": {
+              "BTC": [
+                {
+                  "amount": "1",
+                  "cost": null
+                }
+              ],
+              "ETH": [
+                {
+                  "amount": "-4",
+                  "cost": null
+                }
+              ]
+            },
+            "Trading:Default": {},
+            "Income:Capital-Gains": {
+              "BTC": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ]
+            },
+            "Income:Capital-Gains:Losses": {
+              "ETH": [
+                {
+                  "amount": "4",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

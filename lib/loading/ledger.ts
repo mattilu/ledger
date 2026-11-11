@@ -2,6 +2,7 @@ import { Map } from 'immutable';
 
 import { SignConvention } from '../core/sign-convention.js';
 import { Directive } from './directive.js';
+import { AccountRuleDirective } from './directives/account-choice.js';
 import { CloseDirective } from './directives/close.js';
 import { CurrencyDirective } from './directives/currency.js';
 import { OpenDirective } from './directives/open.js';
@@ -17,5 +18,6 @@ export interface Ledger {
   readonly directives: readonly Directive[];
   readonly currencyMap: Map<string, CurrencyDirective>;
   readonly accountMap: AccountMap;
+  readonly accountRuleMap: Map<string, AccountRuleDirective>;
   readonly signConvention: SignConvention;
 }

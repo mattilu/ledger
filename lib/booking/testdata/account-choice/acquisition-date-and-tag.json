@@ -1,0 +1,641 @@
+{
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "transactions": [
+        {
+          "date": "2025-06-15T00:00:00.000Z",
+          "description": "Buy pre-2026 untagged lot",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "100",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2025-06-15T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2025-06-15",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "100",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "-100",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker": {
+              "ACME": [
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "100",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2025-06-15T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2025-06-15",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": []
+                  }
+                }
+              ]
+            },
+            "Trading:Default": {
+              "ACME": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ],
+              "USD": [
+                {
+                  "amount": "100",
+                  "cost": null
+                }
+              ]
+            },
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "-100",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-02-01T00:00:00.000Z",
+          "description": "Buy RSU lot",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "110",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-02-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-02-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": [
+                  "rsu"
+                ]
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "110",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "-110",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker": {
+              "ACME": [
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "100",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2025-06-15T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2025-06-15",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": []
+                  }
+                },
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "110",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2026-02-01T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2026-02-01",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": [
+                      "rsu"
+                    ]
+                  }
+                }
+              ]
+            },
+            "Trading:Default": {
+              "ACME": [
+                {
+                  "amount": "-2",
+                  "cost": null
+                }
+              ],
+              "USD": [
+                {
+                  "amount": "210",
+                  "cost": null
+                }
+              ]
+            },
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "-210",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-03-01T00:00:00.000Z",
+          "description": "Buy discounted ESPP lot",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "90",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-03-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-03-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": [
+                  "espp",
+                  "discounted"
+                ]
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "90",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "-90",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker": {
+              "ACME": [
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "100",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2025-06-15T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2025-06-15",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": []
+                  }
+                },
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "110",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2026-02-01T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2026-02-01",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": [
+                      "rsu"
+                    ]
+                  }
+                },
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "90",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2026-03-01T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2026-03-01",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": [
+                      "espp",
+                      "discounted"
+                    ]
+                  }
+                }
+              ]
+            },
+            "Trading:Default": {
+              "ACME": [
+                {
+                  "amount": "-3",
+                  "cost": null
+                }
+              ],
+              "USD": [
+                {
+                  "amount": "300",
+                  "cost": null
+                }
+              ]
+            },
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "-300",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-04-01T00:00:00.000Z",
+          "description": "Sell all 3 shares at 140 USD each",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "100",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2025-06-15T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2025-06-15",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-100",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "110",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-02-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-02-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": [
+                  "rsu"
+                ]
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-110",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "90",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-03-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-03-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": [
+                  "espp",
+                  "discounted"
+                ]
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-90",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "420",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Income:Capital-Gains:Grandfathered",
+              "flag": "*",
+              "amount": {
+                "amount": "-40",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Income:Capital-Gains:Non-ESPP",
+              "flag": "*",
+              "amount": {
+                "amount": "-30",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Income:Capital-Gains:ESPP:Discounted",
+              "flag": "*",
+              "amount": {
+                "amount": "-50",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker": {},
+            "Trading:Default": {},
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "120",
+                  "cost": null
+                }
+              ]
+            },
+            "Income:Capital-Gains:Grandfathered": {
+              "USD": [
+                {
+                  "amount": "-40",
+                  "cost": null
+                }
+              ]
+            },
+            "Income:Capital-Gains:Non-ESPP": {
+              "USD": [
+                {
+                  "amount": "-30",
+                  "cost": null
+                }
+              ]
+            },
+            "Income:Capital-Gains:ESPP:Discounted": {
+              "USD": [
+                {
+                  "amount": "-50",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "prices": [
+        {
+          "type": "price",
+          "date": "2025-06-15T00:00:00.000Z",
+          "currency": "ACME",
+          "price": {
+            "amount": "100",
+            "currency": "USD"
+          },
+          "meta": {
+            "synthetized-from": {
+              "type": "string",
+              "value": "cost-spec"
+            }
+          },
+          "optionMap": {}
+        },
+        {
+          "type": "price",
+          "date": "2026-02-01T00:00:00.000Z",
+          "currency": "ACME",
+          "price": {
+            "amount": "110",
+            "currency": "USD"
+          },
+          "meta": {
+            "synthetized-from": {
+              "type": "string",
+              "value": "cost-spec"
+            }
+          },
+          "optionMap": {}
+        },
+        {
+          "type": "price",
+          "date": "2026-03-01T00:00:00.000Z",
+          "currency": "ACME",
+          "price": {
+            "amount": "90",
+            "currency": "USD"
+          },
+          "meta": {
+            "synthetized-from": {
+              "type": "string",
+              "value": "cost-spec"
+            }
+          },
+          "optionMap": {}
+        }
+      ]
+    }
+  }
+}

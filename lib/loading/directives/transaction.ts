@@ -2,8 +2,9 @@ import { NormalBalanceSide } from '../../core/account.js';
 import { Amount } from '../../core/amount.js';
 import { SignConvention } from '../../core/sign-convention.js';
 import { DateSpec } from '../../parsing/spec/date.js';
-import { DirectiveCommon } from '../directive.js';
+import { DatedDirectiveCommon } from '../directive.js';
 import { Metadata } from '../metadata.js';
+import { AccountChoiceRule } from './account-choice.js';
 
 export interface CostSpec {
   readonly kind: 'per-unit' | 'total';
@@ -19,7 +20,7 @@ export interface PriceSpec {
   readonly amount: Amount;
 }
 
-export interface Posting {
+export interface AccountPosting {
   readonly account: string;
   readonly flag: string;
   readonly amount: Amount | null;
@@ -29,7 +30,27 @@ export interface Posting {
   readonly normalBalanceSide: NormalBalanceSide;
 }
 
-export interface TransactionDirective extends DirectiveCommon<'transaction'> {
+export interface AccountChoiceInline {
+  readonly type: 'inline';
+  readonly rules: readonly AccountChoiceRule[];
+}
+
+export interface AccountChoiceRef {
+  readonly type: 'ref';
+  readonly name: string;
+}
+
+export type AccountChoice = AccountChoiceInline | AccountChoiceRef;
+
+export interface AccountChoicePosting {
+  readonly account: AccountChoice;
+  readonly flag: string;
+  readonly meta: Metadata;
+}
+
+export type Posting = AccountPosting | AccountChoicePosting;
+
+export interface TransactionDirective extends DatedDirectiveCommon<'transaction'> {
   readonly dateSpec: DateSpec;
   readonly description: string;
   readonly flag: string;

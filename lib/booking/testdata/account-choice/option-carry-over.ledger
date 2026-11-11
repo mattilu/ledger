@@ -1,0 +1,32 @@
+2026-11-01 * "Buy calls"
+  Assets:Broker:Options          1 ACME-20261106-C-200 {{ 10 USD }}
+  Assets:Broker:Options          1 FOO-20261106-C-200 {{ 10 USD }}
+  Assets:Broker:Cash
+
+2026-11-07 * "Carry-over position"
+  Assets:Broker:Options         -1 ACME-20261106-C-200 {}  ; Expires worthless
+  Assets:Broker:Options          1 ACME-20261113-C-200 { 10 USD } ; Buy new expiry date
+  choose account {
+    when context is reduction and direction is debit: Income:Capital-Gains:Losses,
+    when context is reduction: Income:Capital-Gains,
+    otherwise: Assets:Broker:Cash
+  }
+
+2026-11-07 * "Carry-over with intervening augmentation and explicit cash offset"
+  Assets:Broker:Options         -1 FOO-20261106-C-200 {}
+  Assets:Broker:Options          1 FOO-20261113-C-200 { 15 USD }
+  Assets:Broker:Cash           -10 USD
+  choose account {
+    when context is reduction and direction is debit: Income:Capital-Gains:Losses,
+    when context is reduction: Income:Capital-Gains,
+    otherwise: Assets:Broker:Cash
+  }
+
+2026-11-07 balance
+  Assets:Broker:Options          0 ACME-20261106-C-200
+  Assets:Broker:Options          1 ACME-20261113-C-200
+  Assets:Broker:Options          0 FOO-20261106-C-200
+  Assets:Broker:Options          1 FOO-20261113-C-200
+  Assets:Broker:Cash           -45 USD
+  Income:Capital-Gains           0 USD
+  Income:Capital-Gains:Losses   20 USD

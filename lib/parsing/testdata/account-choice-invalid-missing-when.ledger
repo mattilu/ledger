@@ -1,0 +1,3 @@
+account-rule "invalid-missing-when" {
+  otherwise: Income:Broker:Capital-Gains
+}

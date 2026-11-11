@@ -1,0 +1,363 @@
+{
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "transactions": [
+        {
+          "date": "2026-11-01T00:00:00.000Z",
+          "description": "Buy in taxable and IRA accounts",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker:Taxable",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "10",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-11-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-11-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Broker:IRA",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "10",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-11-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-11-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "-20",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker:Taxable": {
+              "ACME": [
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "10",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2026-11-01T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2026-11-01",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": []
+                  }
+                }
+              ]
+            },
+            "Trading:Default": {
+              "ACME": [
+                {
+                  "amount": "-2",
+                  "cost": null
+                }
+              ],
+              "USD": [
+                {
+                  "amount": "20",
+                  "cost": null
+                }
+              ]
+            },
+            "Assets:Broker:IRA": {
+              "ACME": [
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "10",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2026-11-01T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2026-11-01",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": []
+                  }
+                }
+              ]
+            },
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "-20",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-11-02T00:00:00.000Z",
+          "description": "Sell from both accounts",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker:Taxable",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "10",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-11-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-11-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "15",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Broker:IRA",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "10",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-11-01T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-11-01",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              }
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": null
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-10",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "8",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Income:Taxable:Capital-Gains",
+              "flag": "*",
+              "amount": {
+                "amount": "-5",
+                "currency": "USD"
+              },
+              "cost": null
+            },
+            {
+              "account": "Income:IRA:Capital-Gains:Losses",
+              "flag": "*",
+              "amount": {
+                "amount": "2",
+                "currency": "USD"
+              },
+              "cost": null
+            }
+          ],
+          "inventoriesAfter": {
+            "Assets:Broker:Taxable": {},
+            "Trading:Default": {},
+            "Assets:Broker:IRA": {},
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "3",
+                  "cost": null
+                }
+              ]
+            },
+            "Income:Taxable:Capital-Gains": {
+              "USD": [
+                {
+                  "amount": "-5",
+                  "cost": null
+                }
+              ]
+            },
+            "Income:IRA:Capital-Gains:Losses": {
+              "USD": [
+                {
+                  "amount": "2",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "prices": [
+        {
+          "type": "price",
+          "date": "2026-11-01T00:00:00.000Z",
+          "currency": "ACME",
+          "price": {
+            "amount": "10",
+            "currency": "USD"
+          },
+          "meta": {
+            "synthetized-from": {
+              "type": "string",
+              "value": "cost-spec"
+            }
+          },
+          "optionMap": {}
+        },
+        {
+          "type": "price",
+          "date": "2026-11-01T00:00:00.000Z",
+          "currency": "ACME",
+          "price": {
+            "amount": "10",
+            "currency": "USD"
+          },
+          "meta": {
+            "synthetized-from": {
+              "type": "string",
+              "value": "cost-spec"
+            }
+          },
+          "optionMap": {}
+        }
+      ]
+    }
+  }
+}

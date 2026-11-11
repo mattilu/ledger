@@ -1,0 +1,18 @@
+2026-11-01 * "Buy position"
+  Assets:Broker                  1 ACME { 10 USD }
+  Assets:Cash                  -10 USD
+
+2026-11-03 * "Sell with unrelated priced amount"
+  Assets:Broker                 -1 ACME {}
+  Assets:Cash                   15 USD
+  Assets:Other                   1 EUR @ 1 USD
+  choose account {
+    when context is reduction and direction is debit: Income:Capital-Gains:Losses,
+    when context is reduction: Income:Capital-Gains,
+    otherwise: Income:Price-Adjustment
+  }
+
+2026-11-03 balance
+  Income:Capital-Gains          -5 USD
+  Income:Capital-Gains:Losses    0 USD
+  Income:Price-Adjustment       -1 USD

@@ -1,0 +1,19 @@
+2025-01-01 * "Buy older lot"
+  Assets:Broker                      1 ACME { 10 USD }
+  Assets:Cash                      -10 USD
+
+2026-01-01 * "Buy newer lot"
+  Assets:Broker                      1 ACME { 15 USD }
+  Assets:Cash                      -15 USD
+
+2026-11-01 * "Close position"
+  Assets:Broker                     -2 ACME {}
+  Assets:Cash                       36 USD
+  choose account {
+    when direction is credit and holding-period >= 365d: Income:Capital-Gains:Long-Term,
+    when direction is credit and holding-period < 365d: Income:Capital-Gains:Short-Term
+  }
+
+2026-11-01 balance
+  Income:Capital-Gains:Long-Term    -8 USD
+  Income:Capital-Gains:Short-Term   -3 USD

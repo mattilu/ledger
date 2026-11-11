@@ -1,0 +1,3 @@
+account-rule "reserved-attribute" {
+  when and == debit: Income:Invalid
+}

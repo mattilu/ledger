@@ -1,0 +1,17 @@
+account-rule "gains-rule" {
+  when holding-period > 365d: Income:Capital-Gains:Long-Term,
+  otherwise: Income:Capital-Gains:Short-Term
+}
+
+2026-11-01 * "Buy stock"
+  Assets:Broker   1 ACME {{ 10 USD }}
+  Assets:Broker
+
+2026-11-02 * "Sell stock using named rule"
+  Assets:Broker  -1 ACME {}
+  Assets:Broker  15 USD
+  choose account "gains-rule"
+
+2026-11-03 * "Use cached named rule in aggregate context"
+  Assets:Cash    10 USD
+  choose account "gains-rule"

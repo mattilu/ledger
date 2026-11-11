@@ -1,0 +1,29 @@
+account-rule "grant-and-cutoff-gains" {
+  when acquisition-date < 2026-01-01: Income:Capital-Gains:Grandfathered,
+  when tag is "espp" and tag is "discounted": Income:Capital-Gains:ESPP:Discounted,
+  when tag is "espp": Income:Capital-Gains:ESPP:Other,
+  when tag is not "espp": Income:Capital-Gains:Non-ESPP
+}
+
+2025-06-15 * "Buy pre-2026 untagged lot"
+  Assets:Broker                           1 ACME { 100 USD }
+  Assets:Cash
+
+2026-02-01 * "Buy RSU lot"
+  Assets:Broker                           1 ACME { 110 USD, "rsu" }
+  Assets:Cash
+
+2026-03-01 * "Buy discounted ESPP lot"
+  Assets:Broker                           1 ACME { 90 USD, "espp", "discounted" }
+  Assets:Cash
+
+2026-04-01 * "Sell all 3 shares at 140 USD each"
+  Assets:Broker                          -3 ACME {}
+  Assets:Cash                           420 USD
+  choose account "grant-and-cutoff-gains"
+
+2026-04-01 balance
+  Income:Capital-Gains:Grandfathered    -40 USD
+  Income:Capital-Gains:ESPP:Discounted  -50 USD
+  Income:Capital-Gains:ESPP:Other         0 USD
+  Income:Capital-Gains:Non-ESPP         -30 USD

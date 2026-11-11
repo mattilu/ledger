@@ -1,4 +1,4 @@
-import { apply, opt_sc, rep_sc, seq, tok } from 'typescript-parsec';
+import { apply, opt_sc, rep_sc, seq, str, tok } from 'typescript-parsec';
 
 import { BalanceDirectiveSpec } from '../../spec/directives/balance.js';
 import { accountParser } from '../account.js';
@@ -12,7 +12,7 @@ import { TokenKind } from '../tokenizer.js';
 export const balanceDirectiveParser = apply(
   seq(
     dateParser,
-    tok(TokenKind.KEYWORD_balance),
+    str('balance'),
     metadataParser,
     rep_sc(
       seq(

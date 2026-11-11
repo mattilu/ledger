@@ -1,0 +1,3 @@
+account-rule "" {
+  when direction is credit: Income:Capital-Gains
+}

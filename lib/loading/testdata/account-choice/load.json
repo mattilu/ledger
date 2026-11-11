@@ -1,0 +1,54 @@
+{
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "directives": [
+        {
+          "type": "transaction",
+          "date": "2026-11-01T00:00:00.000Z",
+          "dateSpec": {
+            "date": "2026-11-01",
+            "time": null,
+            "timezone": null
+          },
+          "description": "Loaded account choice",
+          "flag": "*",
+          "postings": [
+            {
+              "account": {
+                "type": "ref",
+                "name": "loaded-rule"
+              },
+              "flag": "*"
+            }
+          ]
+        }
+      ],
+      "accountRuleMap": {
+        "loaded-rule": {
+          "type": "account-rule",
+          "name": "loaded-rule",
+          "rules": [
+            {
+              "type": "when",
+              "condition": {
+                "type": "comparison",
+                "attribute": "direction",
+                "operator": "is",
+                "value": {
+                  "type": "identifier",
+                  "value": "credit"
+                }
+              },
+              "account": "Income:Loaded:Gain"
+            },
+            {
+              "type": "otherwise",
+              "account": "Income:Loaded:Other"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

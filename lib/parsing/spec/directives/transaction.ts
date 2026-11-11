@@ -2,6 +2,7 @@ import { AmountSpec } from '../amount.js';
 import { DateSpec } from '../date.js';
 import { DirectiveCommonSpec } from '../directive.js';
 import { MetadataSpec } from '../metadata.js';
+import { AccountChoiceRule } from './account-rule.js';
 
 export interface CostSpec {
   readonly kind: 'per-unit' | 'total';
@@ -26,7 +27,7 @@ export interface PriceSpec {
   readonly amount: AmountSpec;
 }
 
-export interface PostingSpec {
+export interface AccountPostingSpec {
   readonly account: string;
   readonly flag: string | null;
   readonly amount: AmountSpec | null;
@@ -34,6 +35,18 @@ export interface PostingSpec {
   readonly priceSpec: PriceSpec | null;
   readonly meta: MetadataSpec;
 }
+
+export type AccountChoiceSpec =
+  | { readonly type: 'inline'; readonly rules: readonly AccountChoiceRule[] }
+  | { readonly type: 'ref'; readonly name: string };
+
+export interface AccountChoicePostingSpec {
+  readonly account: AccountChoiceSpec;
+  readonly flag: string | null;
+  readonly meta: MetadataSpec;
+}
+
+export type PostingSpec = AccountPostingSpec | AccountChoicePostingSpec;
 
 export interface TransactionDirectiveSpec extends DirectiveCommonSpec<'transaction'> {
   readonly date: DateSpec;

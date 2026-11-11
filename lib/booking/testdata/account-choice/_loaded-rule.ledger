@@ -1,0 +1,5 @@
+account-rule "capital-gains" {
+  when direction is debit: Income:Capital-Gains:Losses,
+  when holding-period > 365d: Income:Capital-Gains:Long-Term,
+  otherwise: Income:Capital-Gains:Short-Term
+}

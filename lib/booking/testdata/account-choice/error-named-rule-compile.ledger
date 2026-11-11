@@ -1,0 +1,8 @@
+account-rule "bad-rule" {
+  when booking-result is gain: Income:Capital-Gains,
+  otherwise: Expenses:Losses
+}
+
+2026-11-01 * "Use invalid named rule"
+  Assets:Cash   10 USD
+  choose account "bad-rule"

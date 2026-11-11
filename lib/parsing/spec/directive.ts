@@ -1,4 +1,5 @@
 import { SourcePosition } from '../source-position.js';
+import { AccountRuleDirectiveSpec } from './directives/account-rule.js';
 import { BalanceDirectiveSpec } from './directives/balance.js';
 import { CloseDirectiveSpec } from './directives/close.js';
 import { CurrencyDirectiveSpec } from './directives/currency.js';
@@ -16,6 +17,7 @@ export interface DirectiveCommonSpec<T extends string> {
 }
 
 export type DirectiveSpec =
+  | AccountRuleDirectiveSpec
   | BalanceDirectiveSpec
   | CloseDirectiveSpec
   | CurrencyDirectiveSpec

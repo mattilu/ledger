@@ -1,0 +1,69 @@
+; Note: the identifiers here do not present actual identifiers that can be used
+; at booking time, but the parser accepts them for future extensibility.
+; Invalid identifiers will fail at booking time.
+
+account-rule "comparisons" {
+  when identifier is id: Income:Identifier,
+  when string == "str": Income:String,
+  when number == 42: Income:Number:Eq,
+  when number != 42: Income:Number:Neq,
+  when number > 42: Income:Number:Gt,
+  when number >= 42: Income:Number:Gte,
+  when number < 42: Income:Number:Lt,
+  when number <= 42: Income:Number:Lte,
+  when amount >= 10 USD: Income:Amount,
+  when date is 2026-11-01: Income:Date,
+  when account is Assets:Test: Income:Account,
+  when currency is USD: Income:Currency,
+  when duration > 3d: Income:Duration,
+}
+
+account-rule "boolean-operators" {
+  when foo == 1 and bar == 2: Income:And,
+  when foo == 1 or bar == 2: Income:Or,
+  when not foo == 1: Income:Not,
+  when not not foo == 1: Income:NotNot,
+  when foo == 1 and bar == 2 and baz == 3: Income:AndLeftAssociative,
+  when foo == 1 or bar == 2 or baz == 3: Income:OrLeftAssociative,
+  when foo == 1 or bar == 2 and baz == 3: Income:PrecedenceAnd,
+  when (foo == 1 or bar == 2) and baz == 3: Income:PrecedenceParens,
+  when foo == 1 and not bar == 2: Income:PrecedenceNot,
+  when not foo == 1 or bar == 2: Income:NotOr,
+}
+
+account-rule "otherwise" {
+  when foo == 0: Income:Foo,
+  otherwise: Income:Otherwise,
+}
+
+account-rule "without-trailing-comma" {
+  when foo == 0: Income:Foo
+}
+
+account-rule "without-trailing-comma-otherwise" {
+  when foo == 0: Income:Foo,
+  otherwise: Income:Otherwise
+}
+
+account-rule "meta" {
+  when foo == 0: Income:Foo
+}
+  meta-key: "value"
+
+2026-11-01 * "Transaction"
+  choose account {
+    when foo == 0: Income:Inline
+  }
+  choose account "rule-reference"
+
+2026-11-01 * "Flags"
+  * choose account { when foo == 0: Income:Inline }
+  ! choose account { when foo == 0: Income:Inline }
+  * choose account "rule-reference"
+  ! choose account "rule-reference"
+
+2026-11-01 * "Meta"
+  choose account { when foo == 0: Income:Inline }
+    meta-key: "value"
+  choose account "rule-reference"
+    meta-key: "value"

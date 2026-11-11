@@ -1,0 +1,10 @@
+2026-11-01 * "Buy position"
+  Assets:Broker    1 ACME { 10 USD }
+  Assets:Cash    -10 USD
+
+2026-11-02 * "Unmatched reduction portion leaves transaction unbalanced"
+  Assets:Broker   -1 ACME {}
+  Assets:Cash     15 USD
+  choose account {
+    when direction is debit: Income:Capital-Gains:Losses
+  }

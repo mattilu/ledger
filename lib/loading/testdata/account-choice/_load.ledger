@@ -1,0 +1,4 @@
+account-rule "loaded-rule" {
+  when direction is credit: Income:Loaded:Gain,
+  otherwise: Income:Loaded:Other
+}

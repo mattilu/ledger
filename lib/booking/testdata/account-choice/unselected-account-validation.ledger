@@ -1,0 +1,28 @@
+option "account-reference-checks" "strict"
+
+2026-11-01 open Assets:Broker ACME
+2026-11-01 open Assets:Cash USD
+2026-11-01 open Trading:Default ACME USD
+2026-11-01 open Income:Capital-Gains USD
+2026-11-01 open Income:Closed USD
+2026-11-01 open Income:EUR-Only EUR
+2026-11-02 close Income:Closed
+
+2026-11-01 * "Buy stock"
+  Assets:Broker           1 ACME { 10 USD }
+  Assets:Cash           -10 USD
+
+2026-11-03 * "Unselected invalid accounts are not validated"
+  Assets:Broker          -1 ACME {}
+  Assets:Cash            15 USD
+  choose account {
+    when direction is debit: Income:Closed,
+    when holding-period > 365d: Income:Undeclared,
+    when context is aggregate: Income:EUR-Only,
+    otherwise: Income:Capital-Gains
+  }
+
+2026-11-03 balance
+  Income:Capital-Gains   -5 USD
+  Income:Closed           0 USD
+  Income:EUR-Only         0 EUR

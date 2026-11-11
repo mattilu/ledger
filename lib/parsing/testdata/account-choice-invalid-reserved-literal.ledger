@@ -1,0 +1,3 @@
+account-rule "reserved-literal" {
+  when direction is not: Income:Invalid
+}

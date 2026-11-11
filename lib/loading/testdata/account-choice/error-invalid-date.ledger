@@ -1,0 +1,3 @@
+account-rule "invalid-date" {
+  when date is 2025-06-66 and direction is credit: Income:Date
+}

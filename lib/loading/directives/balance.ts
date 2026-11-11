@@ -3,7 +3,7 @@ import { ExactNumberType as N } from 'exactnumber';
 import { NormalBalanceSide } from '../../core/account.js';
 import { Amount } from '../../core/amount.js';
 import { SignConvention } from '../../core/sign-convention.js';
-import { DirectiveCommon } from '../directive.js';
+import { DatedDirectiveCommon } from '../directive.js';
 
 export interface BalanceEntry {
   readonly account: string;
@@ -12,7 +12,7 @@ export interface BalanceEntry {
   readonly normalBalanceSide: NormalBalanceSide;
 }
 
-export interface BalanceDirective extends DirectiveCommon<'balance'> {
+export interface BalanceDirective extends DatedDirectiveCommon<'balance'> {
   readonly balances: readonly BalanceEntry[];
   readonly signConvention: SignConvention;
 }

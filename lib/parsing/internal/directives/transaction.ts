@@ -1,21 +1,26 @@
 import {
   alt_sc,
   apply,
+  kright,
   list_sc,
   opt_sc,
   Parser,
   rep_sc,
   seq,
+  str,
   tok,
 } from 'typescript-parsec';
 
 import {
+  AccountChoicePostingSpec,
+  AccountChoiceSpec,
+  AccountPostingSpec,
   CostSpec,
-  PostingSpec,
   PriceSpec,
   TransactionDirectiveSpec,
 } from '../../spec/directives/transaction.js';
 import { accountParser } from '../account.js';
+import { accountChoiceRuleBlockParser } from '../account-choice.js';
 import { amountParser } from '../amount.js';
 import { currencyParser } from '../currency.js';
 import { dateParser } from '../date.js';
@@ -77,7 +82,7 @@ const priceSpecParser = apply(
   }),
 );
 
-const postingParser = apply(
+const accountPostingParser = apply(
   seq(
     opt_sc(alt_sc(tok(TokenKind.Times), tok(TokenKind.ExclamationMark))),
     accountParser,
@@ -86,7 +91,7 @@ const postingParser = apply(
     opt_sc(priceSpecParser),
     metadataParser,
   ),
-  ([flag, account, amount, costSpec, priceSpec, meta]): PostingSpec => ({
+  ([flag, account, amount, costSpec, priceSpec, meta]): AccountPostingSpec => ({
     account,
     flag: flag?.text ?? null,
     amount: amount ?? null,
@@ -96,14 +101,36 @@ const postingParser = apply(
   }),
 );
 
+const accountChoiceParser = kright(
+  seq(str('choose'), str('account')),
+  alt_sc(
+    apply(
+      accountChoiceRuleBlockParser,
+      (rules): AccountChoiceSpec => ({ type: 'inline', rules }),
+    ),
+    apply(stringParser, (name): AccountChoiceSpec => ({ type: 'ref', name })),
+  ),
+);
+
+const accountChoicePostingParser = apply(
+  seq(
+    opt_sc(alt_sc(tok(TokenKind.Times), tok(TokenKind.ExclamationMark))),
+    accountChoiceParser,
+    metadataParser,
+  ),
+  ([flag, account, meta]): AccountChoicePostingSpec => ({
+    account,
+    flag: flag?.text ?? null,
+    meta,
+  }),
+);
+
+const postingParser = alt_sc(accountChoicePostingParser, accountPostingParser);
+
 export const transactionDirectiveParser = apply(
   seq(
     dateParser,
-    alt_sc(
-      tok(TokenKind.KEYWORD_txn),
-      tok(TokenKind.Times),
-      tok(TokenKind.ExclamationMark),
-    ),
+    alt_sc(str('txn'), tok(TokenKind.Times), tok(TokenKind.ExclamationMark)),
     stringParser,
     metadataParser,
     rep_sc(postingParser),

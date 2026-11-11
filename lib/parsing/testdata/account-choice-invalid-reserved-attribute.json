@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "Unexpected reserved keyword: and at lib/parsing/testdata/account-choice-invalid-reserved-attribute.ledger:2"
+  }
+}

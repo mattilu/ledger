@@ -1,0 +1,8 @@
+{
+  "want": {
+    "_tag": "Left",
+    "left": {
+      "error": "While processing 'transaction' directive at lib/booking/testdata/account-choice/error-invalid-missing-holding-period.ledger:1: Condition requires holding-period, but no reduced lot context is available"
+    }
+  }
+}

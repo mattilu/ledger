@@ -1,0 +1,47 @@
+2026-11-01 * "Buy stock"
+  Assets:Broker                 1 ACME {{ 10 USD }}
+  Assets:Broker
+
+2026-11-02 * "Buy another stock"
+  Assets:Broker                 2 FOO {{ 40 USD }}
+  Assets:Broker
+
+2026-11-03 * "Sell both, final ordinary account consumes leftover"
+  Assets:Broker                -1 ACME {}
+  Assets:Broker                15 USD
+  choose account {
+    ; This doesn't match, so the credit portion remains available.
+    when direction is debit: Income:Capital-Gains:Losses
+  }
+  Assets:Broker                -1 FOO {}
+  Assets:Broker                16 USD
+  choose account {
+    ; Matches the credit portion from ACME, leaves the debit portion from FOO.
+    when direction is credit: Income:Capital-Gains
+  }
+  Income:Leftovers
+
+2026-11-03 balance
+  Income:Capital-Gains         -5 USD
+  Income:Capital-Gains:Losses   0 USD
+  Income:Leftovers              4 USD
+
+2026-11-04 * "Mid-transaction ordinary omitted-amount posting clears pending portions"
+  Assets:Broker                -1 FOO {}
+  Assets:Broker                12 USD
+  choose account {
+    ; Doesn't match the debit portion from FOO.
+    when direction is credit: Income:Capital-Gains
+  }
+  ; Consumes the 8 USD debit balance and clears pending reduction portions.
+  Income:Leftovers
+  Assets:Cash                   5 USD
+  choose account {
+    when context is aggregate and direction is credit: Income:Other
+  }
+
+2026-11-04 balance
+  Income:Capital-Gains         -5 USD
+  Income:Capital-Gains:Losses   0 USD
+  Income:Leftovers             12 USD
+  Income:Other                 -5 USD

@@ -1,0 +1,22 @@
+2026-11-01 * "Buy in taxable and IRA accounts"
+  Assets:Broker:Taxable                  1 ACME { 10 USD }
+  Assets:Broker:IRA                      1 ACME { 10 USD }
+  Assets:Cash                          -20 USD
+
+2026-11-02 * "Sell from both accounts"
+  Assets:Broker:Taxable                 -1 ACME {}
+  Assets:Cash                           15 USD
+  Assets:Broker:IRA                     -1 ACME {}
+  Assets:Cash                            8 USD
+  choose account {
+    when source-account is Assets:Broker:Taxable and direction is debit: Income:Taxable:Capital-Gains:Losses,
+    when source-account == Assets:Broker:Taxable: Income:Taxable:Capital-Gains,
+    when source-account != Assets:Broker:Taxable and source-account is not Assets:Broker:Taxable and direction is debit: Income:IRA:Capital-Gains:Losses,
+    otherwise: Income:IRA:Capital-Gains
+  }
+
+2026-11-02 balance
+  Income:Taxable:Capital-Gains          -5 USD
+  Income:Taxable:Capital-Gains:Losses    0 USD
+  Income:IRA:Capital-Gains               0 USD
+  Income:IRA:Capital-Gains:Losses        2 USD

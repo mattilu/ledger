@@ -1,0 +1,6 @@
+2026-11-01 * "Unsupported direction"
+  Assets:Cash  10 USD
+  choose account {
+    when direction is inbound: Income:Route,
+    otherwise: Income:Fallback
+  }

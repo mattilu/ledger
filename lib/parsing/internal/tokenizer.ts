@@ -7,16 +7,6 @@ export enum TokenKind {
   TimeZoneLiteral,
   StringLiteral,
 
-  KEYWORD_balance,
-  KEYWORD_close,
-  KEYWORD_commodity,
-  KEYWORD_currency,
-  KEYWORD_load,
-  KEYWORD_open,
-  KEYWORD_option,
-  KEYWORD_price,
-  KEYWORD_txn,
-
   Identifier,
 
   Account,
@@ -26,6 +16,12 @@ export enum TokenKind {
   Minus,
   Times,
   Divide,
+  Equal,
+  NotEqual,
+  LessThan,
+  LessThanOrEqual,
+  GreaterThan,
+  GreaterThanOrEqual,
 
   OpenParen,
   CloseParen,
@@ -50,17 +46,6 @@ const tokenizer = buildLexer([
   [true, /^\d{2}:\d{2}(?::\d{2})?/g, TokenKind.TimeLiteral],
   [true, /^[+-]\d{2}:\d{2}|^Z\b/g, TokenKind.TimeZoneLiteral],
   [true, /^"[^"\n]*"/g, TokenKind.StringLiteral],
-
-  [true, /^balance\b/g, TokenKind.KEYWORD_balance],
-  [true, /^close\b/g, TokenKind.KEYWORD_close],
-  [true, /^commodity\b/g, TokenKind.KEYWORD_commodity],
-  [true, /^currency\b/g, TokenKind.KEYWORD_currency],
-  [true, /^load\b/g, TokenKind.KEYWORD_load],
-  [true, /^open\b/g, TokenKind.KEYWORD_open],
-  [true, /^option\b/g, TokenKind.KEYWORD_option],
-  [true, /^price\b/g, TokenKind.KEYWORD_price],
-  [true, /^txn\b/g, TokenKind.KEYWORD_txn],
-
   [true, /^[a-z][a-z0-9_-]*/g, TokenKind.Identifier],
   [
     true,
@@ -73,6 +58,12 @@ const tokenizer = buildLexer([
   [true, /^[-]/g, TokenKind.Minus],
   [true, /^[*]/g, TokenKind.Times],
   [true, /^[/]/g, TokenKind.Divide],
+  [true, /^==/g, TokenKind.Equal],
+  [true, /^!=/g, TokenKind.NotEqual],
+  [true, /^<=/g, TokenKind.LessThanOrEqual],
+  [true, /^</g, TokenKind.LessThan],
+  [true, /^>=/g, TokenKind.GreaterThanOrEqual],
+  [true, /^>/g, TokenKind.GreaterThan],
 
   [true, /^[(]/g, TokenKind.OpenParen],
   [true, /^[)]/g, TokenKind.CloseParen],

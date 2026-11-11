@@ -1,0 +1,8 @@
+{
+  "want": {
+    "_tag": "Left",
+    "left": {
+      "error": "While processing 'transaction' directive at lib/booking/testdata/account-choice/error-selected-closed-account.ledger:4: Account Income:Closed has been closed (at lib/booking/testdata/account-choice/error-selected-closed-account.ledger:2)"
+    }
+  }
+}

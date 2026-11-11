@@ -37,7 +37,14 @@ Cost and price annotations on postings also affect booking. A cost basis adds a
 position held at cost and generated trading postings; a price annotation
 converts currencies without retaining the position at cost. On reductions, an
 empty cost selector (for example `{}`) invokes the booking method to choose
-existing positions. For the full rules and worked entries, see
-[Booking](../booking.md).
+existing positions.
+
+An omitted-amount posting can also use `choose account` (either inline or
+referencing a named [`account-rule`](./account-rule.md)) to select its
+destination account based on booking-time facts such as debit/credit direction,
+reduction context, source account, and holding period. Any posting flag or
+metadata on a `choose account` posting is applied to every booked posting it
+emits. For the full rules and worked entries, see
+[Booking](../booking.md#dynamic-account-selection).
 
 See the [`transaction` syntax](../syntax.md#transaction).

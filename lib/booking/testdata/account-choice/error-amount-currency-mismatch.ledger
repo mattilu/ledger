@@ -1,0 +1,6 @@
+2026-11-01 * "Amount currency mismatch without currency guard"
+  Assets:Cash        10 EUR
+  choose account {
+    when amount <  0.05 USD: Expenses:Rounding,
+    otherwise: Income:Other
+  }

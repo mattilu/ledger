@@ -2,7 +2,7 @@
   "want": {
     "_tag": "Left",
     "left": {
-      "error": "Unable to tokenize the rest of the input: <invalid>\n at lib/loading/testdata/syntax-error.ledger:1"
+      "error": "Unable to tokenize the rest of the input: ?invalid\n at lib/loading/testdata/syntax-error.ledger:1"
     }
   }
 }
