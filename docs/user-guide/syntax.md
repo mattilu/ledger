@@ -409,13 +409,30 @@ parentheses (with precedence `not`, then `and`, then `or`):
   - `direction`: `debit` or `credit` (equality operators only).
   - `context`: `reduction` (for realized portions of reduced costed lots) or
     `aggregate` (for non-reduction balance residuals; equality operators only).
+  - `currency`: the currency of the portion (currency literal, equality
+    operators only).
+  - `amount`: the unsigned (absolute) amount of the portion regardless of the
+    active `sign-convention`, compared against a non-negative amount literal
+    such as `0.05 USD` (equality and ordered operators; check `direction`
+    separately if debit versus credit matters, and guard with `currency` when a
+    posting can see multiple currencies).
   - `source-account`: the account from which a costed lot was reduced (account
     literal, equality operators only; available only when `context` is
+    `reduction`).
+  - `source-currency`: the currency of the reduced costed lot (currency literal,
+    equality operators only; available only when `context` is `reduction`).
+  - `acquisition-date`: the reduced lot's acquisition date (date literal,
+    equality and ordered operators; available only when `context` is
     `reduction`).
   - `holding-period`: elapsed time between the reduced lot's acquisition date
     and the transaction date, compared against a day duration literal
     `<number>d` such as `365d` (equality and ordered operators; available only
     when `context` is `reduction`).
+  - `tag`: matches cost tags on the reduced lot against a string literal
+    (equality operators only; available only when `context` is `reduction`).
+    `is` / `==` matches when any tag on the lot equals the string, and `is not`
+    / `!=` matches when none of the lot's tags equals the string (including
+    untagged lots).
 
 Example:
 

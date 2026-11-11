@@ -263,16 +263,28 @@ A `choose account` posting evaluates two kinds of candidate amounts:
 
 Each nonzero portion is evaluated against the rule clauses using its facts:
 
-| Attribute        | Context                  | Values / Type            | Description                                                                                                                                        |
-| ---------------- | ------------------------ | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `context`        | `reduction`, `aggregate` | `reduction`, `aggregate` | Whether the portion is a per-lot realized amount or a general per-currency balance residual.                                                       |
-| `direction`      | `reduction`, `aggregate` | `debit`, `credit`        | Accounting direction of the inferred portion (`debit` for canonical positive, `credit` for negative), independent of the active `sign-convention`. |
-| `source-account` | `reduction` only         | Account                  | The account from which the lot was reduced.                                                                                                        |
-| `holding-period` | `reduction` only         | Duration (`<number>d`)   | Elapsed days between the lot's acquisition date and the transaction date.                                                                          |
+| Attribute          | Context                  | Values / Type            | Description                                                                                                                                                   |
+| ------------------ | ------------------------ | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `context`          | `reduction`, `aggregate` | `reduction`, `aggregate` | Whether the portion is a per-lot realized amount or a general per-currency balance residual (equality only).                                                  |
+| `direction`        | `reduction`, `aggregate` | `debit`, `credit`        | Accounting direction of the inferred portion (`debit` for canonical positive, `credit` for negative), independent of the active `sign-convention`.            |
+| `currency`         | `reduction`, `aggregate` | Currency                 | Currency of the portion (equality only).                                                                                                                      |
+| `amount`           | `reduction`, `aggregate` | Non-negative Amount      | Unsigned (absolute) amount of the portion regardless of `sign-convention`; check `direction` separately when debit versus credit matters.                     |
+| `source-account`   | `reduction` only         | Account                  | The account from which the lot was reduced (equality only).                                                                                                   |
+| `source-currency`  | `reduction` only         | Currency                 | The currency of the reduced lot (equality only).                                                                                                              |
+| `acquisition-date` | `reduction` only         | Date                     | The lot's acquisition date (equality and ordered operators).                                                                                                  |
+| `holding-period`   | `reduction` only         | Duration (`<number>d`)   | Elapsed days between the lot's acquisition date and the transaction date (equality and ordered operators).                                                    |
+| `tag`              | `reduction` only         | String                   | Cost tags on the reduced lot (equality only): `is`/`==` matches if any tag on the lot equals the string; `is not`/`!=` matches if none does (or if untagged). |
 
-Referencing `source-account` or `holding-period` when evaluating an `aggregate`
-residual is a booking error unless guarded earlier in the condition (for
-example, `when context is reduction and holding-period >= 365d: ...`).
+Notes on condition evaluation:
+
+- Because `amount` is always unsigned, negative amount literals are rejected at
+  compile time. Comparing `amount` against a literal in a different currency is
+  a booking error unless guarded earlier in the condition (for example,
+  `when currency is USD and amount < 0.05 USD: ...`).
+- Referencing `source-account`, `source-currency`, `acquisition-date`,
+  `holding-period`, or `tag` when evaluating an `aggregate` residual is a
+  booking error unless guarded earlier in the condition (for example,
+  `when context is reduction and holding-period >= 365d: ...`).
 
 ### Evaluation, chaining, and validation
 
