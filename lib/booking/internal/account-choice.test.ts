@@ -4,6 +4,7 @@ import { describe, it } from 'node:test';
 import { ExactNumber } from 'exactnumber';
 import { either as E } from 'fp-ts';
 
+import { Amount } from '../../core/amount.js';
 import {
   AccountChoiceRule,
   ConditionExpression,
@@ -55,6 +56,11 @@ const id = (value: string): ConditionLiteral => ({ type: 'identifier', value });
 
 const acct = (value: string): ConditionLiteral => ({ type: 'account', value });
 
+const amt = (value: number | string, currency = 'USD'): ConditionLiteral => ({
+  type: 'amount',
+  value: new Amount(ExactNumber(value), currency),
+});
+
 const curr = (value: string): ConditionLiteral => ({ type: 'currency', value });
 
 const date = (value: string): ConditionLiteral => ({
@@ -75,12 +81,15 @@ const num = (value: number | string): ConditionLiteral => ({
   value: ExactNumber(value),
 });
 
+const makeAmount = (value: number | string, currency = 'USD'): Amount =>
+  new Amount(ExactNumber(value), currency);
+
 const aggregateFacts = (
   overrides?: Partial<Omit<AccountChoiceAggregateFacts, 'context'>>,
 ): AccountChoiceAggregateFacts => ({
   context: 'aggregate',
   direction: overrides?.direction ?? 'debit',
-  currency: overrides?.currency ?? 'USD',
+  amount: overrides?.amount ?? makeAmount(10),
 });
 
 const aggregateDebit = aggregateFacts({ direction: 'debit' });
@@ -92,7 +101,7 @@ const reductionFacts = (
 ): AccountChoiceReductionFacts => ({
   context: 'reduction',
   direction: overrides?.direction ?? 'credit',
-  currency: overrides?.currency ?? 'USD',
+  amount: overrides?.amount ?? makeAmount(10),
   sourceAccount: overrides?.sourceAccount ?? 'Assets:Broker:Foo',
   sourceCurrency: overrides?.sourceCurrency ?? 'ACME',
   acquisitionDate:
@@ -124,6 +133,18 @@ describe('compileAccountChoiceRules', () => {
       assert.equal(
         got.left.message,
         'Invalid account-choice context; expected reduction or aggregate',
+      );
+    });
+
+    it('fails on negative amount literal', () => {
+      const got = compileAccountChoiceRules([
+        when(cmp('amount', '<', amt(-5)), 'Expenses:Rounding'),
+      ]);
+
+      assert(E.isLeft(got));
+      assert.equal(
+        got.left.message,
+        'Account-choice amount literal must not be negative; use direction to check debit or credit',
       );
     });
 
@@ -161,6 +182,18 @@ describe('compileAccountChoiceRules', () => {
         assert.equal(
           got.left.message,
           "Cannot compare account-choice values of types 'currency' and 'string'",
+        );
+      });
+
+      it('fails on amount type mismatch', () => {
+        const got = compileAccountChoiceRules([
+          when(cmp('amount', '<', num(5)), 'Expenses:Rounding'),
+        ]);
+
+        assert(E.isLeft(got));
+        assert.equal(
+          got.left.message,
+          "Cannot compare account-choice values of types 'amount' and 'number'",
         );
       });
 
@@ -523,22 +556,96 @@ describe('compileAccountChoiceRules', () => {
         ]);
         assert(E.isRight(compiled));
         assert.deepEqual(
-          compiled.right(aggregateFacts({ currency: 'USD' })),
+          compiled.right(aggregateFacts({ amount: makeAmount(10, 'USD') })),
           E.right(matchUsd ? 'Income:Usd' : null),
         );
         assert.deepEqual(
-          compiled.right(aggregateFacts({ currency: 'EUR' })),
+          compiled.right(aggregateFacts({ amount: makeAmount(10, 'EUR') })),
           E.right(matchEur ? 'Income:Usd' : null),
         );
         assert.deepEqual(
-          compiled.right(reductionFacts({ currency: 'USD' })),
+          compiled.right(reductionFacts({ amount: makeAmount(10, 'USD') })),
           E.right(matchUsd ? 'Income:Usd' : null),
         );
         assert.deepEqual(
-          compiled.right(reductionFacts({ currency: 'EUR' })),
+          compiled.right(reductionFacts({ amount: makeAmount(10, 'EUR') })),
           E.right(matchEur ? 'Income:Usd' : null),
         );
       }
+    });
+
+    it('evaluates amount comparisons using unsigned magnitude in both contexts', () => {
+      const cases: Array<[ComparisonOperator, string, boolean]> = [
+        ['is', '0.05', true],
+        ['is', '0.01', false],
+        ['==', '0.05', true],
+        ['==', '0.01', false],
+        ['is not', '0.01', true],
+        ['is not', '0.05', false],
+        ['!=', '0.01', true],
+        ['!=', '0.05', false],
+        ['<', '0.04', true],
+        ['<', '0.05', false],
+        ['<=', '0.05', true],
+        ['<=', '0.06', false],
+        ['>', '0.06', true],
+        ['>', '0.05', false],
+        ['>=', '0.05', true],
+        ['>=', '0.04', false],
+      ];
+
+      for (const [op, actualValue, expectedMatch] of cases) {
+        const compiled = compileAccountChoiceRules([
+          when(cmp('amount', op, amt('0.05', 'USD')), 'Expenses:Rounding'),
+        ]);
+        assert(E.isRight(compiled));
+        assert.deepEqual(
+          compiled.right(
+            aggregateFacts({
+              direction: 'debit',
+              amount: makeAmount(actualValue, 'USD'),
+            }),
+          ),
+          E.right(expectedMatch ? 'Expenses:Rounding' : null),
+        );
+        assert.deepEqual(
+          compiled.right(
+            reductionFacts({
+              direction: 'credit',
+              // Also verify abs() normalization if a caller passes a signed Amount.
+              amount: makeAmount(actualValue, 'USD').neg(),
+            }),
+          ),
+          E.right(expectedMatch ? 'Expenses:Rounding' : null),
+        );
+      }
+
+      const zeroCheck = compileAccountChoiceRules([
+        when(cmp('amount', '>', amt(0, 'USD')), 'Income:NonZero'),
+      ]);
+      assert(E.isRight(zeroCheck));
+      assert.deepEqual(
+        zeroCheck.right(aggregateFacts({ amount: makeAmount('0.01', 'USD') })),
+        E.right('Income:NonZero'),
+      );
+
+      const guardedMultiCurrency = compileAccountChoiceRules([
+        when(
+          and(
+            cmp('currency', 'is', curr('USD')),
+            cmp('amount', '<', amt('0.05', 'USD')),
+          ),
+          'Expenses:Rounding:USD',
+        ),
+        otherwise('Income:Other'),
+      ]);
+      assert(E.isRight(guardedMultiCurrency));
+      assert.deepEqual(
+        guardedMultiCurrency.right(
+          aggregateFacts({ amount: makeAmount('10', 'EUR') }),
+        ),
+        E.right('Income:Other'),
+      );
     });
 
     it('evaluates source-account comparisons in reduction context', () => {
@@ -794,6 +901,22 @@ describe('compileAccountChoiceRules', () => {
   });
 
   describe('evaluation errors', () => {
+    it('fails when amount is compared across different currencies', () => {
+      const compiled = compileAccountChoiceRules([
+        when(cmp('amount', '<', amt('0.05', 'USD')), 'Expenses:Rounding'),
+      ]);
+      assert(E.isRight(compiled));
+
+      const got = compiled.right(
+        aggregateFacts({ amount: makeAmount('0.02', 'EUR') }),
+      );
+      assert(E.isLeft(got));
+      assert.equal(
+        got.left.message,
+        "Cannot compare account-choice amounts with different currencies 'EUR' and 'USD'",
+      );
+    });
+
     it('fails when source-account is evaluated in aggregate context', () => {
       const compiled = compileAccountChoiceRules([
         when(

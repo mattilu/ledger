@@ -1,0 +1,38 @@
+option "sign-convention" "normal-balance-positive"
+
+2026-01-01 open Assets:Broker
+2026-01-01 open Assets:Cash
+2026-01-01 open Income:Rounding
+2026-01-01 open Expenses:Rounding
+2026-01-01 open Income:Capital-Gains
+2026-01-01 open Expenses:Capital-Losses
+
+account-rule "with-rounding-threshold" {
+  when currency is USD and amount < 0.05 USD and direction is debit: Expenses:Rounding,
+  when currency is USD and amount < 0.05 USD and direction is credit: Income:Rounding,
+  when currency is EUR and amount < 0.05 EUR and direction is debit: Expenses:Rounding,
+  when currency is EUR and amount < 0.05 EUR and direction is credit: Income:Rounding,
+  when direction is debit: Expenses:Capital-Losses,
+  otherwise: Income:Capital-Gains
+}
+
+2026-01-10 * "Buy stock"
+  Assets:Broker                         2 ACME { 100 USD }
+  Assets:Cash                        -200 USD
+
+2026-02-01 * "Sell 1 share with tiny 0.02 USD credit rounding gain"
+  Assets:Broker                        -1 ACME {}
+  Assets:Cash                      100.02 USD
+  choose account "with-rounding-threshold"
+
+2026-03-01 * "Sell 1 share with 12 USD gain and 0.03 EUR debit FX rounding"
+  Assets:Cash                       -0.03 EUR
+  Assets:Broker                        -1 ACME {}
+  Assets:Cash                         112 USD
+  choose account "with-rounding-threshold"
+
+2026-03-01 balance
+  Income:Rounding                    0.02 USD
+  Expenses:Rounding                  0.03 EUR
+  Income:Capital-Gains                 12 USD
+  Expenses:Capital-Losses               0 USD

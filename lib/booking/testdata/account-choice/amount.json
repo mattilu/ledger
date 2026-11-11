@@ -1,0 +1,400 @@
+{
+  "options": {
+    "compareSignConventions": true
+  },
+  "want": {
+    "_tag": "Right",
+    "right": {
+      "transactions": [
+        {
+          "date": "2026-01-10T00:00:00.000Z",
+          "description": "Buy stock",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "2",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "100",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-01-10T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-01-10",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              },
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-2",
+                "currency": "ACME"
+              },
+              "cost": null,
+              "normalBalanceSide": "credit"
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "200",
+                "currency": "USD"
+              },
+              "cost": null,
+              "normalBalanceSide": "credit"
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "-200",
+                "currency": "USD"
+              },
+              "cost": null,
+              "normalBalanceSide": "debit"
+            }
+          ],
+          "signConvention": "normal-balance-positive",
+          "inventoriesAfter": {
+            "Assets:Broker": {
+              "ACME": [
+                {
+                  "amount": "2",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "100",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2026-01-10T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2026-01-10",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": []
+                  }
+                }
+              ]
+            },
+            "Trading:Default": {
+              "ACME": [
+                {
+                  "amount": "-2",
+                  "cost": null
+                }
+              ],
+              "USD": [
+                {
+                  "amount": "200",
+                  "cost": null
+                }
+              ]
+            },
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "-200",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-02-01T00:00:00.000Z",
+          "description": "Sell 1 share with tiny 0.02 USD credit rounding gain",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "100",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-01-10T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-01-10",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              },
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": null,
+              "normalBalanceSide": "credit"
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-100",
+                "currency": "USD"
+              },
+              "cost": null,
+              "normalBalanceSide": "credit"
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "100.02",
+                "currency": "USD"
+              },
+              "cost": null,
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Income:Rounding",
+              "flag": "*",
+              "amount": {
+                "amount": "-0.02",
+                "currency": "USD"
+              },
+              "cost": null,
+              "normalBalanceSide": "credit"
+            }
+          ],
+          "signConvention": "normal-balance-positive",
+          "inventoriesAfter": {
+            "Assets:Broker": {
+              "ACME": [
+                {
+                  "amount": "1",
+                  "cost": {
+                    "amounts": [
+                      {
+                        "amount": "100",
+                        "currency": "USD"
+                      }
+                    ],
+                    "date": "2026-01-10T00:00:00.000Z",
+                    "dateSpec": {
+                      "date": "2026-01-10",
+                      "time": null,
+                      "timezone": null
+                    },
+                    "tags": []
+                  }
+                }
+              ]
+            },
+            "Trading:Default": {
+              "ACME": [
+                {
+                  "amount": "-1",
+                  "cost": null
+                }
+              ],
+              "USD": [
+                {
+                  "amount": "100",
+                  "cost": null
+                }
+              ]
+            },
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "-99.98",
+                  "cost": null
+                }
+              ]
+            },
+            "Income:Rounding": {
+              "USD": [
+                {
+                  "amount": "-0.02",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "date": "2026-03-01T00:00:00.000Z",
+          "description": "Sell 1 share with 12 USD gain and 0.03 EUR debit FX rounding",
+          "flag": "*",
+          "postings": [
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "-0.03",
+                "currency": "EUR"
+              },
+              "cost": null,
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Assets:Broker",
+              "flag": "*",
+              "amount": {
+                "amount": "-1",
+                "currency": "ACME"
+              },
+              "cost": {
+                "amounts": [
+                  {
+                    "amount": "100",
+                    "currency": "USD"
+                  }
+                ],
+                "date": "2026-01-10T00:00:00.000Z",
+                "dateSpec": {
+                  "date": "2026-01-10",
+                  "time": null,
+                  "timezone": null
+                },
+                "tags": []
+              },
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "1",
+                "currency": "ACME"
+              },
+              "cost": null,
+              "normalBalanceSide": "credit"
+            },
+            {
+              "account": "Trading:Default",
+              "flag": "*",
+              "amount": {
+                "amount": "-100",
+                "currency": "USD"
+              },
+              "cost": null,
+              "normalBalanceSide": "credit"
+            },
+            {
+              "account": "Assets:Cash",
+              "flag": "*",
+              "amount": {
+                "amount": "112",
+                "currency": "USD"
+              },
+              "cost": null,
+              "normalBalanceSide": "debit"
+            },
+            {
+              "account": "Income:Capital-Gains",
+              "flag": "*",
+              "amount": {
+                "amount": "-12",
+                "currency": "USD"
+              },
+              "cost": null,
+              "normalBalanceSide": "credit"
+            },
+            {
+              "account": "Expenses:Rounding",
+              "flag": "*",
+              "amount": {
+                "amount": "0.03",
+                "currency": "EUR"
+              },
+              "cost": null,
+              "normalBalanceSide": "debit"
+            }
+          ],
+          "signConvention": "normal-balance-positive",
+          "inventoriesAfter": {
+            "Assets:Broker": {},
+            "Trading:Default": {},
+            "Assets:Cash": {
+              "USD": [
+                {
+                  "amount": "12.02",
+                  "cost": null
+                }
+              ],
+              "EUR": [
+                {
+                  "amount": "-0.03",
+                  "cost": null
+                }
+              ]
+            },
+            "Income:Rounding": {
+              "USD": [
+                {
+                  "amount": "-0.02",
+                  "cost": null
+                }
+              ]
+            },
+            "Income:Capital-Gains": {
+              "USD": [
+                {
+                  "amount": "-12",
+                  "cost": null
+                }
+              ]
+            },
+            "Expenses:Rounding": {
+              "EUR": [
+                {
+                  "amount": "0.03",
+                  "cost": null
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "prices": [
+        {
+          "type": "price",
+          "date": "2026-01-10T00:00:00.000Z",
+          "currency": "ACME",
+          "price": {
+            "amount": "100",
+            "currency": "USD"
+          },
+          "meta": {
+            "synthetized-from": {
+              "type": "string",
+              "value": "cost-spec"
+            }
+          },
+          "optionMap": {
+            "sign-convention": "normal-balance-positive"
+          }
+        }
+      ]
+    }
+  }
+}

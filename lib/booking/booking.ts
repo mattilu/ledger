@@ -531,7 +531,7 @@ function bookAccountChoice(
         selectAccount({
           ...portion,
           direction: portion.amount.isPos() ? 'debit' : 'credit',
-          currency: portion.amount.currency,
+          amount: portion.amount.abs(),
         }),
         E.map(account => {
           if (account !== null) {

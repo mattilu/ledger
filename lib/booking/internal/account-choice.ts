@@ -1,6 +1,7 @@
 import { ExactNumberType } from 'exactnumber';
 import { either as E, function as F, readonlyArray as RA } from 'fp-ts';
 
+import { Amount } from '../../core/amount.js';
 import {
   AccountChoiceRule,
   ConditionExpression,
@@ -12,7 +13,8 @@ import {
 export interface AccountChoiceAggregateFacts {
   readonly context: 'aggregate';
   readonly direction: 'debit' | 'credit';
-  readonly currency: string;
+  /** Unsigned (absolute) amount of the portion. */
+  readonly amount: Amount;
 }
 
 /**
@@ -21,7 +23,8 @@ export interface AccountChoiceAggregateFacts {
 export interface AccountChoiceReductionFacts {
   readonly context: 'reduction';
   readonly direction: 'debit' | 'credit';
-  readonly currency: string;
+  /** Unsigned (absolute) amount of the portion. */
+  readonly amount: Amount;
   readonly sourceAccount: string;
   readonly sourceCurrency: string;
   readonly acquisitionDate: Date;
@@ -212,11 +215,39 @@ function compileCondition(
                 facts =>
                   E.right(
                     compareEquality(
-                      facts.currency === expectedCurrency,
+                      facts.amount.currency === expectedCurrency,
                       operator,
                     ),
                   ),
             ),
+          );
+        }
+        case 'amount': {
+          if (condition.value.type !== 'amount') {
+            return invalidTypeComparison('amount', condition.value.type);
+          }
+          const expectedAmount = condition.value.value;
+          if (expectedAmount.isNeg()) {
+            return E.left(
+              new Error(
+                'Account-choice amount literal must not be negative; use direction to check debit or credit',
+              ),
+            );
+          }
+          return E.right(facts =>
+            facts.amount.currency !== expectedAmount.currency
+              ? E.left(
+                  new Error(
+                    `Cannot compare account-choice amounts with different currencies '${facts.amount.currency}' and '${expectedAmount.currency}'`,
+                  ),
+                )
+              : E.right(
+                  compareNumbers(
+                    facts.amount.amount.abs(),
+                    expectedAmount.amount,
+                    condition.operator,
+                  ),
+                ),
           );
         }
         case 'source-account': {
