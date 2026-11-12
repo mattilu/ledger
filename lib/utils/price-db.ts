@@ -296,8 +296,7 @@ export class PriceDatabase {
       readonly timestamp: number;
     };
     type Edge =
-      | { type: 'price'; priceEntry: PriceEntry }
-      | { type: 'time-shift' };
+      { type: 'price'; priceEntry: PriceEntry } | { type: 'time-shift' };
 
     const reqTimestamp = (options?.date ?? new Date()).getTime();
 

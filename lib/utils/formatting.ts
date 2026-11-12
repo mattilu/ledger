@@ -84,8 +84,7 @@ type FormatAccountsOptionsTree<T> = {
 };
 
 export type FormatAccountsOptions<T> =
-  | FormatAccountsOptionsPlain
-  | FormatAccountsOptionsTree<T>;
+  FormatAccountsOptionsPlain | FormatAccountsOptionsTree<T>;
 
 export type FormatInventoriesOptions = {
   /**

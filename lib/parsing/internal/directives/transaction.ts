@@ -104,10 +104,10 @@ const accountPostingParser = apply(
 const accountChoiceParser = kright(
   seq(str('choose'), str('account')),
   alt_sc(
-    apply(
-      accountChoiceRuleBlockParser,
-      (rules): AccountChoiceSpec => ({ type: 'inline', rules }),
-    ),
+    apply(accountChoiceRuleBlockParser, (rules): AccountChoiceSpec => ({
+      type: 'inline',
+      rules,
+    })),
     apply(stringParser, (name): AccountChoiceSpec => ({ type: 'ref', name })),
   ),
 );

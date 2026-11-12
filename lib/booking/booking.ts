@@ -266,8 +266,7 @@ interface AccountChoiceReductionPortion {
 }
 
 type AccountChoicePortion =
-  | AccountChoiceAggregatePortion
-  | AccountChoiceReductionPortion;
+  AccountChoiceAggregatePortion | AccountChoiceReductionPortion;
 
 interface BookTransactionResult {
   readonly transaction: Transaction;
@@ -933,16 +932,16 @@ function bookPosting(
 
   // Posting doesn't specify amount, so we infer it to be the running balance of
   // the transaction, and balance it out.
-  const balancePostings = balance.getPositions().map(
-    (amount): BookedPosting => ({
+  const balancePostings = balance
+    .getPositions()
+    .map((amount): BookedPosting => ({
       account: posting.account,
       flag: posting.flag,
       amount: amount.amount.neg(),
       cost: null,
       meta: posting.meta,
       normalBalanceSide: posting.normalBalanceSide,
-    }),
-  );
+    }));
 
   return E.right({
     ...doBook(inventories, balance, ...balancePostings),

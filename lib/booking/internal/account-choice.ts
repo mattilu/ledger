@@ -36,8 +36,7 @@ export interface AccountChoiceReductionFacts {
  * Booking facts passed to an account-choice evaluator.
  */
 export type AccountChoiceFacts =
-  | AccountChoiceAggregateFacts
-  | AccountChoiceReductionFacts;
+  AccountChoiceAggregateFacts | AccountChoiceReductionFacts;
 
 /**
  * Evaluates compiled account-choice rules against booking facts and returns

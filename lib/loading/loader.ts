@@ -129,15 +129,13 @@ export async function load(
     await doLoad(filePath, directives, currencyMap, accountRuleMap, context),
     E.bindTo('ctx'),
     E.bind('normalized', () => normalizeDirectives(directives, options)),
-    E.map(
-      ({ ctx, normalized }): Ledger => ({
-        directives: normalized.directives,
-        currencyMap: ImmutableMap(currencyMap),
-        accountMap: normalized.accountMap,
-        accountRuleMap: ImmutableMap(accountRuleMap),
-        signConvention: ctx.signConvention,
-      }),
-    ),
+    E.map(({ ctx, normalized }): Ledger => ({
+      directives: normalized.directives,
+      currencyMap: ImmutableMap(currencyMap),
+      accountMap: normalized.accountMap,
+      accountRuleMap: ImmutableMap(accountRuleMap),
+      signConvention: ctx.signConvention,
+    })),
   );
 }
 

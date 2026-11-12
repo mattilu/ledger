@@ -94,10 +94,10 @@ const primaryExpression = alt_sc(
 const notExpression = rule<TokenKind, ConditionExpression>();
 notExpression.setPattern(
   alt_sc(
-    apply(
-      kright(str('not'), notExpression),
-      (expr): ConditionExpression => ({ type: 'not', expr }),
-    ),
+    apply(kright(str('not'), notExpression), (expr): ConditionExpression => ({
+      type: 'not',
+      expr,
+    })),
     primaryExpression,
   ),
 );

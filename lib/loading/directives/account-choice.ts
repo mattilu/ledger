@@ -22,14 +22,7 @@ export type ConditionExpression =
       readonly type: 'comparison';
       readonly attribute: string;
       readonly operator:
-        | 'is'
-        | 'is not'
-        | '=='
-        | '!='
-        | '<'
-        | '<='
-        | '>'
-        | '>=';
+        'is' | 'is not' | '==' | '!=' | '<' | '<=' | '>' | '>=';
       readonly value: ConditionLiteral;
     }
   | {
