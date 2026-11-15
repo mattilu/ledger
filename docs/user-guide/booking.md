@@ -289,18 +289,28 @@ Notes on condition evaluation:
 ### Evaluation, chaining, and validation
 
 Clauses are evaluated in source order; the first matching `when` clause (or the
-optional final `otherwise` clause) selects the account for that portion. Zero
-portions are ignored and do not emit postings.
+optional final `otherwise` clause) determines the outcome for that portion. Zero
+portions are ignored and do not evaluate rules or emit postings.
+
+Each clause can specify one of the following outcomes:
+
+- **`<account>`:** Selects the destination account for that portion.
+- **`break` (`when` only):** Exits the current rule block immediately for that
+  portion, leaving it unmatched without evaluating later `when` or `otherwise`
+  clauses.
+- **`fail ["<message>"]`:** Stops booking with an error
+  (`Account-choice rule failed`, or `Account-choice rule failed: <message>` when
+  a message is provided).
 
 Only accounts selected for a nonzero portion are checked against
 `account-reference-checks` and currency restrictions; unselected candidate
 accounts are not validated.
 
-If a portion matches no clause in a `choose account` posting, it remains
-pending: unmatched reduction portions carry forward with their lot context to
-subsequent `choose account` postings, and unmatched residuals remain in the
-running balance. An ordinary omitted-amount posting consumes the entire
-remaining balance and clears any pending reduction portions.
+If a portion matches no clause in a `choose account` posting—or matches a
+`break` clause—it remains pending: unmatched reduction portions carry forward
+with their lot context to subsequent `choose account` postings, and unmatched
+residuals remain in the running balance. An ordinary omitted-amount posting
+consumes the entire remaining balance and clears any pending reduction portions.
 
 See [Syntax](./syntax.md#dynamic-account-selection) for the condition grammar.
 
