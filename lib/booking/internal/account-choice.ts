@@ -63,8 +63,16 @@ export function compileAccountChoiceRules(
     rules,
     RA.traverse(E.Applicative)(
       (rule): E.Either<Error, AccountChoiceEvaluator> => {
+        if (rule.outcome.type !== 'account') {
+          return E.left(
+            new Error(
+              `Account-choice '${rule.outcome.type}' outcome is not implemented yet`,
+            ),
+          );
+        }
+        const account = rule.outcome.account;
         if (rule.type === 'otherwise') {
-          const result = E.right(rule.account);
+          const result = E.right(account);
           return E.right(() => result);
         }
         return F.pipe(
@@ -73,7 +81,7 @@ export function compileAccountChoiceRules(
             evaluateCondition => facts =>
               F.pipe(
                 evaluateCondition(facts),
-                E.map(matches => (matches ? rule.account : null)),
+                E.map(matches => (matches ? account : null)),
               ),
           ),
         );

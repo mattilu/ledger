@@ -40,11 +40,17 @@
                   "value": "credit"
                 }
               },
-              "account": "Income:Loaded:Gain"
+              "outcome": {
+                "type": "account",
+                "account": "Income:Loaded:Gain"
+              }
             },
             {
               "type": "otherwise",
-              "account": "Income:Loaded:Other"
+              "outcome": {
+                "type": "account",
+                "account": "Income:Loaded:Other"
+              }
             }
           ]
         }

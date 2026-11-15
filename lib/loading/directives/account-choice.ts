@@ -35,13 +35,26 @@ export type ConditionExpression =
       readonly rhs: ConditionExpression;
     };
 
+export type AccountChoiceOutcome =
+  | { readonly type: 'account'; readonly account: string }
+  | { readonly type: 'fail'; readonly message: string | null }
+  | { readonly type: 'break' };
+
+export type AccountChoiceOtherwiseOutcome = Exclude<
+  AccountChoiceOutcome,
+  { readonly type: 'break' }
+>;
+
 export type AccountChoiceRule =
   | {
       readonly type: 'when';
       readonly condition: ConditionExpression;
-      readonly account: string;
+      readonly outcome: AccountChoiceOutcome;
     }
-  | { readonly type: 'otherwise'; readonly account: string };
+  | {
+      readonly type: 'otherwise';
+      readonly outcome: AccountChoiceOtherwiseOutcome;
+    };
 
 export interface AccountRuleDirective extends DirectiveCommon<'account-rule'> {
   readonly name: string;

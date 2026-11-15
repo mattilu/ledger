@@ -45,11 +45,15 @@ const or = (
 const when = (
   condition: ConditionExpression,
   account: string,
-): AccountChoiceRule => ({ type: 'when', condition, account });
+): AccountChoiceRule => ({
+  type: 'when',
+  condition,
+  outcome: { type: 'account', account },
+});
 
 const otherwise = (account: string): AccountChoiceRule => ({
   type: 'otherwise',
-  account,
+  outcome: { type: 'account', account },
 });
 
 const id = (value: string): ConditionLiteral => ({ type: 'identifier', value });
