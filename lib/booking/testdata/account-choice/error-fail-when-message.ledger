@@ -1,0 +1,11 @@
+2026-11-01 * "Buy stock"
+  Assets:Broker  1 ACME { 100 USD }
+  Assets:Cash
+
+2026-11-02 * "Sell stock at a loss"
+  Assets:Broker -1 ACME {}
+  Assets:Cash   80 USD
+  choose account {
+    when direction is debit: fail "Losses are not allowed",
+    otherwise: Income:Capital-Gains
+  }

@@ -1,0 +1,6 @@
+{
+  "_tag": "Left",
+  "left": {
+    "error": "Unable to consume token: break at lib/parsing/testdata/account-choice-invalid-otherwise-break.ledger:3"
+  }
+}

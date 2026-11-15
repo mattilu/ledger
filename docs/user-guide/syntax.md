@@ -240,9 +240,9 @@ Syntax:
 
 ```text
 account-rule "name" {
-  when <condition>: <account>
-  [, when <condition>: <account>]...
-  [, otherwise: <account>]
+  when <condition>: <when-outcome>
+  [, when <condition>: <when-outcome>]...
+  [, otherwise: <otherwise-outcome>]
 } [metadata]
 ```
 
@@ -385,9 +385,9 @@ or by referencing a named [`account-rule`](#account-rule):
 
 ```text
 [flag] choose account {
-  when <condition>: <account>
-  [, when <condition>: <account>]...
-  [, otherwise: <account>]
+  when <condition>: <when-outcome>
+  [, when <condition>: <when-outcome>]...
+  [, otherwise: <otherwise-outcome>]
 } [metadata]
 
 [flag] choose account "rule-name" [metadata]
@@ -396,6 +396,17 @@ or by referencing a named [`account-rule`](#account-rule):
 A `choose account` posting cannot specify an explicit amount, cost
 specification, or price specification. Clauses in a rule block are separated by
 commas, with an optional trailing comma.
+
+Clause outcomes:
+
+- `<when-outcome>`:
+  - `<account>`: routes the matched portion to `<account>`.
+  - `fail ["<message>"]`: fails booking when matched, optionally including a
+    custom error message.
+  - `break`: exits the rule block early for the matched portion, leaving it
+    unmatched without evaluating subsequent `when` or `otherwise` clauses.
+- `<otherwise-outcome>`: `<account>` or `fail ["<message>"]` (`break` is not
+  valid on `otherwise`).
 
 Conditions combine attribute comparisons using `not`, `and`, `or`, and
 parentheses (with precedence `not`, then `and`, then `or`):

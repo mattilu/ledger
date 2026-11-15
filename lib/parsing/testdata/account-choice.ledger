@@ -36,6 +36,18 @@ account-rule "otherwise" {
   otherwise: Income:Otherwise,
 }
 
+account-rule "outcomes" {
+  when foo == 0: break,
+  when foo == 1: fail,
+  when foo == 2: fail "custom failure",
+  otherwise: fail,
+}
+
+account-rule "otherwise-fail-message" {
+  when foo == 0: Income:Foo,
+  otherwise: fail "fallback failure",
+}
+
 account-rule "without-trailing-comma" {
   when foo == 0: Income:Foo
 }

@@ -17,7 +17,10 @@
                 "value": "id"
               }
             },
-            "account": "Income:Identifier"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Identifier"
+            }
           },
           {
             "type": "when",
@@ -30,7 +33,10 @@
                 "value": "str"
               }
             },
-            "account": "Income:String"
+            "outcome": {
+              "type": "account",
+              "account": "Income:String"
+            }
           },
           {
             "type": "when",
@@ -46,7 +52,10 @@
                 }
               }
             },
-            "account": "Income:Number:Eq"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Number:Eq"
+            }
           },
           {
             "type": "when",
@@ -62,7 +71,10 @@
                 }
               }
             },
-            "account": "Income:Number:Neq"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Number:Neq"
+            }
           },
           {
             "type": "when",
@@ -78,7 +90,10 @@
                 }
               }
             },
-            "account": "Income:Number:Gt"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Number:Gt"
+            }
           },
           {
             "type": "when",
@@ -94,7 +109,10 @@
                 }
               }
             },
-            "account": "Income:Number:Gte"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Number:Gte"
+            }
           },
           {
             "type": "when",
@@ -110,7 +128,10 @@
                 }
               }
             },
-            "account": "Income:Number:Lt"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Number:Lt"
+            }
           },
           {
             "type": "when",
@@ -126,7 +147,10 @@
                 }
               }
             },
-            "account": "Income:Number:Lte"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Number:Lte"
+            }
           },
           {
             "type": "when",
@@ -145,7 +169,10 @@
                 }
               }
             },
-            "account": "Income:Amount"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Amount"
+            }
           },
           {
             "type": "when",
@@ -162,7 +189,10 @@
                 }
               }
             },
-            "account": "Income:Date"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Date"
+            }
           },
           {
             "type": "when",
@@ -175,7 +205,10 @@
                 "value": "Assets:Test"
               }
             },
-            "account": "Income:Account"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Account"
+            }
           },
           {
             "type": "when",
@@ -188,7 +221,10 @@
                 "value": "USD"
               }
             },
-            "account": "Income:Currency"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Currency"
+            }
           },
           {
             "type": "when",
@@ -202,7 +238,10 @@
                 "unit": "d"
               }
             },
-            "account": "Income:Duration"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Duration"
+            }
           }
         ]
       },
@@ -239,7 +278,10 @@
                 }
               }
             },
-            "account": "Income:And"
+            "outcome": {
+              "type": "account",
+              "account": "Income:And"
+            }
           },
           {
             "type": "when",
@@ -270,7 +312,10 @@
                 }
               }
             },
-            "account": "Income:Or"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Or"
+            }
           },
           {
             "type": "when",
@@ -289,7 +334,10 @@
                 }
               }
             },
-            "account": "Income:Not"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Not"
+            }
           },
           {
             "type": "when",
@@ -311,7 +359,10 @@
                 }
               }
             },
-            "account": "Income:NotNot"
+            "outcome": {
+              "type": "account",
+              "account": "Income:NotNot"
+            }
           },
           {
             "type": "when",
@@ -357,7 +408,10 @@
                 }
               }
             },
-            "account": "Income:AndLeftAssociative"
+            "outcome": {
+              "type": "account",
+              "account": "Income:AndLeftAssociative"
+            }
           },
           {
             "type": "when",
@@ -403,7 +457,10 @@
                 }
               }
             },
-            "account": "Income:OrLeftAssociative"
+            "outcome": {
+              "type": "account",
+              "account": "Income:OrLeftAssociative"
+            }
           },
           {
             "type": "when",
@@ -449,7 +506,10 @@
                 }
               }
             },
-            "account": "Income:PrecedenceAnd"
+            "outcome": {
+              "type": "account",
+              "account": "Income:PrecedenceAnd"
+            }
           },
           {
             "type": "when",
@@ -495,7 +555,10 @@
                 }
               }
             },
-            "account": "Income:PrecedenceParens"
+            "outcome": {
+              "type": "account",
+              "account": "Income:PrecedenceParens"
+            }
           },
           {
             "type": "when",
@@ -529,7 +592,10 @@
                 }
               }
             },
-            "account": "Income:PrecedenceNot"
+            "outcome": {
+              "type": "account",
+              "account": "Income:PrecedenceNot"
+            }
           },
           {
             "type": "when",
@@ -563,7 +629,10 @@
                 }
               }
             },
-            "account": "Income:NotOr"
+            "outcome": {
+              "type": "account",
+              "account": "Income:NotOr"
+            }
           }
         ]
       },
@@ -585,11 +654,118 @@
                 }
               }
             },
-            "account": "Income:Foo"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Foo"
+            }
           },
           {
             "type": "otherwise",
-            "account": "Income:Otherwise"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Otherwise"
+            }
+          }
+        ]
+      },
+      {
+        "type": "account-rule",
+        "name": "outcomes",
+        "rules": [
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "foo",
+              "operator": "==",
+              "value": {
+                "type": "number",
+                "value": {
+                  "type": "literal",
+                  "value": "0"
+                }
+              }
+            },
+            "outcome": {
+              "type": "break"
+            }
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "foo",
+              "operator": "==",
+              "value": {
+                "type": "number",
+                "value": {
+                  "type": "literal",
+                  "value": "1"
+                }
+              }
+            },
+            "outcome": {
+              "type": "fail",
+              "message": null
+            }
+          },
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "foo",
+              "operator": "==",
+              "value": {
+                "type": "number",
+                "value": {
+                  "type": "literal",
+                  "value": "2"
+                }
+              }
+            },
+            "outcome": {
+              "type": "fail",
+              "message": "custom failure"
+            }
+          },
+          {
+            "type": "otherwise",
+            "outcome": {
+              "type": "fail",
+              "message": null
+            }
+          }
+        ]
+      },
+      {
+        "type": "account-rule",
+        "name": "otherwise-fail-message",
+        "rules": [
+          {
+            "type": "when",
+            "condition": {
+              "type": "comparison",
+              "attribute": "foo",
+              "operator": "==",
+              "value": {
+                "type": "number",
+                "value": {
+                  "type": "literal",
+                  "value": "0"
+                }
+              }
+            },
+            "outcome": {
+              "type": "account",
+              "account": "Income:Foo"
+            }
+          },
+          {
+            "type": "otherwise",
+            "outcome": {
+              "type": "fail",
+              "message": "fallback failure"
+            }
           }
         ]
       },
@@ -611,7 +787,10 @@
                 }
               }
             },
-            "account": "Income:Foo"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Foo"
+            }
           }
         ]
       },
@@ -633,11 +812,17 @@
                 }
               }
             },
-            "account": "Income:Foo"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Foo"
+            }
           },
           {
             "type": "otherwise",
-            "account": "Income:Otherwise"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Otherwise"
+            }
           }
         ]
       },
@@ -659,7 +844,10 @@
                 }
               }
             },
-            "account": "Income:Foo"
+            "outcome": {
+              "type": "account",
+              "account": "Income:Foo"
+            }
           }
         ],
         "meta": {
@@ -697,7 +885,10 @@
                       }
                     }
                   },
-                  "account": "Income:Inline"
+                  "outcome": {
+                    "type": "account",
+                    "account": "Income:Inline"
+                  }
                 }
               ]
             },
@@ -740,7 +931,10 @@
                       }
                     }
                   },
-                  "account": "Income:Inline"
+                  "outcome": {
+                    "type": "account",
+                    "account": "Income:Inline"
+                  }
                 }
               ]
             },
@@ -764,7 +958,10 @@
                       }
                     }
                   },
-                  "account": "Income:Inline"
+                  "outcome": {
+                    "type": "account",
+                    "account": "Income:Inline"
+                  }
                 }
               ]
             },
@@ -814,7 +1011,10 @@
                       }
                     }
                   },
-                  "account": "Income:Inline"
+                  "outcome": {
+                    "type": "account",
+                    "account": "Income:Inline"
+                  }
                 }
               ]
             },

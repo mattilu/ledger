@@ -3,6 +3,7 @@ import { either as E, function as F, readonlyArray as RA } from 'fp-ts';
 
 import { Amount } from '../../core/amount.js';
 import {
+  AccountChoiceOutcome,
   AccountChoiceRule,
   ConditionExpression,
 } from '../../loading/directives/account-choice.js';
@@ -61,34 +62,66 @@ export function compileAccountChoiceRules(
 ): E.Either<Error, AccountChoiceEvaluator> {
   return F.pipe(
     rules,
-    RA.traverse(E.Applicative)(
-      (rule): E.Either<Error, AccountChoiceEvaluator> => {
-        if (rule.type === 'otherwise') {
-          const result = E.right(rule.account);
-          return E.right(() => result);
-        }
-        return F.pipe(
-          compileCondition(rule.condition),
-          E.map(
-            evaluateCondition => facts =>
-              F.pipe(
-                evaluateCondition(facts),
-                E.map(matches => (matches ? rule.account : null)),
-              ),
-          ),
-        );
-      },
-    ),
+    RA.traverse(E.Applicative)((rule): E.Either<Error, RuleEvaluator> => {
+      const matchedOutcome = compileOutcome(rule.outcome);
+      if (rule.type === 'otherwise') {
+        return E.right(() => matchedOutcome);
+      }
+      return F.pipe(
+        compileCondition(rule.condition),
+        E.map(
+          evaluateCondition => facts =>
+            F.pipe(
+              evaluateCondition(facts),
+              E.flatMap(matches => (matches ? matchedOutcome : UNMATCHED)),
+            ),
+        ),
+      );
+    }),
     E.map(compiledRules => facts => {
       for (const evaluateRule of compiledRules) {
         const result = evaluateRule(facts);
-        if (E.isLeft(result) || result.right !== null) {
+        if (E.isLeft(result)) {
           return result;
+        }
+        if (result.right.matched) {
+          return E.right(result.right.account);
         }
       }
       return E.right(null);
     }),
   );
+}
+
+type RuleEvaluationResult =
+  | { readonly matched: false }
+  | { readonly matched: true; readonly account: string | null };
+
+type RuleEvaluator = (
+  facts: AccountChoiceFacts,
+) => E.Either<Error, RuleEvaluationResult>;
+
+const UNMATCHED: E.Either<Error, RuleEvaluationResult> = E.right({
+  matched: false,
+});
+
+function compileOutcome(
+  outcome: AccountChoiceOutcome,
+): E.Either<Error, RuleEvaluationResult> {
+  switch (outcome.type) {
+    case 'account':
+      return E.right({ matched: true, account: outcome.account });
+    case 'break':
+      return E.right({ matched: true, account: null });
+    case 'fail':
+      return E.left(
+        new Error(
+          outcome.message === null
+            ? 'Account-choice rule failed'
+            : `Account-choice rule failed: ${outcome.message}`,
+        ),
+      );
+  }
 }
 
 type ConditionEvaluator = (

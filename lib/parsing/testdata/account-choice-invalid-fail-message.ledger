@@ -1,0 +1,3 @@
+account-rule "invalid-fail-message" {
+  when direction is debit: fail 123
+}

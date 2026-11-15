@@ -1,0 +1,8 @@
+{
+  "want": {
+    "_tag": "Left",
+    "left": {
+      "error": "While processing 'transaction' directive at lib/booking/testdata/account-choice/error-fail-when-message.ledger:5: Account-choice rule failed: Losses are not allowed"
+    }
+  }
+}

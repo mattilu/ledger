@@ -693,7 +693,7 @@ function evaluateAccountChoiceRuleSpecs(
     evaluated.push({
       type: 'when',
       condition: condition.right,
-      account: rule.account,
+      outcome: rule.outcome,
     });
   }
   return E.right(evaluated);

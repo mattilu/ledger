@@ -63,6 +63,15 @@ await describe('parse', async () => {
       assert(E.isRight(got));
     });
   }
+
+  for (const keyword of ['fail', 'break']) {
+    await test(`allows contextual outcome keyword '${keyword}' in conditions`, () => {
+      const got = parse(
+        `account-rule "r" {\n  when ${keyword} is ${keyword}: Income:Foo\n}\n`,
+      );
+      assert(E.isRight(got));
+    });
+  }
 });
 
 function cleanup(ledger: LedgerSpec) {
