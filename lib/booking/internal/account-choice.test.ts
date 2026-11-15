@@ -6,6 +6,8 @@ import { either as E } from 'fp-ts';
 
 import { Amount } from '../../core/amount.js';
 import {
+  AccountChoiceOtherwiseOutcome,
+  AccountChoiceOutcome,
   AccountChoiceRule,
   ConditionExpression,
   ConditionLiteral,
@@ -42,18 +44,35 @@ const or = (
   rhs: ConditionExpression,
 ): ConditionExpression => ({ type: 'or', lhs, rhs });
 
+const brk: AccountChoiceOutcome = { type: 'break' };
+
+const fail = (
+  message: string | null = null,
+): AccountChoiceOtherwiseOutcome => ({
+  type: 'fail',
+  message,
+});
+
 const when = (
   condition: ConditionExpression,
-  account: string,
+  outcome: string | AccountChoiceOutcome,
 ): AccountChoiceRule => ({
   type: 'when',
   condition,
-  outcome: { type: 'account', account },
+  outcome:
+    typeof outcome === 'string'
+      ? { type: 'account', account: outcome }
+      : outcome,
 });
 
-const otherwise = (account: string): AccountChoiceRule => ({
+const otherwise = (
+  outcome: string | AccountChoiceOtherwiseOutcome,
+): AccountChoiceRule => ({
   type: 'otherwise',
-  outcome: { type: 'account', account },
+  outcome:
+    typeof outcome === 'string'
+      ? { type: 'account', account: outcome }
+      : outcome,
 });
 
 const id = (value: string): ConditionLiteral => ({ type: 'identifier', value });
@@ -1061,6 +1080,115 @@ describe('compileAccountChoiceRules', () => {
         ]);
         assert(E.isRight(compiled));
         assert(E.isLeft(compiled.right(aggregateCredit)));
+      });
+    });
+
+    describe('break and fail outcomes', () => {
+      it('returns null on break and skips subsequent when and otherwise clauses', () => {
+        const compiled = compileAccountChoiceRules([
+          when(cmp('context', 'is', id('aggregate')), brk),
+          when(cmp('holding-period', '>=', days(365)), 'Income:LongTerm'),
+          otherwise(fail('should not reach otherwise')),
+        ]);
+        assert(E.isRight(compiled));
+
+        // Aggregate portion breaks early before evaluating reduction-only
+        // attributes or otherwise: fail.
+        assert.deepEqual(compiled.right(aggregateDebit), E.right(null));
+        assert.deepEqual(
+          compiled.right(reductionFacts({ holdingPeriod: ExactNumber(400) })),
+          E.right('Income:LongTerm'),
+        );
+      });
+
+      it('continues past non-matching break to later clauses', () => {
+        const compiled = compileAccountChoiceRules([
+          when(cmp('direction', 'is', id('debit')), brk),
+          otherwise('Income:Gain'),
+        ]);
+        assert(E.isRight(compiled));
+
+        assert.deepEqual(compiled.right(aggregateDebit), E.right(null));
+        assert.deepEqual(
+          compiled.right(aggregateCredit),
+          E.right('Income:Gain'),
+        );
+      });
+
+      it('fails with default message when bare fail matches', () => {
+        const compiled = compileAccountChoiceRules([
+          when(cmp('direction', 'is', id('debit')), fail()),
+          otherwise('Income:Gain'),
+        ]);
+        assert(E.isRight(compiled));
+
+        assert.deepEqual(
+          compiled.right(aggregateCredit),
+          E.right('Income:Gain'),
+        );
+
+        const got = compiled.right(aggregateDebit);
+        assert(E.isLeft(got));
+        assert.equal(got.left.message, 'Account-choice rule failed');
+      });
+
+      it('fails with custom message when fail message matches', () => {
+        const compiled = compileAccountChoiceRules([
+          when(cmp('direction', 'is', id('debit')), fail('Unexpected debit')),
+        ]);
+        assert(E.isRight(compiled));
+
+        const got = compiled.right(aggregateDebit);
+        assert(E.isLeft(got));
+        assert.equal(
+          got.left.message,
+          'Account-choice rule failed: Unexpected debit',
+        );
+      });
+
+      it('fails with default message on bare otherwise: fail', () => {
+        const compiled = compileAccountChoiceRules([
+          when(cmp('direction', 'is', id('credit')), 'Income:Gain'),
+          otherwise(fail()),
+        ]);
+        assert(E.isRight(compiled));
+
+        assert.deepEqual(
+          compiled.right(aggregateCredit),
+          E.right('Income:Gain'),
+        );
+
+        const got = compiled.right(aggregateDebit);
+        assert(E.isLeft(got));
+        assert.equal(got.left.message, 'Account-choice rule failed');
+      });
+
+      it('fails with custom message on otherwise: fail', () => {
+        const compiled = compileAccountChoiceRules([
+          when(cmp('direction', 'is', id('credit')), 'Income:Gain'),
+          otherwise(fail('Unhandled portion')),
+        ]);
+        assert(E.isRight(compiled));
+
+        const got = compiled.right(aggregateDebit);
+        assert(E.isLeft(got));
+        assert.equal(
+          got.left.message,
+          'Account-choice rule failed: Unhandled portion',
+        );
+      });
+
+      it('reports static compilation errors in clauses after fail or break', () => {
+        const got = compileAccountChoiceRules([
+          when(cmp('direction', 'is', id('debit')), fail()),
+          when(cmp('context', 'is', id('aggregate')), brk),
+          when(cmp('unknown-attr', 'is', id('foo')), 'Income:Gain'),
+        ]);
+        assert(E.isLeft(got));
+        assert.equal(
+          got.left.message,
+          'Unknown account-choice attribute: unknown-attr',
+        );
       });
     });
   });
