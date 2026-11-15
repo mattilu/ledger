@@ -1,4 +1,5 @@
 import {
+  alt_sc,
   apply,
   kright,
   list_sc,
@@ -8,23 +9,48 @@ import {
   tok,
 } from 'typescript-parsec';
 
-import { AccountChoiceRule } from '../spec/directives/account-rule.js';
+import {
+  AccountChoiceOtherwiseOutcome,
+  AccountChoiceOutcome,
+  AccountChoiceRule,
+} from '../spec/directives/account-rule.js';
 import { accountParser } from './account.js';
 import { conditionParser } from './condition.js';
+import { stringParser } from './string.js';
 import { TokenKind } from './tokenizer.js';
 
+const accountOutcomeParser = apply(
+  accountParser,
+  (account): AccountChoiceOtherwiseOutcome => ({ type: 'account', account }),
+);
+
+const failOutcomeParser = apply(
+  kright(str<TokenKind>('fail'), opt_sc(stringParser)),
+  (message): AccountChoiceOtherwiseOutcome => ({
+    type: 'fail',
+    message: message ?? null,
+  }),
+);
+
+const otherwiseOutcomeParser = alt_sc(accountOutcomeParser, failOutcomeParser);
+
+const whenOutcomeParser = alt_sc(
+  otherwiseOutcomeParser,
+  apply(str('break'), (): AccountChoiceOutcome => ({ type: 'break' })),
+);
+
 const whenClauseParser = apply(
-  seq(str('when'), conditionParser, tok(TokenKind.Colon), accountParser),
-  ([, condition, , account]): AccountChoiceRule => ({
+  seq(str('when'), conditionParser, tok(TokenKind.Colon), whenOutcomeParser),
+  ([, condition, , outcome]): AccountChoiceRule => ({
     type: 'when',
     condition,
-    account,
+    outcome,
   }),
 );
 
 const otherwiseClauseParser = apply(
-  seq(str('otherwise'), tok(TokenKind.Colon), accountParser),
-  ([, , account]): AccountChoiceRule => ({ type: 'otherwise', account }),
+  seq(str('otherwise'), tok(TokenKind.Colon), otherwiseOutcomeParser),
+  ([, , outcome]): AccountChoiceRule => ({ type: 'otherwise', outcome }),
 );
 
 export const accountChoiceRuleBlockParser = apply(

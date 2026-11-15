@@ -493,7 +493,14 @@ async function doLoad(
             F.pipe(
               directive.postings,
               A.traverse(E.Applicative)(posting =>
-                evaluatePostingSpec(directive, posting, makeDate, makeMeta),
+                evaluatePostingSpec(
+                  directive,
+                  posting,
+                  filePath,
+                  ctx,
+                  makeDate,
+                  makeMeta,
+                ),
               ),
             ),
           ),
@@ -537,22 +544,39 @@ async function doLoad(
 function evaluatePostingSpec(
   transaction: TransactionDirectiveSpec,
   posting: PostingSpec,
+  filePath: string,
+  ctx: LoadContext,
   makeDate: MakeDate,
   makeMeta: MakeMeta,
 ): E.Either<LoadError, PartialPosting> {
   return isAccountChoicePosting(posting)
-    ? evaluateAccountChoicePostingSpec(transaction, posting, makeDate, makeMeta)
+    ? evaluateAccountChoicePostingSpec(
+        transaction,
+        posting,
+        filePath,
+        ctx,
+        makeDate,
+        makeMeta,
+      )
     : evaluateAccountPostingSpec(transaction, posting, makeDate, makeMeta);
 }
 
 function evaluateAccountChoicePostingSpec(
   transaction: TransactionDirectiveSpec,
   posting: AccountChoicePostingSpec,
+  filePath: string,
+  ctx: LoadContext,
   makeDate: MakeDate,
   makeMeta: MakeMeta,
 ): E.Either<LoadError, PartialAccountChoicePosting> {
   return F.pipe(
-    evaluateAccountChoiceSpec(transaction, posting.account, makeDate),
+    evaluateAccountChoiceSpec(
+      transaction,
+      posting.account,
+      filePath,
+      ctx,
+      makeDate,
+    ),
     E.flatMap(account =>
       F.pipe(
         makeMeta({ meta: posting.meta, srcPos: transaction.srcPos }),
@@ -569,6 +593,8 @@ function evaluateAccountChoicePostingSpec(
 function evaluateAccountChoiceSpec(
   transaction: TransactionDirectiveSpec,
   accountChoice: AccountChoiceSpec,
+  filePath: string,
+  ctx: LoadContext,
   makeDate: MakeDate,
 ): E.Either<LoadError, AccountChoice> {
   if (accountChoice.type === 'ref') {
@@ -578,6 +604,8 @@ function evaluateAccountChoiceSpec(
     evaluateAccountChoiceRuleSpecs(
       accountChoice.rules,
       transaction.srcPos,
+      filePath,
+      ctx,
       makeDate,
     ),
     E.map(rules => ({ type: 'inline' as const, rules })),
@@ -654,6 +682,8 @@ function loadAccountRule(
       evaluateAccountChoiceRuleSpecs(
         directive.rules,
         directive.srcPos,
+        filePath,
+        ctx,
         makeDate,
       ),
     ),
@@ -674,12 +704,23 @@ function loadAccountRule(
 function evaluateAccountChoiceRuleSpecs(
   rules: readonly AccountChoiceRuleSpec[],
   srcPos: SourcePosition,
+  filePath: string,
+  ctx: LoadContext,
   makeDate: MakeDate,
 ): E.Either<LoadError, readonly AccountChoiceRule[]> {
   const evaluated: AccountChoiceRule[] = [];
   for (const rule of rules) {
+    if (rule.outcome.type !== 'account') {
+      return E.left(
+        new LoadError(
+          `Account-choice '${rule.outcome.type}' outcome is not implemented yet`,
+          makeSourceContext(filePath, srcPos),
+          ctx.stackTrace,
+        ),
+      );
+    }
     if (rule.type === 'otherwise') {
-      evaluated.push(rule);
+      evaluated.push({ type: 'otherwise', account: rule.outcome.account });
       continue;
     }
     const condition = evaluateConditionExpressionSpec(
@@ -693,7 +734,7 @@ function evaluateAccountChoiceRuleSpecs(
     evaluated.push({
       type: 'when',
       condition: condition.right,
-      account: rule.account,
+      account: rule.outcome.account,
     });
   }
   return E.right(evaluated);

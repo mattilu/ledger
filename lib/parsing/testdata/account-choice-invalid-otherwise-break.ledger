@@ -1,0 +1,4 @@
+account-rule "invalid-otherwise-break" {
+  when direction is credit: Income:Broker:Capital-Gains,
+  otherwise: break
+}
