@@ -94,7 +94,10 @@ npx tsx scripts/compare-bench.ts --before before.json --after after.json
 ```
 
 Benchmarks are intentionally excluded from the pre-commit hook to keep commits
-fast.
+fast. On GitHub, pull requests targeting `main` run both the `Checks` workflow
+(`npm run pre-commit`) and the `Benchmarks` workflow, which compares the PR
+against `main`, posts/updates a PR comment, and publishes the results to the
+workflow Job Summary.
 
 ## Extending the project
 
