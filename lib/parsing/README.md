@@ -29,3 +29,7 @@ timezone/option evaluation, and runtime directives in `lib/loading/`.
 `parser.test.ts` discovers `.ledger` / `.json` fixture pairs in `testdata/`. Add
 successful and malformed-input cases when changing grammar, and preserve useful
 source positions in errors.
+
+`parser.bench.ts` defines the parser benchmark suite (realistic mixed ledgers up
+to 50,000 directives, isolated syntax constructs, and complexity scaling pairs).
+Extend its generators when introducing new grammar constructs.
