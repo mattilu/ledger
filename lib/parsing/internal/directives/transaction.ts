@@ -5,7 +5,6 @@ import {
   list_sc,
   opt_sc,
   Parser,
-  rep_sc,
   seq,
   str,
   tok,
@@ -22,6 +21,7 @@ import {
 import { accountParser } from '../account.js';
 import { accountChoiceRuleBlockParser } from '../account-choice.js';
 import { amountParser } from '../amount.js';
+import { rep_sc } from '../combinators.js';
 import { currencyParser } from '../currency.js';
 import { dateParser } from '../date.js';
 import { metadataParser } from '../metadata.js';

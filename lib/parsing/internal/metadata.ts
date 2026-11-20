@@ -1,9 +1,10 @@
 import { Map } from 'immutable';
-import { alt_sc, apply, Parser, rep_sc, seq, tok } from 'typescript-parsec';
+import { alt_sc, apply, Parser, seq, tok } from 'typescript-parsec';
 
 import { MetadataSpec, MetadataValueSpec } from '../spec/metadata.js';
 import { accountParser } from './account.js';
 import { amountParser } from './amount.js';
+import { rep_sc } from './combinators.js';
 import { currencyParser } from './currency.js';
 import { dateParser } from './date.js';
 import { expressionParser } from './expression.js';

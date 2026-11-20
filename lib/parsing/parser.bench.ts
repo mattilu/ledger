@@ -552,10 +552,7 @@ export function createSuite(): BenchSuite {
         smallId: 'mixed-5k',
         largeId: 'mixed-50k',
         sizeUnit: 'MB',
-        // typescript-parsec's rep_sc copies its accumulator array via concat()
-        // on every directive (~3.1x normalized at 50k). Tighten to <= 2.0 once
-        // top-level directive accumulation is linear.
-        maxNormalizedRatio: 4.5,
+        maxNormalizedRatio: 2.0,
       },
       {
         id: 'tokenize-file-size',
