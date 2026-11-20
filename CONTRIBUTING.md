@@ -62,6 +62,43 @@ npm run prettier-format
 Ledger uses Husky to run a pre-commit hook. To run the same checks manually
 before committing, use `npm run pre-commit`.
 
+### Benchmarks
+
+Benchmarks live alongside their modules as `*.bench.ts` files and are discovered
+automatically. Run all benchmarks locally with:
+
+```bash
+npm run bench
+```
+
+You can filter by suite, case pattern, or specific file paths:
+
+```bash
+npm run bench -- --suite parsing --filter syntax
+npm run bench -- --quick
+npm run bench -- --json results.json
+```
+
+To compare your working tree against the merge-base with `main` (or between any
+two git refs) using interleaved A/B rounds:
+
+```bash
+npm run bench:compare
+npm run bench:compare -- --before=main --after=HEAD
+```
+
+To compare two previously exported JSON files directly without touching git:
+
+```bash
+npx tsx scripts/compare-bench.ts --before before.json --after after.json
+```
+
+Benchmarks are intentionally excluded from the pre-commit hook to keep commits
+fast. On GitHub, pull requests targeting `main` run both the `Checks` workflow
+(`npm run pre-commit`) and the `Benchmarks` workflow, which compares the PR
+against `main`, posts/updates a PR comment, and publishes the results to the
+workflow Job Summary.
+
 ## Extending the project
 
 ### Add or change a directive

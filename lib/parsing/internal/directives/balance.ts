@@ -1,8 +1,9 @@
-import { apply, opt_sc, rep_sc, seq, str, tok } from 'typescript-parsec';
+import { apply, opt_sc, seq, str, tok } from 'typescript-parsec';
 
 import { BalanceDirectiveSpec } from '../../spec/directives/balance.js';
 import { accountParser } from '../account.js';
 import { amountParser } from '../amount.js';
+import { rep_sc } from '../combinators.js';
 import { dateParser } from '../date.js';
 import { expressionParser } from '../expression.js';
 import { metadataParser } from '../metadata.js';

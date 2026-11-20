@@ -41,3 +41,8 @@ reports.
 When adding a lot-reduction method, implement `BookingMethod` and test its
 inventory transition. Selection precedence is implemented in
 [booking.ts](./booking.ts).
+
+`booking.bench.ts` defines the booking benchmark suite (realistic mixed ledgers
+up to 50,000 directives, isolated posting/lot/account-choice/balance workloads,
+and inventory/account/posting scaling pairs). Extend its generators when adding
+new booking features.

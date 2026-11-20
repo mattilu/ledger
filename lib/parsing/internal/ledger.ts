@@ -1,6 +1,7 @@
-import { alt_sc, apply, rep_sc } from 'typescript-parsec';
+import { alt_sc, apply } from 'typescript-parsec';
 
 import { LedgerSpec } from '../spec/ledger.js';
+import { rep_sc } from './combinators.js';
 import { accountRuleDirectiveParser } from './directives/account-rule.js';
 import { balanceDirectiveParser } from './directives/balance.js';
 import { closeDirectiveParser } from './directives/close.js';

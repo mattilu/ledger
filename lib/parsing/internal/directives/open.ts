@@ -1,7 +1,8 @@
-import { apply, rep_sc, seq, str } from 'typescript-parsec';
+import { apply, seq, str } from 'typescript-parsec';
 
 import { OpenDirectiveSpec } from '../../spec/directives/open.js';
 import { accountParser } from '../account.js';
+import { rep_sc } from '../combinators.js';
 import { currencyParser } from '../currency.js';
 import { dateParser } from '../date.js';
 import { metadataParser } from '../metadata.js';
