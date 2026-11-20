@@ -1,7 +1,7 @@
 import { either as E } from 'fp-ts';
 
+import { tokenizeWithTrivia } from '../syntax/internal/tokenizer.js';
 import type { BenchCase, BenchSuite } from '../testing/bench.js';
-import { tokenize } from './internal/tokenizer.js';
 import { parse } from './parser.js';
 
 type Mode = 'parse' | 'tokenize' | 'parse-error';
@@ -51,7 +51,11 @@ function makeCase(
       heavy: options?.heavy,
       run: () => {
         let count = 0;
-        for (let tok = tokenize(source); tok !== undefined; tok = tok.next) {
+        for (
+          let tok = tokenizeWithTrivia(source).firstToken;
+          tok !== undefined;
+          tok = tok.next
+        ) {
           count++;
         }
         if (count === 0) {
