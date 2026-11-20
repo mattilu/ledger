@@ -72,6 +72,14 @@ await describe('parse', async () => {
       assert(E.isRight(got));
     });
   }
+
+  await test('lowers long flat arithmetic and boolean chains without stack overflow', () => {
+    const longExpr = `2026-06-01 * "Long sum"\n  Assets:Cash  ${Array(5000).fill('1').join(' + ')} USD\n`;
+    assert(E.isRight(parse(longExpr)));
+
+    const longCond = `account-rule "long" {\n  when ${Array(2000).fill('a == 1').join(' and ')}: Assets:Cash\n}\n`;
+    assert(E.isRight(parse(longCond)));
+  });
 });
 
 function cleanup(ledger: LedgerSpec) {

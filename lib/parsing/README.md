@@ -1,7 +1,8 @@
 # Parsing
 
-The `parsing` module converts Ledger source language into an AST. It does not
-deal with I/O, accounting or reporting.
+The `parsing` module converts Ledger source language into a semantic
+specification AST (`LedgerSpec`) by lowering the lossless concrete syntax tree
+produced by `lib/syntax/`. It does not deal with I/O, accounting, or reporting.
 
 Parsing is stateless and file-local: parsing one file must not depend on another
 file's contents or parse results. Keep cross-file and Ledger-wide context in the
@@ -12,17 +13,18 @@ timezone and other loading context when it evaluates those specs.
 ## Main pieces
 
 - `parser.ts` exposes `parse(contents)`, returning
-  `Either<ParseError, LedgerSpec>`.
-- `internal/tokenizer.ts` tokenizes source; `internal/ledger.ts` composes the
-  grammar and the other `internal/` parsers.
-- `spec/` defines the AST, including directive, amount, date, expression, and
-  metadata specifications.
+  `Either<ParseError, LedgerSpec>`, and `lowerSyntaxTree(tree)`.
+- `internal/lower.ts` lowers `SyntaxTree` nodes from `lib/syntax/` into
+  `LedgerSpec` values.
+- `spec/` defines the semantic AST, including directive, amount, date,
+  expression, and metadata specifications.
 - `source-position.ts` and `error.ts` carry parse location and error details.
 - `testdata/` holds Ledger inputs and expected parser results.
 
 Loading consumes `LedgerSpec` and converts specs into runtime values. Keep
-source syntax and grammar rules here; place file inclusion, filesystem reads,
-timezone/option evaluation, and runtime directives in `lib/loading/`.
+tokenization and grammar rules in `lib/syntax/` and semantic AST lowering here;
+place file inclusion, filesystem reads, timezone/option evaluation, and runtime
+directives in `lib/loading/`.
 
 ## Tests and changes
 
