@@ -44,6 +44,7 @@
     "typescript-eslint": "^8.48.0"
   },
   "dependencies": {
+    "atomically": "^2.1.1",
     "cmd-ts": "^0.15.0",
     "exactnumber": "^2.0.1",
     "fp-ts": "^2.16.10",

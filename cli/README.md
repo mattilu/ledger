@@ -6,16 +6,19 @@ code.
 
 ## Main files
 
-- `app.ts` registers the various subcommands (e.g. `debug`, `report`,
-  `validate`). Each subcommand is declare in its own file.
-- `error.ts` converts `LoadError` and `BookingError` into command-facing
-  messages while preserving the cause.
+- `app.ts` registers the various subcommands (e.g. `debug`, `fmt`, `report`,
+  `validate`). Each subcommand is declared in its own file.
+- `fmt.ts` implements `ledger fmt` (`stdin`/`stdout`, `--write`, `--check`, and
+  upward `.ledgerfmt.json` configuration discovery) delegating layout to
+  `lib/formatting/`.
+- `error.ts` converts `FormatError`, `LoadError`, and `BookingError` into
+  command-facing messages while preserving the cause.
 - `types/` adapts specific types (e.g. `date`) to the `cmd-ts` argument parser.
 
 ## Tests and changes
 
 CLI-specific tests are colocated with their command support files where needed
-(for example `types/date.test.ts`).
+(for example `fmt.test.ts` and `types/date.test.ts`).
 
 There are no end-to-end CLI tests at the moment. Changes to reporting or
 formatting should be covered in the corresponding `lib/reporting/` or
