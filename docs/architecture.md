@@ -16,28 +16,34 @@ directives, a booked ledger, and finally report output.
 ```text
 main.ts
   └─ cli/ (argument parsing and command orchestration)
+       ├─ format(source text)
+       │    ├─ lib/syntax/     → lossless SyntaxTree (CST with trivia + spans)
+       │    └─ lib/formatting/ → formatted Ledger source text
        ├─ load(input path)
        │    ├─ read files and recursively resolve `load` directives
-       │    ├─ lib/parsing/  → LedgerSpec
-       │    └─ lib/loading/  → Ledger
-       ├─ book(Ledger)       → BookedLedger
-       └─ lib/reporting/     → text output
-            └─ lib/utils/    → filtering, price lookup, formatting, etc.
+       │    ├─ lib/syntax/     → SyntaxTree
+       │    ├─ lib/parsing/    → LedgerSpec (lowered from SyntaxTree)
+       │    └─ lib/loading/    → Ledger
+       ├─ book(Ledger)         → BookedLedger
+       └─ lib/reporting/       → text output
+            └─ lib/utils/      → filtering, price lookup, formatting, etc.
 
 lib/core/ supplies shared value types such as Amount.
 ```
 
 ## Module boundaries
 
-| Module                                         | Responsibility                                                                   | Main boundary                                                       |
-| ---------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| [`lib/core/`](../lib/core/README.md)           | Small domain value types shared by the pipeline.                                 | `Amount` keeps exact numeric value and currency together.           |
-| [`lib/parsing/`](../lib/parsing/README.md)     | Tokenize and parse Ledger language into typed syntax specifications.             | `parse(contents)` returns `Either<ParseError, LedgerSpec>`.         |
-| [`lib/loading/`](../lib/loading/README.md)     | Resolve files and evaluate parsed specs into runtime directives.                 | `load(path)` returns `Either<LoadError, Ledger>`.                   |
-| [`lib/booking/`](../lib/booking/README.md)     | Apply directives in order, validate accounting constraints, and track positions. | `book(ledger)` returns `Either<BookingError, BookedLedger>`.        |
-| [`lib/reporting/`](../lib/reporting/README.md) | Derive report-specific results from a `BookedLedger`.                            | Reports implement `Report.run(BookedLedger): string`.               |
-| [`lib/utils/`](../lib/utils/README.md)         | Reusable algorithms and formatting shared by domain modules.                     | Utilities are consumed by the pipeline; they do not orchestrate it. |
-| [`cli/`](../cli/README.md)                     | CLI commands, flags, orchestration, and user-facing error conversion.            | Calls `load`, `book`, and report implementations.                   |
+| Module                                           | Responsibility                                                                                | Main boundary                                                       |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| [`lib/core/`](../lib/core/README.md)             | Small domain value types shared by the pipeline.                                              | `Amount` keeps exact numeric value and currency together.           |
+| [`lib/syntax/`](../lib/syntax/README.md)         | Lossless tokenization and CST parsing preserving comments, blank lines, and UTF-16 spans.     | `parseSyntax(contents)` returns `Either<SyntaxError, SyntaxTree>`.  |
+| [`lib/parsing/`](../lib/parsing/README.md)       | Lower lossless `SyntaxTree` nodes into typed semantic syntax specifications.                  | `parse(contents)` returns `Either<ParseError, LedgerSpec>`.         |
+| [`lib/formatting/`](../lib/formatting/README.md) | Format Ledger source text from `SyntaxTree` with configurable alignment and safety invariant. | `format(contents, options?)` returns `Either<FormatError, string>`. |
+| [`lib/loading/`](../lib/loading/README.md)       | Resolve files and evaluate parsed specs into runtime directives.                              | `load(path)` returns `Either<LoadError, Ledger>`.                   |
+| [`lib/booking/`](../lib/booking/README.md)       | Apply directives in order, validate accounting constraints, and track positions.              | `book(ledger)` returns `Either<BookingError, BookedLedger>`.        |
+| [`lib/reporting/`](../lib/reporting/README.md)   | Derive report-specific results from a `BookedLedger`.                                         | Reports implement `Report.run(BookedLedger): string`.               |
+| [`lib/utils/`](../lib/utils/README.md)           | Reusable algorithms and formatting shared by domain modules.                                  | Utilities are consumed by the pipeline; they do not orchestrate it. |
+| [`cli/`](../cli/README.md)                       | CLI commands, flags, orchestration, and user-facing error conversion.                         | Calls `format`, `load`, `book`, and report implementations.         |
 
 The parser's `LedgerSpec` contains typed syntax data rather than runtime
 directives. Loading adds evaluated dates, amounts, metadata, option state, and

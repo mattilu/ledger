@@ -1,6 +1,6 @@
 # Ledger source formatter
 
-- **Status:** Proposed.
+- **Status:** Implemented.
 - **Supersedes:** None.
 
 Ledger's whitespace-insensitive grammar lets users enter directives flexibly,
@@ -295,11 +295,11 @@ Alignment behavior is controlled by two orthogonal settings:
   default `2` spaces), with posting metadata indented two levels
   (`2 * indentWidth`).
 - **Rule blocks (`account-rule` and `choose account`):** Top-level
-  `account-rule` blocks expand across multiple lines when they contain multiple
-  clauses, comments, or exceed `printWidth`. Inline `choose account { ... }`
-  blocks stay on a single line if they have a single short clause without
-  comments and were not written multi-line, or expand cleanly otherwise. Long
-  `when <condition>: <outcome>` clauses wrap after `:` or across `or`/`and`
+  `account-rule` declarations always format as multi-line blocks with one clause
+  per indented line. Inline `choose account { ... }` blocks stay on a single
+  line if they have a single short clause without comments, fit within
+  `printWidth`, and were not written multi-line, or expand cleanly otherwise.
+  Long `when <condition>: <outcome>` clauses wrap after `:` or across `or`/`and`
   boundaries with hanging indentation.
 - **Cost and price specifications:** `{}` renders without interior spaces;
   non-empty `{ a, b }` and `{{ a, b }}` include single interior brace spaces and
@@ -344,8 +344,10 @@ zeroes (`.00`, `.`) are never altered.
   headers (`;;`, `;;;`), and banner comments remain intact; trailing horizontal
   whitespace inside comments is trimmed.
 - **Mandatory line breaks:** Because `;` comments run to the end of the line,
-  every emitted comment forces a newline (`hardline` or `lineSuffix` +
-  `breakParent`) so subsequent tokens can never be commented out inadvertently.
+  standalone comments emit a `hardline` and inline comments emit `lineSuffix`,
+  forcing any enclosing group to break whenever subsequent tokens follow that
+  comment on the same logical line so code can never be commented out
+  inadvertently.
 - **Ignore pragmas:** Top-level standalone comments matching `; ledger-fmt: off`
   suspend formatting for subsequent directives until a matching
   `; ledger-fmt: on` comment (or EOF), replaying the exact raw source slice
@@ -509,3 +511,84 @@ Allowing single-entry `balance` directives to remain on the header line while
 multi-entry `balance` directives break onto indented lines would prevent
 `balance` amounts from aligning vertically with surrounding transaction postings
 in `file`, `file-grow-only`, and `fixed` scopes.
+
+### Tokenize with sticky longest-match rules and fallback `Unknown` tokens
+
+`lib/syntax/` runs sticky (`/y`) regular expressions across all valid lexical
+rules first and falls back to `TokenKind.Unknown` (`/[^\s;]+/y`) only when no
+valid rule matches at the current character offset.
+
+#### Rejected alternative: Add a catch-all unknown rule to `typescript-parsec`'s `buildLexer`
+
+`buildLexer` evaluates every rule at the current index and picks the longest
+match overall. Adding a catch-all `/^\S+/g` rule directly to `buildLexer` would
+out-match single-character delimiters like `(`, `{`, `+`, and `-` whenever
+non-whitespace characters immediately follow them (such as `(1 + 2)` or `-10`).
+
+### Propagate `lineSuffix` breaks contextually in the document printer
+
+In `lib/formatting/internal/doc.ts`, `propagateBreaks` tracks whether an
+unflushed `lineSuffix` (inline `;` comment) precedes subsequent non-empty text
+inside a `group`. Enclosing groups are forced to break only when tokens follow
+the inline comment on what would otherwise be the same flat line, leaving
+end-of-line comments (such as `2026-05-01 * "Payee"  ; header note`) flat.
+
+#### Rejected alternative: Emit unconditional `breakParent` on every `lineSuffix`
+
+Attaching `breakParent` to every token with a trailing comment forces enclosing
+directive headers and rule clauses to split across multiple lines even when the
+comment sits on the final token of the line with nothing following it.
+
+### Exclude `price` directives from posting alignment columns
+
+`price` directives format canonically with single spaces
+(`2026-05-01 price USD 0.85 CHF`) rather than participating in the posting and
+`balance` alignment grid.
+
+#### Rejected alternative: Align `price` directive amounts with transaction postings
+
+Unlike indented postings and `balance` entries that start with an account name,
+`price` directives sit at column 1 with a date, keyword, and base currency.
+Sharing alignment anchors between `price` lines and deep account hierarchies
+creates wide, unnatural gaps in price tables.
+
+### Normalize unary signs while separating adjacent sign operators
+
+Unary `+` and `-` attach directly to unsigned literals and parenthesized
+expressions (`- 1` becomes `-1`, `-(1 + 2)` stays compact), while preserving a
+single space when the operand itself starts with a `+` or `-` sign (`- -1`,
+`+ -1`). Semantic verification folds `unary('-', literal(x))` to `literal(-x)`
+because `-1` lexes as a single `NumberLiteral` whereas `- 1` lexes as `Minus`
+followed by `NumberLiteral`.
+
+#### Rejected alternative: Preserve original whitespace after unary `-`
+
+Preserving the input space in `- 1` would leave unary minus formatting dependent
+on unformatted input whitespace rather than producing a single canonical
+representation.
+
+### Always format top-level `account-rule` blocks across multiple lines
+
+Top-level `account-rule` declarations always format as multi-line blocks with
+one clause per indented line, whereas inline `choose account { ... }` postings
+may remain on a single line when they contain one short comment-free clause and
+were written on a single line.
+
+#### Rejected alternative: Collapse single-clause `account-rule` directives onto one line
+
+Top-level `account-rule` directives define named, reusable routing tables and
+are consistently written as multi-line blocks across Ledger files; collapsing
+one-clause definitions onto one line would make top-level declarations visually
+inconsistent as rules gain or lose clauses.
+
+### Require `--write` or `--check` when formatting multiple files in `ledger fmt`
+
+`ledger fmt` writes formatted output to `stdout` when reading from `stdin` or a
+single file path, and rejects multiple file paths unless `--write` or `--check`
+is passed.
+
+#### Rejected alternative: Concatenate multiple formatted files to `stdout`
+
+Concatenating multiple formatted files onto `stdout` without file boundaries
+cannot be redirected safely back into individual files and masks accidental
+omission of `--write` or `--check`.
