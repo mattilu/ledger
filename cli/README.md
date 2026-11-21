@@ -20,9 +20,8 @@ code.
 CLI-specific tests are colocated with their command support files where needed
 (for example `fmt.test.ts` and `types/date.test.ts`).
 
-There are no end-to-end CLI tests at the moment. Changes to reporting or
-formatting should be covered in the corresponding `lib/reporting/` or
-`lib/utils/` tests.
+There are no end-to-end CLI tests at the moment. Changes to domain logic should
+be covered in the corresponding `lib/` tests.
 
 When adding a command or report, wire it in `app.ts` or `report.ts` and update
 `docs/user-guide/commands.md` and/or `docs/user-guide/reports/` accordingly.

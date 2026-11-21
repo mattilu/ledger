@@ -14,6 +14,7 @@ in loading.
 - `bounds.ts` provides partition/bound searches over sorted arrays.
 - `heap.ts` provides heap operations used by booking methods and graph search.
 - `iter.ts` provides lazy iterator transformers.
+- `terminal.ts` escapes unsafe terminal control characters in diagnostic text.
 
 Code in the `internal/` directory is meant to support implementation of code in
 the parent folder, and should not be accessed directly by Ledger library users.

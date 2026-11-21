@@ -15,7 +15,7 @@ discovery and CLI flags live in `cli/`.
 - `options.ts` defines `FormatOptions`, `DEFAULT_FORMAT_OPTIONS`, and
   `resolveFormatOptions(raw)` for validating `.ledgerfmt.json` payloads.
 - `internal/doc.ts` implements the Wadler–Lindig pretty-printing IR (`group`,
-  `indent`, `line`, `softline`, `hardline`, `ifBreak`, `lineSuffix`,
+  `fill`, `indent`, `line`, `softline`, `hardline`, `ifBreak`, `lineSuffix`,
   `breakParent`).
 - `internal/align.ts` resolves two-dimensional amount and inline-comment
   alignment across scopes (`none`, `directive`, `file`, `file-grow-only`,
