@@ -34,3 +34,8 @@ discovery and CLI flags live in `cli/`.
   comment pragmas.
 - `internal/verify.ts` checks before returning that formatted output re-parses
   to an equivalent `LedgerSpec` and preserves all comments in order.
+
+## Benchmarks
+
+`formatter.bench.ts` defines the formatter benchmark suite (mixed ledgers up to
+10,000 directives, alignment and wrapping workloads, and linear scaling checks).
